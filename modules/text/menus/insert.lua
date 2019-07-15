@@ -88,14 +88,10 @@ end
 local function getInsertion(self, typ)
   print(self, typ)
   if typ == "boolean" then
-    while true do
-      local ev = {os.pullEvent("key")}
-      local key = ev[2]
-      if key == 205 or key == 208 then
-        -- switch true/false
-      elseif key == 28 then
-        -- enter
-      end
+    if self.menuItems.appends[self.selected] == "true" then
+      return "false"
+    else
+      return "true"
     end
   elseif typ == "string" then
     --TODO: this
@@ -131,8 +127,7 @@ function met:go()
         local sel = self.selected
         print(sel)
         local temp = getInsertion(self, self.menuItems.types[sel])
-        print(temp)
-        os.sleep(1)
+        self.menuItems.appends[sel] = temp
       end
     end
 
@@ -152,7 +147,7 @@ function funcs.newMenu()
     infos = {
     },
     appends = {
-    }
+    },
   }
   tmp.selected = 1
 
