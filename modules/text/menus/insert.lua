@@ -96,9 +96,16 @@ local function getInsertion(self, typ)
     end
   elseif typ == "string" then
     --TODO: this
-    term.setCursorPos(15, )
+    term.setCursorPos(15, self.menuItems.lineStart + self.selected)
+    io.write("                          ")
+    term.setCursorPos(15, self.menuItems.lineStart + self.selected)
+    return io.read()
   elseif typ == "number" then
     --TODO: this
+    term.setCursorPos(15, self.menuItems.lineStart + self.selected)
+    io.write("                          ")
+    term.setCursorPos(15, self.menuItems.lineStart + self.selected)
+    return tonumber(io.read()) or "0"
   else
     error(ec(1, "string", typ))
   end
