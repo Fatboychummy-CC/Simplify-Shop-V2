@@ -14,12 +14,46 @@ function met:update()
   if self.selected < self.maxSelection - 3 then
     self.maxSelection = self.selected + 3
   end
+  if self.maxSelection < #self.menuItems.selectables then
+    term.setCursorPos(1, 9)
+    io.write("v")
+  end
+  if self.maxSelection > 4 then
+    term.setCursorPos(1, 4)
+    io.write("^")
+  end
+
+  term.setCursorPos(1, 5)
+
+  for i = self.maxSelection - 3, self.maxSelection do
+    local selection = self.menuItems.selectables[i]
+    if selection then
+      if self.selected == i then
+        io.write('>')
+      else
+        io.write(' ')
+      end
+      print(selection)
+    end
+  end
+end
+
+function met:update2()
+  term.setBackgroundColor(self.colors.infobg)
+  term.setTextColor(self.colors.infofg)
+  term.setCursorPos(1, 11)
+  print(self.menuItems.infos[self.selected])
 end
 
 function met:selectDown()
   self.selected = self.selected - 1
   if self.selected < 1 then
     self.selected = #self.menuItems.selectables
+  end
+
+  self.slot = self.slot - 1
+  if self.slot < 1 then
+    self.slot = 1
   end
 
   return self
@@ -29,6 +63,11 @@ function met:selectUp()
   self.selected = self.selected + 1
   if self.selected > #self.menuItems.selectables then
     self.selected = 1
+  end
+
+  self.slot = self.slot + 1
+  if self.slot > 4 then
+    self.slot = 4
   end
 
   return self
@@ -85,39 +124,26 @@ function met:draw()
   term.setBackgroundColor(self.colors.infobg)
   term.setTextColor(self.colors.infofg)
   local ln2 = print(self.info)
-  local inc = ln + ln2 + 1
-  print()
+  local inc = ln + ln2 + 2
   term.setBackgroundColor(self.colors.bg)
   term.setTextColor(self.colors.fg)
 
   self:update()
 
-  for i = self.maxSelection - 3, self.maxSelection do
-    local selection = self.menuItems.selectables[i]
-    if selection then
-      if self.selected == i then
-        io.write('>')
-      else
-        io.write(' ')
-      end
-      print(selection)
-    end
-  end
-
   term.setBackgroundColor(self.colors.appendbg)
   term.setTextColor(self.colors.appendfg)
+
+  local ind = 1
   for i = self.maxSelection - 3, self.maxSelection do
     local append = self.menuItems.appends[i]
     if append then
-      term.setCursorPos(15, inc + i)
+      term.setCursorPos(15, inc + ind)
       io.write(append)
+      ind = ind + 1
     end
   end
 
-  term.setBackgroundColor(self.colors.infobg)
-  term.setTextColor(self.colors.infofg)
-  term.setCursorPos(1, #self.menuItems.selectables + 3 + inc)
-  print(self.menuItems.infos[self.selected])
+  self:update2()
 
   return self
 end
@@ -221,6 +247,7 @@ function funcs.newMenu()
   }
 
   tmp.selected = 1
+  tmp.slot = 1
   tmp.title = "Menu"
   tmp.info = "Select an item."
   tmp.maxSelection = 4
