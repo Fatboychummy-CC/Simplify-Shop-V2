@@ -1,11 +1,10 @@
 local funcs = {}
-local meta = {}
-local met = {}
-meta.__index = met
-met.__type = "menuObject"
-
 local ers = require("modules.etc.errors")
 local simple = require("modules.text.menus.simple")
+local dCopy = require("modules.etc.dcop")
+local meta = getmetatable(simple.newMenu())
+meta = dCopy(meta)
+local met = meta.__index
 local ec = ers.create
 
 local function getInsertion(self, typ)
@@ -62,6 +61,7 @@ end
 
 function funcs.newMenu()
   local tmp = simple.newMenu()
+  setmetatable(tmp, meta)
 
   tmp.menuItems = {
     selectables = {
