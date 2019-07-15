@@ -40,7 +40,6 @@ local function mainMenu()
     "Use a helpful UI to add items to your shop."
   )
   --
-  --
   menu:addMenuItem(
     "Options",
     "Edit shop config.",
@@ -54,6 +53,13 @@ local function optionsMenu()
   local menu = imenus.newMenu()
   menu.title = "Settings"
   menu.info = "Select an item to edit it's value."
+
+  menu:addMenuItem(
+    "Shop name",
+    "string",
+    "Unnamed Shop",
+    "Speed at which the shop will refresh it's screen (in seconds)."
+  )
 
   menu:go()
 end
