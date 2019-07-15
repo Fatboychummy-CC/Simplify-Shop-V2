@@ -8,6 +8,8 @@ local met = meta.__index
 meta.__index = met
 local ec = ers.create
 
+local mx, my = term.getSize()
+
 function met:addMenuItem(selection, tp,  append, info)
   selection = type(selection) == "string" and selection
                 or error(ec(1, "string", selection))
@@ -45,7 +47,7 @@ function met:draw()
   term.setBackgroundColor(self.colors.infobg)
   term.setTextColor(self.colors.infofg)
   local ln2 = print(self.info)
-  local inc = ln + ln2 + 1
+  local inc = ln + ln2 + 2
   self.menuItems.lineStart = inc
   print()
   term.setBackgroundColor(self.colors.bg)
@@ -53,45 +55,41 @@ function met:draw()
 
   self:update()
 
-  for i, selection in ipairs(self.menuItems.selectables) do
-    if self.selected == i then
-      io.write('>')
-    else
-      io.write(' ')
-    end
-    print(selection)
-  end
-
   term.setBackgroundColor(self.colors.appendbg)
   term.setTextColor(self.colors.appendfg)
-  for i, append in ipairs(self.menuItems.appends) do
-    if self.menuItems.types[i] == "boolean" then
-      term.setCursorPos(15, inc + i)
-      if self.selected == i then
-        term.setBackgroundColor(self.colors.selectedbg)
-        term.setTextColor(self.colors.selectedfg)
-      end
-      if append == "true" then
-        io.write(" false [true]")
-      elseif append == "false" then
-        io.write("[false] true")
+  local ind = 1
+  for i = self.maxSelection - 3, self.maxSelection do
+    local append = self.menuItems.appends[i]
+    if append then
+      if self.menuItems.types[i] == "boolean" then
+        term.setCursorPos(15, inc + ind)
+        if self.selected == i then
+          term.setBackgroundColor(self.colors.selectedbg)
+          term.setTextColor(self.colors.selectedfg)
+        end
+        if append == "true" then
+          io.write(" false [true]")
+        elseif append == "false" then
+          io.write("[false] true")
+        else
+          io.write(" false true ?")
+        end
+        if self.selected == i then
+          term.setBackgroundColor(self.colors.appendbg)
+          term.setTextColor(self.colors.appendfg)
+        end
       else
-        io.write(" false true ?")
+        term.setCursorPos(15, inc + ind)
+        io.write(
+          #tostring(append) < mx - 15 and tostring(append)
+            or tostring(append):sub(1, mx - 18) .. "..."
+        )
       end
-      if self.selected == i then
-        term.setBackgroundColor(self.colors.appendbg)
-        term.setTextColor(self.colors.appendfg)
-      end
-    else
-      term.setCursorPos(15, inc + i)
-      io.write(tostring(append))
+      ind = ind + 1
     end
   end
 
-  term.setBackgroundColor(self.colors.infobg)
-  term.setTextColor(self.colors.infofg)
-  term.setCursorPos(1, #self.menuItems.selectables + 3 + inc)
-  print(self.menuItems.infos[self.selected])
+  self:update2()
 
   return self
 end
@@ -106,16 +104,14 @@ local function getInsertion(self, typ)
       return "true"
     end
   elseif typ == "string" then
-    --TODO: this
-    term.setCursorPos(15, self.menuItems.lineStart + self.selected)
+    term.setCursorPos(15, self.menuItems.lineStart + self.slot)
     io.write("                          ")
-    term.setCursorPos(15, self.menuItems.lineStart + self.selected)
+    term.setCursorPos(15, self.menuItems.lineStart + self.slot)
     return io.read()
   elseif typ == "number" then
-    --TODO: this
-    term.setCursorPos(15, self.menuItems.lineStart + self.selected)
+    term.setCursorPos(15, self.menuItems.lineStart + self.slot)
     io.write("                          ")
-    term.setCursorPos(15, self.menuItems.lineStart + self.selected)
+    term.setCursorPos(15, self.menuItems.lineStart + self.slot)
     return tonumber(io.read()) or "0"
   else
     error(ec(1, "string", typ))
@@ -133,8 +129,6 @@ function met:go()
   table.insert(self.menuItems.types, "string")
   table.insert(self.menuItems.infos, "Return to the previous screen.")
   table.insert(self.menuItems.appends, "Exit this menu")
-
-  self:update()
 
   while true do
     local ev = {os.pullEvent()}
@@ -166,6 +160,8 @@ function met:go()
 
     self:draw()
   end
+
+  return true
 end
 
 function funcs.newMenu()
