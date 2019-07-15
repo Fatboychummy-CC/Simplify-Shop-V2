@@ -95,6 +95,8 @@ function met:draw()
 end
 
 local function getInsertion(self, typ)
+  term.setBackgroundColor(self.colors.selectedbg)
+  term.setTextColor(self.colors.selectedfg)
   if typ == "boolean" then
     if self.menuItems.appends[self.selected] == "true" then
       return "false"
