@@ -87,7 +87,6 @@ function met:draw()
 end
 
 local function getInsertion(self, typ)
-  print(self, typ)
   if typ == "boolean" then
     if self.menuItems.appends[self.selected] == "true" then
       return "false"
@@ -118,6 +117,11 @@ function met:go()
   local oldbg = term.getBackgroundColor()
   local oldfg = term.getTextColor()
 
+  table.insert(self.menuItems.selectables, "Exit")
+  table.insert(self.menuItems.types, "string")
+  table.insert(self.menuItems.infos, "Return to the previous screen.")
+  table.insert(self.menuItems.appends, "Exit this menu")
+
   while true do
     local ev = {os.pullEvent()}
     local event = ev[1]
@@ -134,7 +138,13 @@ function met:go()
       elseif key == 28 then
         -- enter key pressed
         local sel = self.selected
-        print(sel)
+        if sel == #self.menuItems.selectables then
+          table.remove(self.menuItems.selectables, #self.menuItems.selectables)
+          table.remove(self.menuItems.types, #self.menuItems.types)
+          table.remove(self.menuItems.infos, #self.menuItems.infos)
+          table.remove(self.menuItems.appends, #self.menuItems.appends)
+          break
+        end
         local temp = getInsertion(self, self.menuItems.types[sel])
         self.menuItems.appends[sel] = temp
       end
@@ -159,7 +169,18 @@ function funcs.newMenu()
     appends = {
     },
   }
-  tmp.selected = 1
+
+  tmp.colors = {
+    bg = colors.black,
+    fg = colors.white,
+    appendbg = colors.black,
+    appendfg = colors.gray,
+    infobg = colors.black,
+    infofg = colors.lightGray
+    selectedbg = colors.black,
+    selectedfg = colors.lightGray
+  }
+
 
 
   return tmp
