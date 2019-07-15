@@ -112,7 +112,7 @@ local function getInsertion(self, typ)
     term.setCursorPos(15, self.menuItems.lineStart + self.slot)
     io.write("                          ")
     term.setCursorPos(15, self.menuItems.lineStart + self.slot)
-    return tonumber(io.read()) or "0"
+    return tonumber(io.read()) or 0
   else
     error(ec(1, "string", typ))
   end
