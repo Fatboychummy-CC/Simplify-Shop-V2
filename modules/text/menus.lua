@@ -111,13 +111,15 @@ function met:go(timeout)
   --
   local oldbg = term.getBackgroundColor()
   local oldfg = term.getTextColor()
-  local tm
+  local tm = -1
   if type(timeout) == "number" then
     tm = os.startTimer(timeout)
     self.menuItems.infos[1] = self.menuItems.infos[1]
-                                    .. " Autoselected after 5 seconds "
+                                    .. " Autoselected after "
+                                    .. tostring(timeout) .. " seconds "
                                     .. "of inactivity at startup."
   end
+
   while true do
     local ev = {os.pullEvent()}
     local event = ev[1]
@@ -127,9 +129,11 @@ function met:go(timeout)
       if key == 200 then
         if tm ~= -1 then
           self.menuItems.infos[1] = self.menuItems.infos[1]:gsub(
-                                          " Autoselected after 5 seconds "
-                                          .. "of inactivity at startup.", ""
-                                          )
+            " Autoselected after "
+              .. tostring(timeout) .. " seconds "
+              .. "of inactivity at startup.",
+            ""
+          )
         end
         tm = -1
         -- go down (up, since inverted)
@@ -137,9 +141,11 @@ function met:go(timeout)
       elseif key == 208 then
         if tm ~= -1 then
           self.menuItems.infos[1] = self.menuItems.infos[1]:gsub(
-                                          " Autoselected after 5 seconds "
-                                          .. "of inactivity at startup.", ""
-                                          )
+            " Autoselected after "
+              .. tostring(timeout) .. " seconds "
+              .. "of inactivity at startup.",
+            ""
+          )
         end
         tm = -1
         -- go up (down, since inverted)
@@ -147,9 +153,11 @@ function met:go(timeout)
       elseif key == 28 then
         if tm ~= -1 then
           self.menuItems.infos[1] = self.menuItems.infos[1]:gsub(
-                                          " Autoselected after 5 seconds "
-                                          .. "of inactivity at startup.", ""
-                                          )
+            " Autoselected after "
+              .. tostring(timeout) .. " seconds "
+              .. "of inactivity at startup.",
+          ""
+          )
         end
         -- enter
         term.setTextColor(oldfg)
@@ -157,13 +165,13 @@ function met:go(timeout)
         return self.selected
       end
     elseif event == "timer" then
-      if tm ~= -1 then
-        self.menuItems.infos[1] = self.menuItems.infos[1]:gsub(
-                                        " Autoselected after 5 seconds "
-                                        .. "of inactivity at startup.", ""
-                                        )
-      end
       if ev[2] == tm then
+        self.menuItems.infos[1] = self.menuItems.infos[1]:gsub(
+          " Autoselected after "
+            .. tostring(timeout) .. " seconds "
+            .. "of inactivity at startup.",
+          ""
+        )
         return 1
       end
     end
@@ -171,7 +179,6 @@ function met:go(timeout)
     self:draw()
   end
 end
-
 
 function funcs.newMenu()
   local tmp = {}
