@@ -62,8 +62,19 @@ function met:draw()
   term.setBackgroundColor(self.colors.appendbg)
   term.setTextColor(self.colors.appendfg)
   for i, append in ipairs(self.menuItems.appends) do
-    term.setCursorPos(15, inc + i)
-    io.write(append)
+    if self.menuItems.types[i] == "boolean" then
+      term.setCursorPos(15, inc + i)
+      if append == "true" then
+        io.write(" false [true]")
+      elseif append == "false" then
+        io.write("[false] true")
+      else
+        io.write(" false true ?")
+      end
+    else
+      term.setCursorPos(15, inc + i)
+      io.write(tostring(append))
+    end
   end
 
   term.setBackgroundColor(self.colors.infobg)
