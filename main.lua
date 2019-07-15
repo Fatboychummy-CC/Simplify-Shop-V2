@@ -7,6 +7,7 @@
 
 local smenus = require("modules.text.menus.simple")
 local imenus = require("modules.text.menus.insert")
+local settings = {}
 local build = 0
 
 local function updateCheck()
