@@ -5,11 +5,21 @@
 
 -- requires
 
-local menus = require("modules.text.menus")
+local smenus = require("modules.text.menus.simple")
+local imenus = require("modules.text.menus.insert")
 local build = 0
 
+local function updateCheck()
+  --TODO: finish this.
+end
+
+local function updateCheckString()
+  --TODO: call updateCheck and return a string depending on what is returned.
+  return "No updates available."
+end
+
 local function mainMenu()
-  local menu = menus.newMenu()
+  local menu = smenus.newMenu()
   menu.title = "Simplify Shop V2B" .. tostring(build)
   menu:addMenuItem(
     "Run",
@@ -19,7 +29,7 @@ local function mainMenu()
   --
   menu:addMenuItem(
     "Update",
-    "No update available.",
+    updateCheckString(),
     "Updates the shop and reboots."
   )
   --
@@ -36,19 +46,22 @@ local function mainMenu()
     "Open a menu which allows you to change core settings for the shop."
   )
   --
-  --
-  --
-  --
   return menu:go(5)
 end
-
-
 
 local function main()
   local selection = 0
   repeat
     selection = mainMenu()
+    if selection == 2 then
+      --TODO: update
+    elseif selection == 3 then
+      --TODO: add/remove items
+    elseif selection == 4 then
+      --TODO: options
+    end
   until selection == 1
+    --TODO: shop
 end
 
 local ok, err = pcall(main)
