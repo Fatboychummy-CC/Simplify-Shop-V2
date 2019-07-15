@@ -50,6 +50,14 @@ local function mainMenu()
   return menu:go(5)
 end
 
+local function optionsMenu()
+  local menu = imenus.newMenu()
+  menu.title = "Settings"
+  menu.info = "Select an item to edit it's value."
+
+  menu:go()
+end
+
 local function main()
   local selection = 0
   repeat
@@ -60,6 +68,7 @@ local function main()
       --TODO: add/remove items
     elseif selection == 4 then
       --TODO: options
+      optionsMenu()
     end
   until selection == 1
     --TODO: shop
