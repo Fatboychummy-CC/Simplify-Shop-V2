@@ -46,6 +46,7 @@ function met:draw()
   term.setTextColor(self.colors.infofg)
   local ln2 = print(self.info)
   local inc = ln + ln2 + 1
+  self.menuItems.lineStart = inc
   print()
   term.setBackgroundColor(self.colors.bg)
   term.setTextColor(self.colors.fg)
@@ -95,6 +96,7 @@ local function getInsertion(self, typ)
     end
   elseif typ == "string" then
     --TODO: this
+    term.setCursorPos(15, )
   elseif typ == "number" then
     --TODO: this
   else
@@ -140,6 +142,7 @@ function funcs.newMenu()
   setmetatable(tmp, meta)
 
   tmp.menuItems = {
+    lineStart = 5,
     selectables = {
     },
     types = { -- "boolean", "string", "number"
