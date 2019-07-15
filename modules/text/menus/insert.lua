@@ -51,6 +51,8 @@ function met:draw()
   term.setBackgroundColor(self.colors.bg)
   term.setTextColor(self.colors.fg)
 
+  self:update()
+
   for i, selection in ipairs(self.menuItems.selectables) do
     if self.selected == i then
       io.write('>')
@@ -131,6 +133,8 @@ function met:go()
   table.insert(self.menuItems.types, "string")
   table.insert(self.menuItems.infos, "Return to the previous screen.")
   table.insert(self.menuItems.appends, "Exit this menu")
+
+  self:update()
 
   while true do
     local ev = {os.pullEvent()}

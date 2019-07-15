@@ -7,6 +7,15 @@ met.__type = "menuObject"
 local ers = require("modules.etc.errors")
 local ec = ers.create
 
+function met:update()
+  if self.selected > self.maxSelection then
+    self.maxSelection = self.selected
+  end
+  if self.selected < self.maxSelection - 3 then
+    self.maxSelection = self.selected + 3
+  end
+end
+
 function met:selectDown()
   self.selected = self.selected - 1
   if self.selected < 1 then
@@ -81,20 +90,28 @@ function met:draw()
   term.setBackgroundColor(self.colors.bg)
   term.setTextColor(self.colors.fg)
 
-  for i, selection in ipairs(self.menuItems.selectables) do
-    if self.selected == i then
-      io.write('>')
-    else
-      io.write(' ')
+  self:update()
+
+  for i = self.maxSelection - 3, self.maxSelection do
+    local selection = self.menuItems.selectables[i]
+    if selection then
+      if self.selected == i then
+        io.write('>')
+      else
+        io.write(' ')
+      end
+      print(selection)
     end
-    print(selection)
   end
 
   term.setBackgroundColor(self.colors.appendbg)
   term.setTextColor(self.colors.appendfg)
-  for i, append in ipairs(self.menuItems.appends) do
-    term.setCursorPos(15, inc + i)
-    io.write(append)
+  for i = self.maxSelection - 3, self.maxSelection do
+    local append = self.menuItems.appends[i]
+    if append then
+      term.setCursorPos(15, inc + i)
+      io.write(append)
+    end
   end
 
   term.setBackgroundColor(self.colors.infobg)
@@ -119,6 +136,8 @@ function met:go(timeout)
                                     .. tostring(timeout) .. " seconds "
                                     .. "of inactivity at startup."
   end
+
+  self:update()
 
   while true do
     local ev = {os.pullEvent()}
@@ -192,10 +211,6 @@ function funcs.newMenu()
     appends = {
     }
   }
-  tmp.selected = 1
-  tmp.title = "Menu"
-  tmp.info = "Select an item."
-
   tmp.colors = {
     bg = colors.black,
     fg = colors.white,
@@ -204,6 +219,12 @@ function funcs.newMenu()
     infobg = colors.black,
     infofg = colors.lightGray
   }
+
+  tmp.selected = 1
+  tmp.title = "Menu"
+  tmp.info = "Select an item."
+  tmp.maxSelection = 4
+
 
   return tmp
 end
