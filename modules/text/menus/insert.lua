@@ -65,12 +65,20 @@ function met:draw()
   for i, append in ipairs(self.menuItems.appends) do
     if self.menuItems.types[i] == "boolean" then
       term.setCursorPos(15, inc + i)
+      if self.selected == i then
+        term.setBackgroundColor(self.colors.selectedbg)
+        term.setTextColor(self.colors.selectedfg)
+      end
       if append == "true" then
         io.write(" false [true]")
       elseif append == "false" then
         io.write("[false] true")
       else
         io.write(" false true ?")
+      end
+      if self.selected == i then
+        term.setBackgroundColor(self.colors.appendbg)
+        term.setTextColor(self.colors.appendfg)
       end
     else
       term.setCursorPos(15, inc + i)
@@ -176,7 +184,7 @@ function funcs.newMenu()
     appendbg = colors.black,
     appendfg = colors.gray,
     infobg = colors.black,
-    infofg = colors.lightGray
+    infofg = colors.lightGray,
     selectedbg = colors.black,
     selectedfg = colors.lightGray
   }
