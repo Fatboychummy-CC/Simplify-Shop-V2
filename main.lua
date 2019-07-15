@@ -7,8 +7,14 @@
 
 local smenus = require("modules.text.menus.simple")
 local imenus = require("modules.text.menus.insert")
-local settings = {}
 local build = 0
+
+if not settings.load("/.shopsettings") then
+  settings.set("shop.shopName", "Unnamed Shop")
+  settings.set("shop.shopOwner", "Unknown")
+  settings.set("shop.refreshRate", 10)
+  settings.save("/.shopsettings")
+end
 
 local function updateCheck()
   --TODO: finish this.
@@ -57,11 +63,28 @@ local function optionsMenu()
   menu:addMenuItem(
     "Shop name",
     "string",
-    "Unnamed Shop",
+    settings.get("shop.shopName") or "ERROR 1",
+    "The name to be displayed for the shop."
+  )
+  menu:addMenuItem(
+    "Shop owner",
+    "string",
+    settings.get("shop.shopOwner") or "ERROR 1",
+    "Who owns this shop?"
+  )
+  menu:addMenuItem(
+    "Refresh rate",
+    "number",
+    settings.get("shop.refreshRate") or -1,
     "Speed at which the shop will refresh it's screen (in seconds)."
   )
 
   menu:go()
+
+  settings.set("shop.shopName", menu.menuItems.appends[1])
+  settings.set("shop.shopOwner", menu.menuItems.appends[2])
+  settings.set("shop.refreshRate", menu.menuItems.appends[3])
+  settings.save("/.shopsettings")
 end
 
 local function main()
