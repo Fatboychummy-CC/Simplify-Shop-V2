@@ -10,12 +10,40 @@ local imenus = require("modules.text.menus.insert")
 local qmenus = require("modules.text.menus.questions")
 local build = 0
 
-if not settings.load("/.shopsettings") then
-  settings.set("shop.shopName", "Unnamed Shop")
-  settings.set("shop.shopOwner", "Unknown")
-  settings.set("shop.refreshRate", 10)
-  settings.save("/.shopsettings")
+
+-- shop settings.
+do
+  local defaults = {
+    {
+      "shop.shopName",
+      "shop.shopOwner",
+      "shop.refreshRate",
+      "shop.dataLocation",
+      "shop.cacheSaveName",
+    },
+    {
+      "Unnamed Shop",
+      "Unknown",
+      10,
+      "/data/",
+      "cache.ic",
+    }
+  }
+  if not settings.load("/.shopsettings") then
+    for i = 1, #defaults[1] do
+      settings.set(defaults[1][i], defaults[2][i])
+    end
+    settings.save("/.shopsettings")
+  end
+
+  for i = 1, #defaults[1] do
+    if not settings.get(defaults[1][i]) then
+      settings.set(defaults[1][i], defaults[2][i])
+      settings.save("/.shopsettings")
+    end
+  end
 end
+
 
 local function updateCheck()
   --TODO: finish this.
@@ -79,12 +107,26 @@ local function optionsMenu()
     settings.get("shop.refreshRate") or -1,
     "Speed at which the shop will refresh it's screen (in seconds)."
   )
+  menu:addMenuItem(
+    "Data folder",
+    "string",
+    settings.get("shop.dataLocation") or "ERROR 1",
+    "File system location at which the data folder will be stored"
+  )
+  menu:addMenuItem(
+    "Cache Name",
+    "string",
+    settings.get("shop.cacheSaveName") or "ERROR 1",
+    "Location within the data folder at which the cache will be saved."
+  )
 
   menu:go()
 
   settings.set("shop.shopName", menu.menuItems.appends[1])
   settings.set("shop.shopOwner", menu.menuItems.appends[2])
   settings.set("shop.refreshRate", menu.menuItems.appends[3])
+  settings.set("shop.dataLocation", menu.menuItems.appends[4])
+  settings.set("shop.cacheSaveName", menu.menuItems.appends[5])
   settings.save("/.shopsettings")
 end
 
