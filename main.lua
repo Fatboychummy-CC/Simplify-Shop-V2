@@ -7,6 +7,7 @@
 
 local smenus = require("modules.text.menus.simple")
 local imenus = require("modules.text.menus.insert")
+local qmenus = require("modules.text.menus.questions")
 local build = 0
 
 if not settings.load("/.shopsettings") then
