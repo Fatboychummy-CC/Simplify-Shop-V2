@@ -173,6 +173,39 @@ local function scanChest()
   end
 end
 
+local function getDetails(items)
+  local tmp = {}
+  for i, item in ipairs(items) do
+    local menu = qmenus.new()
+    menu:addQuestion(
+      "Scanned '" .. item.name .. "' with damage "
+      .. tostring(item.damage) .. ".",
+      "string",
+      "Enter the name you wish to use for this item.\n"
+      .. "Leave blank to enter '" .. item.displayName .. "'."
+    )
+    menu:addQuestion(
+      "For the previous item, what shall the cost in krist per item be?",
+      "number",
+      "Enter the cost per item you wish to charge for the previous item."
+    )
+    menu:go()
+
+    if menu.questions.a[1] == "" then
+      menu.questions.a[1] = item.displayName
+    end
+
+    tmp[#tmp + 1] = {
+      name = item.name,
+      damage = item.damage,
+      displayName = menu.questions.a[1],
+      value = menu.questions.a[2]
+    }
+  end
+
+  return tmp
+end
+
 local function addItem()
   local menu = smenus.newMenu()
   menu.title = "Add Items."
@@ -193,6 +226,10 @@ local function addItem()
 
   if a == 1 then
     local items = scanChest()
+    local the_deets = getDetails(items)
+    for i, item in ipairs(the_deets) do
+      cache.addToCache(item.displayName, item.name, item.damage, item.value)
+    end
     -- scan the chest
   elseif a == 2 then
     -- Return
