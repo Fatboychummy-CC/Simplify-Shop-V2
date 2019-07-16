@@ -30,7 +30,7 @@ end
 
 function funcs.addToCache(itemName, itemID, itemDamage, worth)
   if not cache[itemID] then cache[itemID] = {} end
-  cache[itemID][itemDamage] = {name = itemName, value = worth}
+  cache[itemID][itemDamage] = {name = itemName, value = worth, enabled = true}
   save()
 end
 
