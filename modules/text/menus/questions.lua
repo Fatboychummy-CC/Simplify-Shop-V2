@@ -8,15 +8,14 @@ local e = require("modules.etc.errors")
 local ew = e.watch
 local ec = e.create
 
-local function ask(self, questionIndex, tp)
+function met:ask(questionIndex)
   ew(1, "table", self)
   if self.__type ~= "menuObject" then
     error(ec(1, "menuObject", self))
   end
-  ew(2, "number", questionIndex)
-  ew(3, "string", tp)
 
   local question = self.questions.q[questionIndex]
+  local tp = self.questions.t[questionIndex]
   local info = self.questions.i[questionIndex]
   local mx, my = term.getSize()
 
@@ -75,7 +74,7 @@ local function ask(self, questionIndex, tp)
       end
     end
   else
-    error("Bad argument #3, expected string stating 'string', 'number', or "
+    error("Bad argument #2, expected string stating 'string', 'number', or "
           .. "'boolean', got " .. tostring(tp), 2)
   end
 end
@@ -95,7 +94,7 @@ end
 
 function met:go()
   for i, question in ipairs(self.questions.q) do
-    self.questions.a[i] = ask(self, i, self.questions.t[i])
+    self.questions.a[i] = self:ask(i)
   end
 end
 
