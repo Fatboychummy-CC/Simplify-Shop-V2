@@ -139,6 +139,7 @@ local function scanChest()
     local size = chest.size()
     local ls = chest.list()
     local items = {}
+    --TODO: fix duplicates.
 
     for i = 1, size do
       if ls[i] then
@@ -266,7 +267,6 @@ local function addRemove()
     local ans = menu:go()
     if ans == 1 then
       addItem()
-      --TODO: add items
     elseif ans == 2 then
       removeItem()
       --TODO: remove items
