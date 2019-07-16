@@ -124,7 +124,7 @@ function met:draw()
   term.setBackgroundColor(self.colors.infobg)
   term.setTextColor(self.colors.infofg)
   local ln2 = print(self.info)
-  local inc = ln + ln2 + 2
+  local inc = 4
   term.setBackgroundColor(self.colors.bg)
   term.setTextColor(self.colors.fg)
 
