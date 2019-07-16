@@ -8,6 +8,7 @@
 local smenus = require("modules.text.menus.simple")
 local imenus = require("modules.text.menus.insert")
 local qmenus = require("modules.text.menus.questions")
+local cache = require("modules.item.cache")
 local build = 0
 
 
@@ -127,10 +128,55 @@ local function optionsMenu()
   settings.save("/.shopsettings")
 end
 
+local function scanChest()
+  term.clear()
+  term.setCursorPos(1, 1)
+
+  local front = peripheral.getType("front")
+
+  local function scan()
+    local chest = peripheral.wrap("front")
+    local size = chest.size()
+    local ls = chest.list()
+    local items = {}
+
+    for i = 1, size do
+      if ls[i] then
+        items[#items + 1] = {
+          name = ls[i].name,
+          damage = ls[i].damage,
+          displayName = chest.getItemMeta(i).displayName
+        }
+      end
+    end
+    return items
+  end
+
+  if front and (front:find("chest") or front:find("shulker")) then
+    print("Chest or shulker box in front, scanning it.")
+    return scan()
+  end
+
+  print("No chest or shulker box in front. Waiting for you to place one.")
+  while true do
+    local ev, side = os.pullEvent("peripheral")
+    if side == "front" then
+      front = peripheral.getType("front")
+      if front and (front:find("chest") or front:find("shulker")) then
+        print("Shulker or chest attached, scanning in 5 seconds.")
+        os.sleep(5)
+        return scan()
+      else
+        print("That is not a valid chest or shulker box.")
+      end
+    end
+  end
+end
+
 local function addItem()
   local menu = smenus.newMenu()
   menu.title = "Add Items."
-  menu.info = "Place a chest in front of the turtle."
+  menu.info = "Add items via a chest in front of the turtle."
 
   menu:addMenuItem(
     "Scan",
@@ -146,6 +192,7 @@ local function addItem()
   local a = menu:go()
 
   if a == 1 then
+    local items = scanChest()
     -- scan the chest
   elseif a == 2 then
     -- Return
@@ -178,27 +225,46 @@ local function addRemove()
     "Return to the startup page."
   )
 
-  local ans = menu:go()
-  if ans == 1 then
-    addItem()
-    --TODO: add items
-  elseif ans == 2 then
-    removeItem()
-    --TODO: remove items
-  elseif ans == 3 then
-    -- return to main
-    return
+  while true do
+    local ans = menu:go()
+    if ans == 1 then
+      addItem()
+      --TODO: add items
+    elseif ans == 2 then
+      removeItem()
+      --TODO: remove items
+    elseif ans == 3 then
+      -- return to main
+      return
+    end
   end
 end
 
 local function main()
+  -- init
+  print("Initializing.")
+  os.sleep(0.1)
+  print("Checking settings.")
   if not settings.load("/.shopsettings") then
+    print("No settings are saved, creating them.")
+    os.sleep(0.5)
     for i = 1, #sets do
       settings.set(sets[i], sets.defaults[i])
+      print(sets[i], " - ", sets.defaults[i])
     end
     settings.save("/.shopsettings")
+    print("Saved settings.")
+    os.sleep(0.5)
   end
   checkSettings()
+
+  print("Checking Cache")
+  os.sleep(0.1)
+  cache.setSaveLocation(settings.get("shop.cacheSaveName"))
+  if not cache.load() then
+    print("No cache file found.")
+    os.sleep(0.5)
+  end
 
   local selection = 0
   repeat
