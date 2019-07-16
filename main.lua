@@ -88,6 +88,14 @@ local function optionsMenu()
   settings.save("/.shopsettings")
 end
 
+local function addItem()
+
+end
+
+local function removeItem()
+
+end
+
 local function addRemove()
   local menu = smenus.newMenu()
 
@@ -111,8 +119,10 @@ local function addRemove()
 
   local ans = menu:go()
   if ans == 1 then
+    addItem()
     --TODO: add items
   elseif ans == 2 then
+    removeItem()
     --TODO: remove items
   elseif ans == 3 then
     -- return to main
