@@ -16,6 +16,17 @@ local function save()
   end
 end
 
+function funcs.load()
+  local h = io.open(saveLocation, 'r')
+  if h then
+    local dat = h:read("*all"):close()
+    cache = textutils.unserialize(dat)
+    return true
+  else
+    return false
+  end
+end
+
 function funcs.addToCache(itemName, itemID, itemDamage, worth)
   if not cache[itemID] then cache[itemID] = {} end
   cache[itemID][itemDamage] = {name = itemName, value = worth}
@@ -29,14 +40,14 @@ function funcs.removeFromCache(itemID, itemDamage)
   save()
 end
 
-function getRegistration(itemID, itemDamage)
+function funcs.getRegistration(itemID, itemDamage)
   if cache[itemID] then
     return cache[itemID][itemDamage].name, cache[itemID][itemDamage].value
   end
   return false
 end
 
-function setSaveLocation(location)
+function funcs.setSaveLocation(location)
   saveLocation = location
 end
 
