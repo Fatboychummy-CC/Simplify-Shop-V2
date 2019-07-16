@@ -38,18 +38,6 @@ local function checkSettings()
   end
 end
 
-do
-  if not settings.load("/.shopsettings") then
-    for i = 1, #sets do
-      settings.set(sets[i], sets.defaults[i])
-    end
-    settings.save("/.shopsettings")
-  end
-
-  checkSettings()
-end
-
-
 local function updateCheck()
   --TODO: finish this.
 end
@@ -182,6 +170,14 @@ local function addRemove()
 end
 
 local function main()
+  if not settings.load("/.shopsettings") then
+    for i = 1, #sets do
+      settings.set(sets[i], sets.defaults[i])
+    end
+    settings.save("/.shopsettings")
+  end
+  checkSettings()
+
   local selection = 0
   repeat
     selection = mainMenu()
