@@ -122,7 +122,13 @@ local function optionsMenu()
     "Cache Name",
     "string",
     settings.get("shop.cacheSaveName") or "ERROR 1",
-    "Location within the data folder at which the cache will be saved."
+    "Location at which the cache will be saved."
+  )
+  menu:addMenuItem(
+    "Log folder",
+    "string",
+    settings.get("shop.logLocation") or "ERROR 1",
+    "Location at which the logs folder will be saved."
   )
 
   menu:go()
