@@ -44,7 +44,7 @@ local function mainMenu()
   menu:addMenuItem(
     "Add/Remove",
     "Add/Remove shop item(s).",
-    "Use a helpful UI to add items to your shop."
+    "Use a helpful UI to add or remove items in your shop."
   )
   --
   menu:addMenuItem(
