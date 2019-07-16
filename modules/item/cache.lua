@@ -16,9 +16,9 @@ local function save()
   end
 end
 
-function funcs.addToCache(itemName, itemID, itemDamage)
+function funcs.addToCache(itemName, itemID, itemDamage, worth)
   if not cache[itemID] then cache[itemID] = {} end
-  cache[itemID][itemDamage] = itemName
+  cache[itemID][itemDamage] = {name = itemName, value = worth}
   save()
 end
 
@@ -31,7 +31,7 @@ end
 
 function getRegistration(itemID, itemDamage)
   if cache[itemID] then
-    return cache[itemID][itemDamage]
+    return cache[itemID][itemDamage].name, cache[itemID][itemDamage].value
   end
   return false
 end
