@@ -12,36 +12,41 @@ local build = 0
 
 
 -- shop settings.
-do
-  local defaults = {
-    {
-      "shop.shopName",
-      "shop.shopOwner",
-      "shop.refreshRate",
-      "shop.dataLocation",
-      "shop.cacheSaveName",
-    },
-    {
-      "Unnamed Shop",
-      "Unknown",
-      10,
-      "/data/",
-      "cache.ic",
-    }
+local sets = {
+  "shop.shopName",
+  "shop.shopOwner",
+  "shop.refreshRate",
+  "shop.dataLocation",
+  "shop.cacheSaveName",
+  "shop.logLocation",
+  defaults = {
+    "Unnamed Shop",
+    "Unknown",
+    10,
+    "/data",
+    "/data/cache.ic",
+    "/data/logs"
   }
+}
+
+local function checkSettings()
+  for i = 1, #sets do
+    if not settings.get(sets[i]) then
+      settings.set(sets[i], sets.defaults[i])
+      settings.save("/.shopsettings")
+    end
+  end
+end
+
+do
   if not settings.load("/.shopsettings") then
-    for i = 1, #defaults[1] do
-      settings.set(defaults[1][i], defaults[2][i])
+    for i = 1, #sets do
+      settings.set(sets[i], sets.defaults[i])
     end
     settings.save("/.shopsettings")
   end
 
-  for i = 1, #defaults[1] do
-    if not settings.get(defaults[1][i]) then
-      settings.set(defaults[1][i], defaults[2][i])
-      settings.save("/.shopsettings")
-    end
-  end
+  checkSettings()
 end
 
 
@@ -122,11 +127,9 @@ local function optionsMenu()
 
   menu:go()
 
-  settings.set("shop.shopName", menu.menuItems.appends[1])
-  settings.set("shop.shopOwner", menu.menuItems.appends[2])
-  settings.set("shop.refreshRate", menu.menuItems.appends[3])
-  settings.set("shop.dataLocation", menu.menuItems.appends[4])
-  settings.set("shop.cacheSaveName", menu.menuItems.appends[5])
+  for i = 1, #sets do
+    settings.set(sets[i], menu.menuItems.appends[i])
+  end
   settings.save("/.shopsettings")
 end
 
