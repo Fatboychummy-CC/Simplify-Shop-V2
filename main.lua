@@ -128,7 +128,29 @@ local function optionsMenu()
 end
 
 local function addItem()
+  local menu = smenus.newMenu()
+  menu.title = "Add Items."
+  menu.info = "Place a chest in front of the turtle."
 
+  menu:addMenuItem(
+    "Scan",
+    "Scan the chest.",
+    "Scan the chest. You will be prompted for each item for it's price and etc."
+  )
+  menu:addMenuItem(
+    "Return",
+    "Go back.",
+    "Return to the startup page."
+  )
+
+  local a = menu:go()
+
+  if a == 1 then
+    -- scan the chest
+  elseif a == 2 then
+    -- Return
+    return
+  end
 end
 
 local function removeItem()
