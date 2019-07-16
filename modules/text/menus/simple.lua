@@ -163,7 +163,7 @@ function met:go(timeout)
                                     .. "of inactivity at startup."
   end
 
-  self:update()
+  self:draw()
 
   while true do
     local ev = {os.pullEvent()}
