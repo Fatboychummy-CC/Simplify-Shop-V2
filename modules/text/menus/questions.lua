@@ -4,7 +4,7 @@ local met = {}
 meta.__index = met
 met.__type = "menuObject"
 
-local e = require(".simplify.modules.etc.errors")
+local e = require("modules.etc.errors")
 local ew = e.watch
 local ec = e.create
 
