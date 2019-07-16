@@ -57,7 +57,8 @@ function funcs.new()
   tmp.questions = {
     q = {},
     t = {},
-    a = {}
+    a = {},
+    i = {}
   }
 
   tmp.colors = {
