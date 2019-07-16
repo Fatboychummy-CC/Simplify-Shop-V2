@@ -10,7 +10,9 @@ local ec = e.create
 
 local function ask(self, question, tp)
   ew(1, "table", self)
-  if self.__type ~= "menuObject" then error()
+  if self.__type ~= "menuObject" then
+    error(ec(1, "menuObject", self))
+  end
   ew(2, "string", question)
   ew(3, "string", tp)
 
@@ -66,8 +68,9 @@ function funcs.new()
     questionbg = colors.black,
     questionfg = colors.white,
     answerbg = colors.black,
-    answerfg = colors.gray
-    info
+    answerfg = colors.gray,
+    infobg = colors.black,
+    infofg = colors.white
   }
 
   tmp.title = "Untitled"
