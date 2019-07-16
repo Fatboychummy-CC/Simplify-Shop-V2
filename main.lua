@@ -242,6 +242,10 @@ local function removeItem()
 
 end
 
+local function editItem()
+
+end
+
 local function addRemove()
   local menu = smenus.newMenu()
 
@@ -251,6 +255,11 @@ local function addRemove()
     "Add Items",
     "Add items to the shop.",
     "Use a helpful UI to add items to your shop."
+  )
+  menu:addMenuItem(
+    "Edit Items",
+    "Edit prices for items.",
+    "Edit the prices for items sold at your shop."
   )
   menu:addMenuItem(
     "Remove Items",
@@ -268,9 +277,12 @@ local function addRemove()
     if ans == 1 then
       addItem()
     elseif ans == 2 then
+      editItem()
+      --TODO: edit items
+    elseif ans == 3 then
       removeItem()
       --TODO: remove items
-    elseif ans == 3 then
+    elseif ans == 4 then
       -- return to main
       return
     end
