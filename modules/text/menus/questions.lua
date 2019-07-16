@@ -16,19 +16,42 @@ local function ask(self, question, tp)
   ew(2, "string", question)
   ew(3, "string", tp)
 
-  local answer = ""
+  term.setBackgroundColor(self.colors.questionbg)
+  term.setTextColor(self.colors.questionfg)
+  term.clear()
+  term.setCursorPos(1, 1)
+  print(question)
+  term.setCursorPos(1, 5)
+  io.write("> ")
+  term.setBackgroundColor(self.colors.answerbg)
+  term.setTextColor(self.colors.answerfg)
 
   if tp == "string" then
-
+    return io.read()
   elseif tp == "number" then
-
+    return tonumber(io.read()) or 0
   elseif tp == "boolean" then
-
+    io.write(" false  true")
+    local sel = 1
+    while true do
+      if sel == 1 then
+        term.setCursorPos(3, 5)
+        io.write("[false] true ")
+      else
+        term.setCursorPos(3, 5)
+        io.write(" false [true]")
+      end
+      local event, key = os.pullEvent("key")
+      if key == 203 or key == 205 then
+        sel = sel == 1 and 2 or 1
+      elseif key == 28 then
+        return sel == 1 and "false" or sel == 2 and "true"
+      end
+    end
   else
-
+    error("Bad argument #3, expected string stating 'string', 'number', or "
+          .. "'boolean', got " .. tostring(tp), 2)
   end
-
-  return ""
 end
 
 function met:addQuestion(question, tp, longInformation)
@@ -36,10 +59,10 @@ function met:addQuestion(question, tp, longInformation)
   ew(2, "string", tp)
   ew(3, "string", longInformation)
 
-  table.insert(tmp.questions.q, question)
-  table.insert(tmp.questions.t, tp)
-  table.insert(tmp.questions.a, "")
-  table.insert(tmp.questions.i, longInformation)
+  table.insert(self.questions.q, question)
+  table.insert(self.questions.t, tp)
+  table.insert(self.questions.a, "")
+  table.insert(self.questions.i, longInformation)
 
   return self
 end
@@ -71,7 +94,7 @@ function funcs.new()
     answerbg = colors.black,
     answerfg = colors.gray,
     infobg = colors.black,
-    infofg = colors.white
+    infofg = colors.lightGray
   }
 
   tmp.title = "Untitled"
