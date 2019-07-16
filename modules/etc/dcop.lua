@@ -1,4 +1,4 @@
-local ec = require(".Simplify-Shop-V2.modules.etc.errors").create
+local ec = require("modules.etc.errors").create
 
 local function dCopy(a)
   a = type(a) == "table" and a or error(ec(1, "table", a))
