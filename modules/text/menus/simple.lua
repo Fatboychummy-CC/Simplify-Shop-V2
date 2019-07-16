@@ -248,7 +248,7 @@ function funcs.newMenu()
 
   tmp.selected = 1
   tmp.slot = 1
-  tmp.title = "Menu"
+  tmp.title = "Untitled Menu"
   tmp.info = "Select an item."
   tmp.maxSelection = 4
 
