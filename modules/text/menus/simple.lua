@@ -53,7 +53,7 @@ function met:selectDown()
 
   self.slot = self.slot - 1
   if self.slot < 1 then
-    self.slot = 1
+    self.slot = 4
   end
 
   return self
@@ -67,7 +67,7 @@ function met:selectUp()
 
   self.slot = self.slot + 1
   if self.slot > 4 then
-    self.slot = 4
+    self.slot = 1
   end
 
   return self
