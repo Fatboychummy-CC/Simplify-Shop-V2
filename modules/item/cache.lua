@@ -19,7 +19,7 @@ end
 function funcs.load()
   local h = io.open(saveLocation, 'r')
   if h then
-    local dat = h:read("*all")
+    local dat = h:read("*a")
     h:close()
     cache = textutils.unserialize(dat)
     return true
