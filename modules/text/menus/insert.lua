@@ -29,6 +29,11 @@ function met:addMenuItem(selection, tp,  append, info)
   info = type(info) == "string" and info or type(info) == "nil" and ""
            or error(ec(4, "string or nil", info))
   --
+  if append == "true" then
+    append = true
+  elseif append == "false" then
+    append = false
+  end
   local m = self.menuItems
   table.insert(m.selectables, selection)
   table.insert(m.infos, info)
@@ -60,16 +65,16 @@ function met:draw()
   local ind = 1
   for i = self.maxSelection - 3, self.maxSelection do
     local append = self.menuItems.appends[i]
-    if append then
+    if type(append) == "boolean" or append then
       if self.menuItems.types[i] == "boolean" then
         term.setCursorPos(15, inc + ind)
         if self.selected == i then
           term.setBackgroundColor(self.colors.selectedbg)
           term.setTextColor(self.colors.selectedfg)
         end
-        if append == "true" then
+        if append == true then
           io.write(" false [true]")
-        elseif append == "false" then
+        elseif append == false then
           io.write("[false] true")
         else
           io.write(" false true ?")
@@ -98,10 +103,10 @@ local function getInsertion(self, typ)
   term.setBackgroundColor(self.colors.selectedbg)
   term.setTextColor(self.colors.selectedfg)
   if typ == "boolean" then
-    if self.menuItems.appends[self.selected] == "true" then
-      return "false"
+    if self.menuItems.appends[self.selected] == true then
+      return false
     else
-      return "true"
+      return true
     end
   elseif typ == "string" then
     term.setCursorPos(15, self.menuItems.lineStart + self.slot)

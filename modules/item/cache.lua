@@ -30,10 +30,16 @@ end
 
 function funcs.addToCache(itemName, itemID, itemDamage, worth, enabled)
   if not cache[itemID] then cache[itemID] = {} end
+
+  local en = true
+  if type(enabled) == "boolean" then
+    en = enabled
+  end
+
   cache[itemID][itemDamage] = {
     name = itemName,
     value = worth,
-    enabled = enabled or true
+    enabled = en
   }
   save()
 end
