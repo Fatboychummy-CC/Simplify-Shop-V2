@@ -48,6 +48,10 @@ function funcs.getRegistration(itemID, itemDamage)
   return false
 end
 
+function funcs.getCache()
+  return cache
+end
+
 function funcs.setSaveLocation(location)
   saveLocation = location
 end
