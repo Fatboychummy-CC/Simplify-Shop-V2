@@ -243,7 +243,44 @@ local function removeItem()
 end
 
 local function editItem()
+  local c = cache.getCache()
 
+  local menu = smenus.newMenu()
+  menu.title = "Edit Item Data"
+  menu.info = "Change values of items in your shop."
+
+  local registry = {}
+
+  for key, reg in pairs(c) do
+    for damage, registration in pairs(reg) do
+      local sName = registration.name
+      if #sName > 12 then
+        sName = sName:sub(1, 9) .. "..."
+      end
+      menu:addMenuItem(
+        sName,
+        "Edit this item.",
+        "Edit the item " .. key .. "[" .. tostring(damage) .. "]"
+      )
+      registry[#registry + 1] = {key = key, damage = damage}
+    end
+  end
+
+  menu:addMenuItem(
+    "Return",
+    "Go back.",
+    "Return to the previous page."
+  )
+
+  while true do
+    local ans = menu:go()
+    if ans == #registry + 1 then
+      return
+    else
+      print("nope")
+      os.sleep(1)
+    end
+  end
 end
 
 local function addRemove()
