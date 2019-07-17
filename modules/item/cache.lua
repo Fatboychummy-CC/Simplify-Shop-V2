@@ -28,9 +28,13 @@ function funcs.load()
   end
 end
 
-function funcs.addToCache(itemName, itemID, itemDamage, worth)
+function funcs.addToCache(itemName, itemID, itemDamage, worth, enabled)
   if not cache[itemID] then cache[itemID] = {} end
-  cache[itemID][itemDamage] = {name = itemName, value = worth, enabled = true}
+  cache[itemID][itemDamage] = {
+    name = itemName,
+    value = worth,
+    enabled = enabled or true
+  }
   save()
 end
 
