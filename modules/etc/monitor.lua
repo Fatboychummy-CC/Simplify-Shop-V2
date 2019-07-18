@@ -23,9 +23,19 @@ function funcs.print(...)
   end
 
   -- call splitprint on the rest of the inputs
-  for i, thing in ipairs(strs) do
+  for i = 1, #strs do
+    local thing = strs[i]
     if i ~= 1 then
       count = count + monPrint(thing)
+    elseif i == #strs then
+      local psx, psy = monitor.getCursorPos()
+      if psy + 1 > my then
+        monitor.scroll(1)
+        monitor.setCursorPos(1, my)
+      else
+        monitor.setCursorPos(1, psy + 1)
+      end
+
     end
   end
 
