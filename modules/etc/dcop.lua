@@ -5,7 +5,7 @@ local function dCopy(a)
 
   local tmp = {}
   for k, v in pairs(a) do
-    if type(v) == "table" then
+    if type(v) == "table" and v ~= a then
       tmp[k] = dCopy(v)
     else
       tmp[k] = v
