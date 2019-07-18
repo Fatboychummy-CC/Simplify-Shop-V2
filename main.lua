@@ -81,6 +81,11 @@ local function mainMenu()
     "Open a menu which allows you to change core settings for the shop."
   )
   --
+  menu:addMenuItem(
+    "Error",
+    "Debug Error",
+    "Force an error to do some random debugging."
+  )
   return menu:go(5)
 end
 
@@ -432,6 +437,8 @@ local function main()
       addRemove()
     elseif selection == 4 then
       optionsMenu()
+    elseif selection == 5 then
+      error("Generated error " .. tostring(math.random(1, 1000000)))
     end
   until selection == 1
     --TODO: shop
