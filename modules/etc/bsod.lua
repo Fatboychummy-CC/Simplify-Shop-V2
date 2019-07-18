@@ -45,8 +45,8 @@ local function bsod(err, monitor)
   end
 
   local lines = monPrint("Simplify Shop encountered an error it could not recover from.")
-  print("LINES: " .. lines)
   monitor.setCursorPos(1, 3 + lines)
+  
   local lLines = lines
   lines = monPrint(err)
 
