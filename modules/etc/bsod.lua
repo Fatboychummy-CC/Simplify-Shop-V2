@@ -31,7 +31,7 @@ local function bsod(err, monitor)
     -- call splitprint on the rest of the inputs
     for i, thing in ipairs(strs) do
       if i ~= 1 then
-        count = count + splitPrint2(thing)
+        count = count + monPrint(thing)
       end
     end
 
@@ -40,18 +40,18 @@ local function bsod(err, monitor)
 
   monitor.setCursorPos(1, 1)
   if err == "Terminated" then
-    splitPrint2("Simplify Shop has been terminated.")
+    monPrint("Simplify Shop has been terminated.")
     return
   end
 
-  local lines = splitPrint2("Simplify Shop encountered an error it could not recover from.")
+  local lines = monPrint("Simplify Shop encountered an error it could not recover from.")
   print("LINES: " .. lines)
   monitor.setCursorPos(1, 3 + lines)
   local lLines = lines
-  lines = splitPrint2(err)
+  lines = monPrint(err)
 
   monitor.setCursorPos(1, 5 + lines + lLines)
-  splitPrint2("Please let Fatboychummy#4287 on Discord know.")
+  monPrint("Please let Fatboychummy#4287 on Discord know.")
 
 end
 
