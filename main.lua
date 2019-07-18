@@ -22,19 +22,23 @@ local sets = {
   "shop.dataLocation",
   "shop.cacheSaveName",
   "shop.logLocation",
+  "shop.rebootTime",
   defaults = {
     "Unnamed Shop",
     "Unknown",
     10,
     "/data",
     "/data/cache.ic",
-    "/data/logs"
+    "/data/logs",
+    30
   }
 }
 
 local function checkSettings()
   for i = 1, #sets do
     if not settings.get(sets[i]) then
+      print("Missing settings value:", sets[i])
+      os.sleep(0.2)
       settings.set(sets[i], sets.defaults[i])
       settings.save("/.shopsettings")
     end
@@ -121,6 +125,12 @@ local function optionsMenu()
     settings.get("shop.logLocation") or "ERROR 1",
     "Location at which the logs folder will be saved."
   )
+  menu:addMenuItem(
+    "Error Timer",
+    "number",
+    settings.get("shop.rebootTime") or "ERROR 1",
+    "When an error occurs, the shop will wait this time (in seconds) to reboot."
+  )
 
   menu:go()
 
@@ -146,7 +156,7 @@ local function errorMenu(err)
     "Return to the shell."
   )
 
-  return menu:go(30)
+  return menu:go(settings.get("shop.rebootTime") or 30)
 end
 
 local function scanChest()
@@ -434,7 +444,8 @@ if not ok then
   if err ~= "Terminated" then
     local psx, psy = mon.getCursorPos()
     mon.setCursorPos(1, psy + 2)
-    mon.write("Rebooting in 30 seconds.")
+    mon.write("Rebooting in " .. tostring(settings.get("shop.rebootTime") or 30)
+              .. " seconds.")
     local ans = errorMenu(err)
     if ans == 1 then
       mon.setBackgroundColor(colors.black)
