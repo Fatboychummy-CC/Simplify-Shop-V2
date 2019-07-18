@@ -1,9 +1,32 @@
 local funcs = {}
 
-local monitor = peripheral.find("monitor")
+local monitor = settings.get("shop.monitor") or peripheral.find("monitor")
+local ep = require("modules.etc.extraPeripherals")
+
+if type(monitor) == "string" then
+  monitor = peripheral.wrap(monitor)
+elseif type(monitor) ~= "table" then
+  error("No monitor detected.")
+end
+
 
 function funcs.setDefaultMonitor(default)
+  monitor = peripheral.wrap(monitor)
+end
 
+function funcs.notify(event)
+  if event == "settings_update" then
+    settings.load("/.shopsettings")
+    local mon = peripheral.wrap(settings.get("shop.monitor"))
+    if mon then
+      monitor = mon
+    else
+      settings.set("shop.monitor", "ERROR 2")
+      settings.save("/.shopsettings")
+    end
+    --TODO: finish this
+
+  end
 end
 
 function funcs.print(...)

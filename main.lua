@@ -10,6 +10,20 @@ local imenus = require("modules.text.menus.insert")
 local qmenus = require("modules.text.menus.questions")
 local cache = require("modules.item.cache")
 local bsod = require("modules.etc.bsod")
+local monitor = require("modules.etc.monitor")
+local ep = require("modules.etc.extraPeripherals")
+
+local modules = {
+  smenus,
+  imenus,
+  qmenus,
+  cache,
+  bsod,
+  monitor,
+  ep
+}
+
+-- miniinit
 local build = 0
 local mon = peripheral.find("monitor")
 
@@ -23,6 +37,7 @@ local sets = {
   "shop.cacheSaveName",
   "shop.logLocation",
   "shop.rebootTime",
+  "shop.monitor", -- TODO: figure out better way for the monitor.
   defaults = {
     "Unnamed Shop",
     "Unknown",
@@ -30,7 +45,8 @@ local sets = {
     "/data",
     "/data/cache.ic",
     "/data/logs",
-    30
+    30,
+    "ERROR 3"
   }
 }
 
@@ -52,6 +68,16 @@ end
 local function updateCheckString()
   --TODO: call updateCheck and return a string depending on what is returned.
   return "No updates available."
+end
+
+local function notify(...)
+  for i, module in ipairs(modules) do
+    if type(module) == "table" then
+      if type(module.notify) == "function" then
+        module.notify(...)
+      end
+    end
+  end
 end
 
 local function mainMenu()
@@ -136,6 +162,13 @@ local function optionsMenu()
     settings.get("shop.rebootTime") or "ERROR 1",
     "When an error occurs, the shop will wait this time (in seconds) to reboot."
   )
+  menu:addMenuItem(
+    "Monitor",
+    "string",
+    settings.get("shop.monitor") or peripheral.findString("monitor")[1]
+      or "NO MONITOR",
+    "The name of the monitor on the wired network."
+  )
 
   menu:go()
 
@@ -143,6 +176,7 @@ local function optionsMenu()
     settings.set(sets[i], menu.menuItems.appends[i])
   end
   settings.save("/.shopsettings")
+  notify("settings_update")
 end
 
 local function errorMenu(err)
@@ -447,6 +481,7 @@ end
 local ok, err = pcall(main)
 
 if not ok then
+  pcall(notify, "error")
   bsod(err, mon)
   if err ~= "Terminated" then
     local psx, psy = mon.getCursorPos()
