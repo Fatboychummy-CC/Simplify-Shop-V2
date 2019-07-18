@@ -388,8 +388,6 @@ local function addRemove()
 end
 
 local function main()
-  os.sleep(5)
-  error("yeett")
   -- init
   print("Initializing.")
   os.sleep(0.1)
