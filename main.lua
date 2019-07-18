@@ -9,7 +9,9 @@ local smenus = require("modules.text.menus.simple")
 local imenus = require("modules.text.menus.insert")
 local qmenus = require("modules.text.menus.questions")
 local cache = require("modules.item.cache")
+local bsod = require("modules.etc.bsod")
 local build = 0
+local mon = peripheral.find("monitor")
 
 
 -- shop settings.
@@ -126,6 +128,25 @@ local function optionsMenu()
     settings.set(sets[i], menu.menuItems.appends[i])
   end
   settings.save("/.shopsettings")
+end
+
+local function errorMenu(err)
+  local menu = smenus.newMenu()
+  menu.title = "Error"
+  menu.info = err
+
+  menu:addMenuItem(
+    "Reboot",
+    "Reboot the shop.",
+    "Reboot the shop."
+  )
+  menu:addMenuItem(
+    "Return",
+    "",
+    "Return to the shell."
+  )
+
+  return menu:go(30)
 end
 
 local function scanChest()
@@ -367,6 +388,8 @@ local function addRemove()
 end
 
 local function main()
+  os.sleep(5)
+  error("yeett")
   -- init
   print("Initializing.")
   os.sleep(0.1)
@@ -409,5 +432,21 @@ end
 local ok, err = pcall(main)
 
 if not ok then
-  error(err, 0)
+  bsod(err, mon)
+  if err ~= "Terminated" then
+    local psx, psy = mon.getCursorPos()
+    mon.setCursorPos(1, psy + 2)
+    mon.write("Rebooting in 30 seconds.")
+    local ans = errorMenu(err)
+    if ans == 1 then
+      mon.setBackgroundColor(colors.black)
+      mon.setTextColor(colors.white)
+      mon.clear()
+      mon.setCursorPos(1, 1)
+      mon.write("Rebooting.")
+      os.reboot()
+    else
+      return
+    end
+  end
 end
