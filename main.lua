@@ -25,7 +25,8 @@ local modules = {
 
 -- miniinit
 local build = 0
-local mon = peripheral.find("monitor")
+local mon
+local settingsLocation = "/.shopsettings"
 
 
 -- shop settings.
@@ -60,7 +61,7 @@ local function checkSettings()
       print("Missing settings value:", sets[i])
       os.sleep(0.2)
       settings.set(sets[i], sets.defaults[i])
-      settings.save("/.shopsettings")
+      settings.save(settingsLocation)
     end
   end
 end
@@ -75,11 +76,23 @@ local function updateCheckString()
 end
 
 local function notify(...)
+  local args = {...}
+  -- notify modules
   for i, module in ipairs(modules) do
     if type(module) == "table" then
       if type(module.notify) == "function" then
-        module.notify(...)
+        module.notify(table.unpack(args))
       end
+    end
+  end
+
+  -- notify self
+  if args[1] == "settings_update" then
+    mon = peripheral.wrap(settings.get("shop.monitor"))
+    if type(mon) ~= "table" then
+      local monName = peripheral.findString("monitor")[1]
+      mon = peripheral.wrap(monName)
+      settings.set("shop.monitor", monName)
     end
   end
 end
@@ -198,13 +211,23 @@ local function optionsMenu()
     "The name of the monitor on the wired network."
   )
 
-  menu:go()
-
-  for i = 1, #sets do
-    settings.set(sets[i], menu.menuItems.appends[i])
+  local function updater()
+    for i = 1, #sets do
+      settings.set(sets[i], menu.menuItems.appends[i])
+    end
+    settings.save(settingsLocation)
+    notify("settings_update")
+    for i = 1, #sets do
+      local append = menu.menuItems.appends[i]
+      if settings.get(sets[i]) ~= append then
+        menu.menuItems.appends[i] = settings.get(sets[i])
+      end
+    end
   end
-  settings.save("/.shopsettings")
-  notify("settings_update")
+
+  menu:go(updater)
+
+  updater()
 end
 
 local function errorMenu(err)
@@ -469,18 +492,36 @@ local function main()
   print("Initializing.")
   os.sleep(0.1)
   print("Checking settings.")
-  if not settings.load("/.shopsettings") then
+  if not settings.load(settingsLocation) then
     print("No settings are saved, creating them.")
     os.sleep(0.5)
     for i = 1, #sets do
       settings.set(sets[i], sets.defaults[i])
       print(sets[i], " - ", sets.defaults[i])
+      os.sleep(0.1)
     end
-    settings.save("/.shopsettings")
+    settings.save(settingsLocation)
     print("Saved settings.")
     os.sleep(0.5)
   end
   checkSettings()
+  print("Grabbing monitor.")
+  local monitorName = settings.get("shop.monitor")
+  if not monitorName or monitorName:find("ERROR")
+      or monitorName == "INVALID" then
+    monitorName = peripheral.findString("monitor")[1]
+    if monitorName then
+      settings.set("shop.monitor", monitorName)
+      settings.save(settingsLocation)
+      notify("settings_update")
+      print("No monitor was selected, Auto-selected " .. monitorName)
+      os.sleep(3)
+    else
+      error("No monitor")
+    end
+  end
+
+  mon = peripheral.wrap(monitorName)
 
   print("Checking Cache")
   os.sleep(0.1)
