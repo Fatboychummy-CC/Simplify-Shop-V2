@@ -260,15 +260,35 @@ local function scanChest()
     local size = chest.size()
     local ls = chest.list()
     local items = {}
-    --TODO: fix duplicates.
+    local cacheItems = cache.getCache()
 
     for i = 1, size do
       if ls[i] then
-        items[#items + 1] = {
-          name = ls[i].name,
-          damage = ls[i].damage,
-          displayName = chest.getItemMeta(i).displayName
-        }
+        local flag = true
+        for j = 1, #items do
+          if items[j].name == ls[i].name
+             and items[j].damage == ls[i].damage then
+            flag = false
+            break
+          end
+        end
+        if flag then
+          for k, v in pairs(cacheItems) do
+            for k2, v2 in pairs(v) do
+              if k == ls[i].name and k2 == ls[i].damage then
+                flag = false
+              end
+            end
+          end
+        end
+
+        if flag then
+          items[#items + 1] = {
+            name = ls[i].name,
+            damage = ls[i].damage,
+            displayName = chest.getItemMeta(i).displayName
+          }
+        end
       end
     end
     return items
