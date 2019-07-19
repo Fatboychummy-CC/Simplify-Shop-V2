@@ -37,6 +37,8 @@ local sets = {
   "shop.cacheSaveName",
   "shop.logLocation",
   "shop.rebootTime",
+  "shop.autorun",
+  "shop.autorunTime",
   "shop.monitor", -- TODO: figure out better way for the monitor.
   defaults = {
     "Unnamed Shop",
@@ -46,13 +48,15 @@ local sets = {
     "/data/cache.ic",
     "/data/logs",
     30,
+    true,
+    5,
     "ERROR 3"
   }
 }
 
 local function checkSettings()
   for i = 1, #sets do
-    if not settings.get(sets[i]) then
+    if type(settings.get(sets[i])) == "nil" then
       print("Missing settings value:", sets[i])
       os.sleep(0.2)
       settings.set(sets[i], sets.defaults[i])
@@ -112,7 +116,9 @@ local function mainMenu()
     "Debug Error",
     "Force an error to do some random debugging."
   )
-  return menu:go(5)
+
+  return menu:go(settings.get("shop.autorun")
+                 and settings.get("shop.autorunTime"))
 end
 
 local function optionsMenu()
@@ -161,6 +167,28 @@ local function optionsMenu()
     "number",
     settings.get("shop.rebootTime") or "ERROR 1",
     "When an error occurs, the shop will wait this time (in seconds) to reboot."
+  )
+  local autorun = settings.get("shop.autorun")
+  if type(autorun) == "boolean" then
+    menu:addMenuItem(
+      "Autorun",
+      "boolean",
+      autorun,
+      "Should the shop autorun on boot?"
+    )
+  else
+    menu:addMenuItem(
+      "Autorun",
+      "boolean",
+      true,
+      "Should the shop autorun on boot?"
+    )
+  end
+  menu:addMenuItem(
+    "Autorun Time",
+    "number",
+    settings.get("shop.autorunTime") or "ERROR 1",
+    "How long should the shop wait until being run if autorun enabled?"
   )
   menu:addMenuItem(
     "Monitor",
