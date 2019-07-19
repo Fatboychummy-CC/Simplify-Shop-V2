@@ -16,17 +16,23 @@ local function bsod(err, monitor)
 
   monitor.setCursorPos(1, 1)
   if err == "Terminated" then
-    mon.print("Simplify Shop has been terminated.")
+    mon.print(monitor, "Simplify Shop has been terminated.")
     return
   end
 
-  local lines = mon.print("Simplify Shop encountered an error it could not recover from.")
+  local lines = mon.print(
+    monitor,
+    "Simplify Shop encountered an error it could not recover from."
+  )
   monitor.setCursorPos(1, 3 + lines)
 
-  lines = lines + mon.print(err)
+  lines = lines + mon.print(monitor, err)
 
   monitor.setCursorPos(1, 5 + lines)
-  lines = lines + mon.print("Please let Fatboychummy#4287 on Discord know.")
+  lines = lines + mon.print(
+    monitor,
+    "Please let Fatboychummy#4287 on Discord know."
+  )
 
 end
 
