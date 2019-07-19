@@ -40,7 +40,7 @@ local sets = {
   "shop.rebootTime",
   "shop.autorun",
   "shop.autorunTime",
-  "shop.monitor", -- TODO: figure out better way for the monitor.
+  "shop.monitor",
   defaults = {
     "Unnamed Shop",
     "Unknown",
