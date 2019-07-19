@@ -123,7 +123,7 @@ local function getInsertion(self, typ)
   end
 end
 
-function met:go()
+function met:go(updater)
   self = type(self) == "table" and self.__type == "menuObject" and self
            or error(ec(0, "menuObject", self))
   --
@@ -160,6 +160,9 @@ function met:go()
         end
         local temp = getInsertion(self, self.menuItems.types[sel])
         self.menuItems.appends[sel] = temp
+        if type(updater) == "function" then
+          updater()
+        end
       end
     end
 
