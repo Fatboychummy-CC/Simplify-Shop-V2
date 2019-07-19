@@ -379,8 +379,65 @@ local function addItem()
   end
 end
 
-local function removeItem()
+local function actuallyRemove(registry)
+  local menu = smenus.newMenu()
+  menu.title = "Confirmation"
+  menu.info = "Item to be deleted: " .. tostring(registry.key) .. " ["
+              .. tostring(registry.damage) .. "]"
 
+  menu:addMenuItem(
+    "Yes",
+    "Delete item.",
+    "Delete the item (Warning: this is permanent)."
+  )
+  menu:addMenuItem(
+    "No",
+    "Keep item.",
+    "Do not remove the item from the shop."
+  )
+
+  local ans = menu:go()
+  if ans == 1 then
+    cache.removeFromCache(registry.key, registry.damage)
+  end
+end
+
+local function removeItem()
+  while true do
+    local menu = smenus.newMenu()
+    menu.title = "Delete items."
+    menu.info = "Select an item to delete."
+
+    local registry = {}
+    local cacheItems = cache.getCache()
+
+    for key, reg in pairs(cacheItems) do
+      for damage, registration in pairs(reg) do
+        local sName = registration.name
+        if #sName > 12 then
+          sName = sName:sub(1, 9) .. "..."
+        end
+        menu:addMenuItem(
+          sName,
+          "Remove this item",
+          "Remove the item " .. key .. "[" .. tostring(damage) .. "]"
+        )
+        registry[#registry + 1] = {key = key, damage = damage}
+      end
+    end
+    menu:addMenuItem(
+      "Return",
+      "Go back.",
+      "Return to the previous menu."
+    )
+    local ans = menu:go()
+
+    if ans == #menu.menuItems.selectables then
+      break
+    else
+      actuallyRemove(registry[ans])
+    end
+  end
 end
 
 local function cacheEdit(c, registry)
@@ -496,10 +553,8 @@ local function addRemove()
       addItem()
     elseif ans == 2 then
       editItem()
-      --TODO: edit items
     elseif ans == 3 then
       removeItem()
-      --TODO: remove items
     elseif ans == 4 then
       -- return to main
       return
