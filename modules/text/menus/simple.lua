@@ -55,10 +55,6 @@ function met:selectDown()
     self.selected = self:count()
   end
 
-  --TODO: Fix this;
-  -- if at bottom of list, go back to top, slot is still 1 when should be 4
-  -- vice versea for select up
-
   self.slot = self.slot - 1
   if self.slot < 1 then
     self.slot = 1
