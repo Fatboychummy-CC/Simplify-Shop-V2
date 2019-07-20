@@ -44,4 +44,12 @@ function funcs.print(monitor, ...)
   return count
 end
 
+function funcs.setupMonitor(mon)
+  for k, v in pairs(funcs) do
+    if k ~= "setupMonitor" then
+      mon[k] = v
+    end
+  end
+end
+
 return funcs
