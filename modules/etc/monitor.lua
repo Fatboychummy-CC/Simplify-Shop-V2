@@ -14,6 +14,16 @@ function funcs.print(monitor, ...)
   local str = strs[1] or ""
   str = tostring(str)
   local count = 0
+  if str == "" then
+    local psx, psy = monitor.getCursorPos()
+    if psy + 1 > my then
+      monitor.scroll(1)
+      monitor.setCursorPos(1, my)
+    else
+      monitor.setCursorPos(1, psy + 1)
+    end
+    return
+  end
 
   for word in str:gmatch("%S+") do
     local posx, posy = monitor.getCursorPos()
