@@ -625,7 +625,6 @@ local function main()
   mon:print("Awaiting input...")
   mon:print()
   mon:print(
-
     settings.get("shop.autorun") and "Seconds until autorun: "
       .. tostring(settings.get("shop.autorunTime"))
     or "Autorun is disabled.  Please contact the owner ("
