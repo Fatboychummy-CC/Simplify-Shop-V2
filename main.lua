@@ -623,7 +623,14 @@ local function main()
   mon:print("Starting...")
   os.sleep(0.1)
   mon:print("Awaiting input...")
-  mon:print("")
+  mon:print()
+  mon:print(
+
+    settings.get("shop.autorun") and "Seconds until autorun: "
+      .. tostring(settings.get("shop.autorunTime"))
+    or "Autorun is disabled.  Please contact the owner ("
+      .. settings.get("shop.shopOwner") .. ") for help."
+    )
 
   local selection = 0
   repeat
