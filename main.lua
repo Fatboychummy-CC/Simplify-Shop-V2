@@ -97,6 +97,7 @@ local function notify(...)
       settings.set("shop.monitor", monName)
     end
   end
+  monitor.setupMonitor(mon)
 end
 
 local function mainMenu()
@@ -607,6 +608,7 @@ local function main()
   end
 
   mon = peripheral.wrap(monitorName)
+  monitor.setupMonitor(mon)
 
   print("Checking Cache")
   os.sleep(0.1)
@@ -615,6 +617,13 @@ local function main()
     print("No cache file found.")
     os.sleep(0.5)
   end
+
+  mon.clear()
+  mon.setCursorPos(1, 1)
+  mon:print("Starting...")
+  os.sleep(0.1)
+  mon:print("Awaiting input...")
+  mon:print("")
 
   local selection = 0
   repeat
@@ -630,6 +639,7 @@ local function main()
     end
   until selection == 1
     --TODO: shop
+    mon:print("Running.")
 end
 
 local ok, err = pcall(main)
