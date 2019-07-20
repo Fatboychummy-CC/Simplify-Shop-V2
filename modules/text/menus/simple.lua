@@ -59,6 +59,9 @@ function met:selectDown()
   if self.slot < 1 then
     self.slot = 1
   end
+  if self.selected == self:count() then
+    self.slot = (self.selected >= 4 and 4 or self.slot)
+  end
 
   return self
 end
@@ -73,6 +76,7 @@ function met:selectUp()
   if self.slot > 4 then
     self.slot = 4
   end
+  if self.selected == 1 then self.slot = 1 end
 
   return self
 end
