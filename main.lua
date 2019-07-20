@@ -40,7 +40,8 @@ local sets = {
   "shop.rebootTime",
   "shop.autorun",
   "shop.autorunTime",
-  "shop.monitor",
+  "shop.monitor.monitor",
+  "shop.monitor.textScale",
   defaults = {
     "Unnamed Shop",
     "Unknown",
@@ -51,7 +52,8 @@ local sets = {
     30,
     true,
     5,
-    "ERROR 3"
+    "ERROR 3",
+    0.5
   }
 }
 
@@ -206,9 +208,15 @@ local function optionsMenu()
   menu:addMenuItem(
     "Monitor",
     "string",
-    settings.get("shop.monitor") or peripheral.findString("monitor")[1]
+    settings.get("shop.monitor.monitor") or peripheral.findString("monitor")[1]
       or "NO MONITOR",
     "The name of the monitor on the wired network."
+  )
+  menu:addMenuItem(
+    "Text Size",
+    "number",
+    settings.get("shop.monitor.textScale") or 0.5,
+    "The scale of the text for the monitor.  Min 0.5, max 4"
   )
 
   local function updater()
@@ -579,7 +587,9 @@ local function main()
     print("Saved settings.")
     os.sleep(0.5)
   end
+
   checkSettings()
+
   print("Grabbing monitor.")
   local monitorName = settings.get("shop.monitor")
   if not monitorName or monitorName:find("ERROR")
