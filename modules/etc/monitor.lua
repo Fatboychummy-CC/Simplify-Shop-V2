@@ -11,7 +11,8 @@ function funcs.print(monitor, ...)
   e.watch(1, "table", monitor)
   local strs = {...}
   local mx, my = monitor.getSize()
-  local str = tostring(strs[1]) or ""
+  local str = strs[1] or ""
+  str = tostring(str)
   local count = 0
 
   for word in str:gmatch("%S+") do
