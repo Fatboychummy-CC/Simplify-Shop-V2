@@ -629,7 +629,7 @@ local function main()
       .. tostring(settings.get("shop.autorunTime"))
     or "Autorun is disabled.  Please contact the owner ("
       .. settings.get("shop.shopOwner") .. ") for help."
-    )
+  )
 
   local selection = 0
   repeat
