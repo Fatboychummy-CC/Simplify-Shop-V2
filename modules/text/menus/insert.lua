@@ -151,7 +151,7 @@ function met:go(updater)
       elseif key == 28 then
         -- enter key pressed
         local sel = self.selected
-        if sel == #self.menuItems.selectables then
+        if sel == self:count() then
           table.remove(self.menuItems.selectables, #self.menuItems.selectables)
           table.remove(self.menuItems.types, #self.menuItems.types)
           table.remove(self.menuItems.infos, #self.menuItems.infos)

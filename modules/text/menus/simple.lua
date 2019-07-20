@@ -7,6 +7,10 @@ met.__type = "menuObject"
 local ers = require("modules.etc.errors")
 local ec = ers.create
 
+function met:count()
+  return #self.menuItems.selectables
+end
+
 function met:update()
   if self.selected > self.maxSelection then
     self.maxSelection = self.selected
@@ -14,7 +18,7 @@ function met:update()
   if self.selected < self.maxSelection - 3 then
     self.maxSelection = self.selected + 3
   end
-  if self.maxSelection < #self.menuItems.selectables then
+  if self.maxSelection < self:count() then
     term.setCursorPos(1, 9)
     io.write("v")
   end
@@ -48,7 +52,7 @@ end
 function met:selectDown()
   self.selected = self.selected - 1
   if self.selected < 1 then
-    self.selected = #self.menuItems.selectables
+    self.selected = self:count()
   end
 
   --TODO: Fix this;
@@ -68,7 +72,7 @@ end
 
 function met:selectUp()
   self.selected = self.selected + 1
-  if self.selected > #self.menuItems.selectables then
+  if self.selected > self:count() then
     self.selected = 1
   end
 
