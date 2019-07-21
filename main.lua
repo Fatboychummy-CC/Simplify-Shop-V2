@@ -57,6 +57,13 @@ local sets = {
   }
 }
 
+----------------------------------------------------------
+-- func:    checkSettings()
+-- inputs:  none
+-- returns: none
+-- info:    Loops through the list of settings and the defaults.
+--          If a setting is missing, then it is set to it's default.
+----------------------------------------------------------
 local function checkSettings()
   for i = 1, #sets do
     if type(settings.get(sets[i])) == "nil" then
@@ -68,15 +75,35 @@ local function checkSettings()
   end
 end
 
+----------------------------------------------------------
+-- func:    updateCheck
+-- inputs:  none
+-- returns: isUpdate|boolean
+-- info:    checks for updates, if there is an update,
+--          returns true, else false.
+----------------------------------------------------------
 local function updateCheck()
   --TODO: finish this.
 end
 
+----------------------------------------------------------
+-- func:    updateCheckString
+-- inputs:  none
+-- returns: updates|string
+-- info:    runs updateCheck, then returns a string based on what was returned.
+----------------------------------------------------------
 local function updateCheckString()
   --TODO: call updateCheck and return a string depending on what is returned.
   return "No updates available."
 end
 
+----------------------------------------------------------
+-- func:    notify
+-- inputs:  any
+-- returns: none
+-- info:    loops through modules, checks if they have a notify function.
+--          If so, runs notify with the inputs to this function
+----------------------------------------------------------
 local function notify(...)
   local args = {...}
   -- notify modules
@@ -88,7 +115,7 @@ local function notify(...)
     end
   end
 
-  -- notify self
+  -- Also updates "ourself" by notifying ourself
   if args[1] == "settings_update" then
     mon = peripheral.wrap(settings.get("shop.monitor"))
     if type(mon) ~= "table" then
@@ -100,6 +127,12 @@ local function notify(...)
   monitor.setupMonitor(mon)
 end
 
+----------------------------------------------------------
+-- func:    mainMenu
+-- inputs:  none
+-- returns: none
+-- info:    runs the 'title screen' menu
+----------------------------------------------------------
 local function mainMenu()
   local menu = smenus.newMenu()
   menu.title = "Simplify Shop V2B" .. tostring(build)
@@ -137,6 +170,12 @@ local function mainMenu()
                  and settings.get("shop.autorunTime"))
 end
 
+----------------------------------------------------------
+-- func:    optionsMenu
+-- inputs:  none
+-- returns: none
+-- info:    runs the menu where you can change settings.
+----------------------------------------------------------
 local function optionsMenu()
   local menu = imenus.newMenu()
   menu.title = "Settings"
@@ -220,12 +259,23 @@ local function optionsMenu()
     "The scale of the text for the monitor.  Min 0.5, max 4"
   )
 
+  ----------------------------------------------------------
+  -- func:    updater
+  -- inputs:  none
+  -- returns: none
+  -- info:    to be run by the menu when a menu option is updated.
+  --          Notifies other modules of a settings update.
+  ----------------------------------------------------------
   local function updater()
+    -- for each setting, set them to the new menu option
     for i = 1, #sets do
       settings.set(sets[i], menu.menuItems.appends[i])
     end
     settings.save(settingsLocation)
-    notify("settings_update")
+    notify("settings_update") -- notify all modules
+
+    -- sets the menu options back to the settings.
+    -- since the settings may be changed after notifying.
     for i = 1, #sets do
       local append = menu.menuItems.appends[i]
       if settings.get(sets[i]) ~= append then
@@ -239,6 +289,12 @@ local function optionsMenu()
   updater()
 end
 
+----------------------------------------------------------
+-- func:    errorMenu
+-- inputs:  err: error|string
+-- returns: selected|number
+-- info:    displays the error menu, after an error occurs.
+----------------------------------------------------------
 local function errorMenu(err)
   local menu = smenus.newMenu()
   menu.title = "Error"
@@ -258,12 +314,25 @@ local function errorMenu(err)
   return menu:go(settings.get("shop.rebootTime") or 30)
 end
 
+----------------------------------------------------------
+-- func:    scanChest
+-- inputs:  none
+-- returns: items|table
+-- info:    scans a chest or shulker box in front of the
+--          turtle, then returns them.
+----------------------------------------------------------
 local function scanChest()
   term.clear()
   term.setCursorPos(1, 1)
 
   local front = peripheral.getType("front")
 
+  ----------------------------------------------------------
+  -- func:    scan
+  -- inputs:  none
+  -- returns: items|table
+  -- info:    actually scan the chest
+  ----------------------------------------------------------
   local function scan()
     local chest = peripheral.wrap("front")
     local size = chest.size()
@@ -272,26 +341,38 @@ local function scanChest()
     local cacheItems = cache.getCache()
 
     for i = 1, size do
+      -- for each slot in the chest
       if ls[i] then
+        -- if there is an item
         local flag = true
         for j = 1, #items do
+          -- for each item already scanned
           if items[j].name == ls[i].name
              and items[j].damage == ls[i].damage then
+             -- check if we already scanned it, set flag to false if we have.
             flag = false
             break
           end
         end
+
         if flag then
+          -- if we haven't already scanned the item then
           for k, v in pairs(cacheItems) do
+            -- for each minecraft:ItemID in the cache do...
             for k2, v2 in pairs(v) do
+              -- for each damage value in minecraft:ItemID in the cache do...
               if k == ls[i].name and k2 == ls[i].damage then
+                -- if the item scanned is already in the cache, set flag to
+                -- false
                 flag = false
               end
             end
           end
         end
 
+        -- if we haven't already scanned the item then
         if flag then
+          -- add the item to the table
           items[#items + 1] = {
             name = ls[i].name,
             damage = ls[i].damage,
@@ -303,30 +384,44 @@ local function scanChest()
     return items
   end
 
+  -- if there is a chest or shulker box...
   if front and (front:find("chest") or front:find("shulker")) then
     print("Chest or shulker box in front, scanning it.")
     return scan()
   end
 
+  -- if we could not see a chest or shulker box...
   print("No chest or shulker box in front. Waiting for you to place one.")
   while true do
     local ev, side = os.pullEvent("peripheral")
+    -- wait for a peripheral event (ie: chest attached, etc)
     if side == "front" then
       front = peripheral.getType("front")
       if front and (front:find("chest") or front:find("shulker")) then
+        -- chest/shulker attached
         print("Shulker or chest attached, scanning in 5 seconds.")
         os.sleep(5)
         return scan()
       else
+        -- not a valid chest/shulker
         print("That is not a valid chest or shulker box.")
       end
     end
   end
 end
 
+----------------------------------------------------------
+-- func:    getDetails
+-- inputs:  items|table
+-- returns: items|table
+-- info:    loops through the items inputted, and asks
+--          the user for it's name and value in krist
+----------------------------------------------------------
 local function getDetails(items)
   local tmp = {}
+
   for i, item in ipairs(items) do
+    -- for each item in the table
     local menu = qmenus.new()
     menu:addQuestion(
       "Scanned '" .. item.name .. "' with damage "
@@ -342,6 +437,8 @@ local function getDetails(items)
     )
     menu:go()
 
+    -- check if the player just left the answer blank.  If so, set the name to
+    -- the item's default name.
     if menu.questions.a[1] == "" then
       menu.questions.a[1] = item.displayName
     end
@@ -357,6 +454,12 @@ local function getDetails(items)
   return tmp
 end
 
+----------------------------------------------------------
+-- func:    addItem
+-- inputs:  none
+-- returns: none
+-- info:    Runs the add item menu.
+----------------------------------------------------------
 local function addItem()
   local menu = smenus.newMenu()
   menu.title = "Add Items."
@@ -376,9 +479,9 @@ local function addItem()
   local a = menu:go()
 
   if a == 1 then
-    local items = scanChest()
-    local the_deets = getDetails(items)
-    for i, item in ipairs(the_deets) do
+    local items = scanChest()           -- scan the chest
+    local the_deets = getDetails(items) -- get user input
+    for i, item in ipairs(the_deets) do -- add each item to cache
       cache.addToCache(item.displayName, item.name, item.damage, item.value)
     end
     -- scan the chest
@@ -388,6 +491,13 @@ local function addItem()
   end
 end
 
+----------------------------------------------------------
+-- func:    actuallyRemove
+-- inputs:  registry|table
+-- returns: nil
+-- info:    Asks the player if they would like to "actually remove"
+--          the item they selected.
+----------------------------------------------------------
 local function actuallyRemove(registry)
   local menu = smenus.newMenu()
   menu.title = "Confirmation"
@@ -411,6 +521,12 @@ local function actuallyRemove(registry)
   end
 end
 
+----------------------------------------------------------
+-- func:    removeItem
+-- inputs:  none
+-- returns: nil
+-- info:    Runs the remove item prompt.
+----------------------------------------------------------
 local function removeItem()
   while true do
     local menu = smenus.newMenu()
@@ -422,7 +538,10 @@ local function removeItem()
 
     for key, reg in pairs(cacheItems) do
       for damage, registration in pairs(reg) do
+        -- for each item in the cache
+        -- get the cache registration
         local sName = registration.name
+        -- if the name is too long, shorten it.
         if #sName > 12 then
           sName = sName:sub(1, 9) .. "..."
         end
@@ -431,6 +550,7 @@ local function removeItem()
           "Remove this item",
           "Remove the item " .. key .. "[" .. tostring(damage) .. "]"
         )
+        -- add to the registry (temp, not the cache registry)
         registry[#registry + 1] = {key = key, damage = damage}
       end
     end
@@ -444,11 +564,18 @@ local function removeItem()
     if ans == #menu.menuItems.selectables then
       break
     else
+      -- ask the player if they really want to remove the selected item.
       actuallyRemove(registry[ans])
     end
   end
 end
 
+----------------------------------------------------------
+-- func:    cacheEdit
+-- inputs:  c: cache|table, registry: registry|table
+-- returns: nil
+-- info:    Edit a single cache entry.
+----------------------------------------------------------
 local function cacheEdit(c, registry)
   local menu = imenus.newMenu()
   menu.title = "Edit item."
@@ -490,6 +617,13 @@ local function cacheEdit(c, registry)
   )
 end
 
+----------------------------------------------------------
+-- func:    editItem
+-- inputs:  none
+-- returns: nil
+-- info:    Loads each item in the cache, and lists them
+--          for the player to be edited.
+----------------------------------------------------------
 local function editItem()
   while true do
     local c = cache.getCache()
@@ -502,7 +636,10 @@ local function editItem()
 
     for key, reg in pairs(c) do
       for damage, registration in pairs(reg) do
+        -- for each item in the cache
+        -- get each item.
         local sName = registration.name
+        -- if the name is too long, shorten it.
         if #sName > 12 then
           sName = sName:sub(1, 9) .. "..."
         end
@@ -511,6 +648,7 @@ local function editItem()
           "Edit this item.",
           "Edit the item " .. key .. "[" .. tostring(damage) .. "]"
         )
+        -- add to registry (temp, not cache registry)
         registry[#registry + 1] = {key = key, damage = damage}
       end
     end
@@ -525,32 +663,39 @@ local function editItem()
     if ans == #registry + 1 then
       return
     else
+      -- confirm edit.
       cacheEdit(c, registry[ans])
     end
   end
 end
 
+----------------------------------------------------------
+-- func:    addRemove
+-- inputs:  none
+-- returns: nil
+-- info:    Runs the "Add or Remove Items" prompt
+----------------------------------------------------------
 local function addRemove()
   local menu = smenus.newMenu()
 
   menu.title = "Add or Remove Items"
 
-  menu:addMenuItem(
+  menu:addMenuItem( -- 1 = add item
     "Add Items",
     "Add items to the shop.",
     "Use a helpful UI to add items to your shop."
   )
-  menu:addMenuItem(
+  menu:addMenuItem( -- 2 = edit item
     "Edit Items",
     "Edit prices for items.",
     "Edit the prices for items sold at your shop."
   )
-  menu:addMenuItem(
+  menu:addMenuItem( -- 3 = remove item
     "Remove Items",
     "Remove items from shop.",
     "Use a helpful UI to remove items from your shop."
   )
-  menu:addMenuItem(
+  menu:addMenuItem( -- max = return
     "Return",
     "Go back.",
     "Return to the startup page."
@@ -564,13 +709,19 @@ local function addRemove()
       editItem()
     elseif ans == 3 then
       removeItem()
-    elseif ans == 4 then
+    elseif ans == menu:count() then
       -- return to main
       return
     end
   end
 end
 
+----------------------------------------------------------
+-- func:    main
+-- inputs:  none
+-- returns: nil
+-- info:    The main bulk of the program, controls everything
+----------------------------------------------------------
 local function main()
   -- init
   print("Initializing.")
@@ -648,11 +799,18 @@ local function main()
     mon:print("Running.")
 end
 
+
+
+
+
+-- ERROR CHECKING
 local ok, err = pcall(main)
 
 if not ok then
-  pcall(notify, "error")
-  bsod(err, mon)
+  pcall(notify, "error") -- notify modules of an error, so things can be saved
+                         -- and unloaded
+  pcall(bsod,err, mon)   -- bluescreen the monitor
+  -- the above are pcalled in case they, themselves, error.
   if err ~= "Terminated" then
     local psx, psy = mon.getCursorPos()
     mon.setCursorPos(1, psy + 2)
@@ -671,62 +829,3 @@ if not ok then
     end
   end
 end
-
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
---TODO: COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT COMMENT
