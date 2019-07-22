@@ -7,6 +7,12 @@ met.__type = "cache"
 local cache = {}
 local saveLocation = "/cache.ic"
 
+----------------------------------------------------------
+-- func:    save
+-- inputs:  none
+-- returns: nil
+-- info:    saves the cache to the save location.
+----------------------------------------------------------
 local function save()
   local h = io.open(saveLocation, 'w')
   if h then
@@ -16,7 +22,17 @@ local function save()
   end
 end
 
+----------------------------------------------------------
+-- func:    load
+-- inputs:  none
+-- returns: loaded|boolean
+-- info:    attempts to load the cache.
+----------------------------------------------------------
 function funcs.load()
+  --[[
+    TODO: Looks like this doesn't make use of the settings API.
+    TODO: Make use of the settings API, so we can change cache location in data
+  ]]
   local h = io.open(saveLocation, 'r')
   if h then
     local dat = h:read("*a")
@@ -28,6 +44,13 @@ function funcs.load()
   end
 end
 
+----------------------------------------------------------
+-- func:    addToCache
+-- inputs:  itemName|string, itemID|string, itemDamage|number
+--          worth|number, [enabled|boolean]
+-- returns: nil
+-- info:    adds to (or updates) the cache registration
+----------------------------------------------------------
 function funcs.addToCache(itemName, itemID, itemDamage, worth, enabled)
   if not cache[itemID] then cache[itemID] = {} end
 
@@ -44,6 +67,12 @@ function funcs.addToCache(itemName, itemID, itemDamage, worth, enabled)
   save()
 end
 
+----------------------------------------------------------
+-- func:    removeFromCache
+-- inputs:  itemID|string, itemDamage|number
+-- returns: nil
+-- info:    removes an item from the cache
+----------------------------------------------------------
 function funcs.removeFromCache(itemID, itemDamage)
   if cache[itemID] then
     cache[itemID][itemDamage] = nil
@@ -51,6 +80,12 @@ function funcs.removeFromCache(itemID, itemDamage)
   save()
 end
 
+----------------------------------------------------------
+-- func:    getRegistration
+-- inputs:  itemID|string, itemDamage|number
+-- returns: (itemName|string, itemValue|number) OR false
+-- info:    gets the item's registration (name and krist value)
+----------------------------------------------------------
 function funcs.getRegistration(itemID, itemDamage)
   if cache[itemID] then
     return cache[itemID][itemDamage].name, cache[itemID][itemDamage].value
@@ -58,12 +93,25 @@ function funcs.getRegistration(itemID, itemDamage)
   return false
 end
 
+----------------------------------------------------------
+-- func:    getCache
+-- inputs:  nil
+-- returns: cache|table
+-- info:    gets the cache table
+----------------------------------------------------------
 function funcs.getCache()
   return cache
 end
 
+----------------------------------------------------------
+-- func:    setSaveLocation
+-- inputs:  location|string
+-- returns: nil
+-- info:    changes the cache's save location.
+----------------------------------------------------------
 function funcs.setSaveLocation(location)
   saveLocation = location
+  funcs.save()
 end
 
 return funcs
