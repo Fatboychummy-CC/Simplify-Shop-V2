@@ -60,7 +60,7 @@ local sets = {
 ----------------------------------------------------------
 -- func:    checkSettings()
 -- inputs:  none
--- returns: none
+-- returns: nil
 -- info:    Loops through the list of settings and the defaults.
 --          If a setting is missing, then it is set to it's default.
 ----------------------------------------------------------
@@ -100,7 +100,7 @@ end
 ----------------------------------------------------------
 -- func:    notify
 -- inputs:  any
--- returns: none
+-- returns: nil
 -- info:    loops through modules, checks if they have a notify function.
 --          If so, runs notify with the inputs to this function
 ----------------------------------------------------------
@@ -130,7 +130,7 @@ end
 ----------------------------------------------------------
 -- func:    mainMenu
 -- inputs:  none
--- returns: none
+-- returns: nil
 -- info:    runs the 'title screen' menu
 ----------------------------------------------------------
 local function mainMenu()
@@ -173,7 +173,7 @@ end
 ----------------------------------------------------------
 -- func:    optionsMenu
 -- inputs:  none
--- returns: none
+-- returns: nil
 -- info:    runs the menu where you can change settings.
 ----------------------------------------------------------
 local function optionsMenu()
@@ -262,7 +262,7 @@ local function optionsMenu()
   ----------------------------------------------------------
   -- func:    updater
   -- inputs:  none
-  -- returns: none
+  -- returns: nil
   -- info:    to be run by the menu when a menu option is updated.
   --          Notifies other modules of a settings update.
   ----------------------------------------------------------
@@ -457,7 +457,7 @@ end
 ----------------------------------------------------------
 -- func:    addItem
 -- inputs:  none
--- returns: none
+-- returns: nil
 -- info:    Runs the add item menu.
 ----------------------------------------------------------
 local function addItem()

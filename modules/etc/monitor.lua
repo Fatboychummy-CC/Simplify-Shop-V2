@@ -3,10 +3,12 @@ local funcs = {}
 local ep = require("modules.etc.extraPeripherals")
 local e = require("modules.etc.errors")
 
-function funcs.setDefaultMonitor(default)
-  monitor = peripheral.wrap(monitor)
-end
-
+----------------------------------------------------------
+-- func:    print
+-- inputs:  monitor: monitor|table, any
+-- returns: lines printed
+-- info:    prints much like term.print() does, but to a monitor.
+----------------------------------------------------------
 function funcs.print(monitor, ...)
   e.watch(1, "table", monitor)
   local strs = {...}
@@ -55,9 +57,15 @@ function funcs.print(monitor, ...)
   return count
 end
 
+----------------------------------------------------------
+-- func:    setupMonitor
+-- inputs:  mon: monitor|table
+-- returns: nil
+-- info:    adds some methods to the monitor inputted
+----------------------------------------------------------
 function funcs.setupMonitor(mon)
   for k, v in pairs(funcs) do
-    if k ~= "setupMonitor" then
+    if k ~= "setupMonitor" then -- don't add this function, but add all else.
       mon[k] = v
     end
   end
