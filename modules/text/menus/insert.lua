@@ -124,9 +124,12 @@ local function getInsertion(self, typ)
 end
 
 function met:go(updater)
-  self = type(self) == "table" and self.__type == "menuObject" and self
+  do
+  local us, tp = type(self)
+  self = us == "userdata" and tp == "menuObject" and self
            or error(ec(0, "menuObject", self))
-  --
+
+  end
   local oldbg = term.getBackgroundColor()
   local oldfg = term.getTextColor()
 

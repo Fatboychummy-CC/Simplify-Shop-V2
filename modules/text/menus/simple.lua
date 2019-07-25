@@ -157,8 +157,12 @@ function met:draw()
 end
 
 function met:go(timeout)
-  self = type(self) == "table" and self.__type == "menuObject" and self
-           or error(ec(0, "menuObject", self))
+  do
+    -- check self
+    local us, tp = type(self)
+    self = us == "userdata" and tp == "menuObject" and self
+        or error(ec(0, "menuObject", self))
+  end
   --
   local oldbg = term.getBackgroundColor()
   local oldfg = term.getTextColor()
