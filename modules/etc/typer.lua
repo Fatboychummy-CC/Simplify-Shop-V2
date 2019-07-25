@@ -26,6 +26,7 @@ local function typer(_, input)
 
   return oldType(input)
 end
+-- TODO: remove userdata
 
 _G.type = setmetatable(
   {},
