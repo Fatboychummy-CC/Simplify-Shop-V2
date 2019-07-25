@@ -125,6 +125,7 @@ local function notify(...)
       settings.set("shop.monitor.monitor", monName)
     end
   end
+  settings.save(settingsLocation)
   monitor.setupMonitor(mon)
 end
 
