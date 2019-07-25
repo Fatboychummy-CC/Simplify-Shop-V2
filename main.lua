@@ -768,17 +768,12 @@ local function main()
 
   if not monitorName or monitorName:find("ERROR")
       or monitorName == "INVALID" then
-      print(monitorName)
-      print("invalid")
-      os.sleep(3)
     fixMonitor()
   end
 
   mon = peripheral.wrap(monitorName) -- if it's not already wrapped, wrap it.
 
   if type(mon) ~= "table" then
-    print("NaT")
-    os.sleep(3)
     fixMonitor()
   end
 
