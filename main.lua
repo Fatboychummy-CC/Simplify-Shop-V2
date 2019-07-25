@@ -813,20 +813,29 @@ if not ok then
   pcall(bsod, err, mon)   -- bluescreen the monitor
   -- the above are pcalled in case they, themselves, error.
   if err ~= "Terminated" then
-    local psx, psy = mon.getCursorPos()
-    mon.setCursorPos(1, psy + 2)
-    mon.write("Rebooting in " .. tostring(settings.get("shop.rebootTime") or 30)
-              .. " seconds.")
-    local ans = errorMenu(err)
-    if ans == 1 then
-      mon.setBackgroundColor(colors.black)
-      mon.setTextColor(colors.white)
-      mon.clear()
-      mon.setCursorPos(1, 1)
-      mon.write("Rebooting.")
-      os.reboot()
-    else
-      return
+    local function doErr()
+      local psx, psy = mon.getCursorPos()
+      mon.setCursorPos(1, psy + 2)
+      mon.write("Rebooting in " .. tostring(settings.get("shop.rebootTime") or 30)
+                .. " seconds.")
+      local ans = errorMenu(err)
+      if ans == 1 then
+        mon.setBackgroundColor(colors.black)
+        mon.setTextColor(colors.white)
+        mon.clear()
+        mon.setCursorPos(1, 1)
+        mon.write("Rebooting.")
+        os.reboot()
+      else
+        pcall(bsod, err, mon) -- redo the bsod, without the reboot string.
+        return
+      end
+    end
+    local ok, err2 = pcall(doErr)
+    if not ok then
+      printError(err)
+      printError("Failed to run error screen due to:")
+      error(err2, 0)
     end
   end
 end
