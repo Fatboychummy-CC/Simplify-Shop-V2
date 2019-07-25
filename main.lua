@@ -53,7 +53,9 @@ local sets = {
     30,
     true,
     5,
-    "ERROR 3",
+    "FIX ME PLS EEEEE", -- no it doesn't actually need to be fixed
+                        -- the shop does this automatically, no matter what this
+                        -- is set to.
     0.5
   }
 }
