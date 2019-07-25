@@ -810,7 +810,7 @@ local ok, err = pcall(main)
 if not ok then
   pcall(notify, "error") -- notify modules of an error, so things can be saved
                          -- and unloaded
-  pcall(bsod,err, mon)   -- bluescreen the monitor
+  pcall(bsod, err, mon)   -- bluescreen the monitor
   -- the above are pcalled in case they, themselves, error.
   if err ~= "Terminated" then
     local psx, psy = mon.getCursorPos()
