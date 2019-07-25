@@ -12,6 +12,7 @@ local cache = require("modules.item.cache")
 local bsod = require("modules.etc.bsod")
 local monitor = require("modules.etc.monitor")
 local ep = require("modules.etc.extraPeripherals")
+local _ = require("modules.etc.typer")
 
 local modules = {
   smenus,

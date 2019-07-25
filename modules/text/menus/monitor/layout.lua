@@ -2,7 +2,11 @@ local lay = {}
 local meta = {}
 local met = {}
 meta.__index = meta
-met.__type = "monitorMenu"
+meta.__type = "monitorMenu"
+
+function met:addObject(object)
+
+end
 
 function lay.newLayout()
   local tmp = {}

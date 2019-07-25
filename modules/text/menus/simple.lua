@@ -2,7 +2,7 @@ local funcs = {}
 local meta = {}
 local met = {}
 meta.__index = met
-met.__type = "menuObject"
+meta.__type = "menuObject"
 
 local ers = require("modules.etc.errors")
 local ec = ers.create
