@@ -11,7 +11,7 @@ local function typer(_, input)
   local ok, a = pcall(getmetatable, input)
   local oldInType = oldType(input)
 
-  if ok and oldInType == "table" and type(a) == "table" then
+  if ok and oldInType == "table" and oldType(a) == "table" then
     if a.__masterType then
       return a.__masterType
     end
