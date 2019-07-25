@@ -728,6 +728,24 @@ local function main()
   -- init
   print("Initializing.")
   os.sleep(0.1)
+
+  local monitorName
+
+  local function fixMonitor()
+    monitorName = peripheral.findString("monitor")[1]
+    if monitorName then
+      settings.set("shop.monitor.monitor", monitorName)
+      settings.save(settingsLocation)
+      notify("settings_update")
+      print("No monitor was selected, Auto-selected " .. monitorName)
+      os.sleep(3)
+    else
+      error("No monitor")
+    end
+    mon = peripheral.wrap(monitorName)
+  end
+
+
   print("Checking settings.")
   if not settings.load(settingsLocation) then
     print("No settings are saved, creating them.")
@@ -741,26 +759,28 @@ local function main()
     print("Saved settings.")
     os.sleep(0.5)
   end
+  monitorName = settings.get("shop.monitor.monitor")
 
   checkSettings()
 
   print("Grabbing monitor.")
-  local monitorName = settings.get("shop.monitor.monitor")
+
   if not monitorName or monitorName:find("ERROR")
       or monitorName == "INVALID" then
-    monitorName = peripheral.findString("monitor")[1]
-    if monitorName then
-      settings.set("shop.monitor.monitor", monitorName)
-      settings.save(settingsLocation)
-      notify("settings_update")
-      print("No monitor was selected, Auto-selected " .. monitorName)
+      print(monitorName)
+      print("invalid")
       os.sleep(3)
-    else
-      error("No monitor")
-    end
+    fixMonitor()
   end
 
-  mon = peripheral.wrap(monitorName)
+  mon = peripheral.wrap(monitorName) -- if it's not already wrapped, wrap it.
+
+  if type(mon) ~= "table" then
+    print("NaT")
+    os.sleep(3)
+    fixMonitor()
+  end
+
   monitor.setupMonitor(mon)
 
   print("Checking Cache")
@@ -835,7 +855,9 @@ if not ok then
     local ok, err2 = pcall(doErr)
     if not ok then
       printError(err)
+      print()
       printError("Failed to run error screen due to:")
+      print()
       error(err2, 0)
     end
   end
