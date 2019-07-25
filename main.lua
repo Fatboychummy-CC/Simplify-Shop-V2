@@ -118,11 +118,11 @@ local function notify(...)
 
   -- Also updates "ourself" by notifying ourself
   if args[1] == "settings_update" then
-    mon = peripheral.wrap(settings.get("shop.monitor"))
+    mon = peripheral.wrap(settings.get("shop.monitor.monitor"))
     if type(mon) ~= "table" then
       local monName = peripheral.findString("monitor")[1]
       mon = peripheral.wrap(monName)
-      settings.set("shop.monitor", monName)
+      settings.set("shop.monitor.monitor", monName)
     end
   end
   monitor.setupMonitor(mon)
@@ -744,12 +744,12 @@ local function main()
   checkSettings()
 
   print("Grabbing monitor.")
-  local monitorName = settings.get("shop.monitor")
+  local monitorName = settings.get("shop.monitor.monitor")
   if not monitorName or monitorName:find("ERROR")
       or monitorName == "INVALID" then
     monitorName = peripheral.findString("monitor")[1]
     if monitorName then
-      settings.set("shop.monitor", monitorName)
+      settings.set("shop.monitor.monitor", monitorName)
       settings.save(settingsLocation)
       notify("settings_update")
       print("No monitor was selected, Auto-selected " .. monitorName)
