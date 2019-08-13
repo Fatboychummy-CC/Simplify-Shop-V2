@@ -111,7 +111,6 @@ end
 ----------------------------------------------------------
 function funcs.setSaveLocation(location)
   saveLocation = location
-  save()
 end
 
 return funcs
