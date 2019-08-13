@@ -301,50 +301,7 @@ local cacheEdit = require("modules.menus.item.cacheEdit")
 -- info:    Loads each item in the cache, and lists them
 --          for the player to be edited.
 ----------------------------------------------------------
-local function editItem()
-  while true do
-    local c = cache.getCache()
-
-    local menu = smenus.newMenu()
-    menu.title = "Edit Item Data"
-    menu.info = "Change values of items in your shop."
-
-    local registry = {}
-
-    for key, reg in pairs(c) do
-      for damage, registration in pairs(reg) do
-        -- for each item in the cache
-        -- get each item.
-        local sName = registration.name
-        -- if the name is too long, shorten it.
-        if #sName > 12 then
-          sName = sName:sub(1, 9) .. "..."
-        end
-        menu:addMenuItem(
-          sName,
-          "Edit this item.",
-          "Edit the item " .. key .. "[" .. tostring(damage) .. "]"
-        )
-        -- add to registry (temp, not cache registry)
-        registry[#registry + 1] = {key = key, damage = damage}
-      end
-    end
-
-    menu:addMenuItem(
-      "Return",
-      "Go back.",
-      "Return to the previous page."
-    )
-
-    local ans = menu:go()
-    if ans == #registry + 1 then
-      return
-    else
-      -- confirm edit.
-      cacheEdit(c, registry[ans], cache)
-    end
-  end
-end
+local editItem = require("modules.menus.item.editItem")
 
 ----------------------------------------------------------
 -- func:    addRemove
@@ -383,7 +340,7 @@ local function addRemove()
     if ans == 1 then
       addItem(scanChest, getDetails, cache) --TODO: move scanChest, getDetails into here
     elseif ans == 2 then
-      editItem()
+      editItem(cache, cacheEdit) --TODO: move cacheEdit into here.
     elseif ans == 3 then
       removeItem(cache, actuallyRemove) --TODO: move actuallyRemove into here
     elseif ans == menu:count() then
