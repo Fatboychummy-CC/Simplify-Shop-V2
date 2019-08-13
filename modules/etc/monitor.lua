@@ -69,6 +69,24 @@ function funcs.setupMonitor(mon)
       mon[k] = v
     end
   end
+  local scale = settings.get("shop.monitor.textScale")
+  mon.clear()
+  mon.setCursorPos(1, 1)
+  if scale then
+    if scale < 0.5 then
+      mon.setTextScale(0.5)
+      mon:print("Size too small, set to 0.5.")
+    elseif scale > 4 then
+      mon.setTextScale(4)
+      mon:print("Size too large, set to 4.")
+    else
+      mon.setTextScale(scale)
+      mon:print("TESTING TESTING 1 2 3")
+    end
+  else
+    mon.setTextScale(1)
+    mon:print("Scale is NaN")
+  end
 end
 
 return funcs
