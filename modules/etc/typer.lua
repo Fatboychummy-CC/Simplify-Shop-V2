@@ -12,26 +12,19 @@ local function typer(_, input)
   local oldInType = oldType(input)
 
   if ok and oldInType == "table" and oldType(a) == "table" then
-    if a.__masterType then
-      return a.__masterType
-    end
     if a.__type then
-      return "userdata", a.__type
-    end
-    if oldInType == "string" then
-      return "string"
+      return a.__type
     end
     return "table"
   end
 
   return oldType(input)
 end
--- TODO: remove userdata
 
 _G.type = setmetatable(
   {},
   {
     __call = typer,
-    __masterType = "function"
+    __type = "function"
   }
 )

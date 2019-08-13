@@ -111,7 +111,7 @@ local function notify(...)
   local args = {...}
   -- notify modules
   for i, module in ipairs(modules) do
-    if type(module) == "table" or type(module) == "userdata" then
+    if type(module) == "table" or type(module) == "menuObject" then
       if type(module.notify) == "function" then
         module.notify(table.unpack(args))
       end

@@ -125,8 +125,8 @@ end
 
 function met:go(updater)
   do
-  local us, tp = type(self)
-  self = us == "userdata" and tp == "menuObject" and self
+  local tp = type(self)
+  self = tp == "menuObject" and self
            or error(ec(0, "menuObject", self))
 
   end
