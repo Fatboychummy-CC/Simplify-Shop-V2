@@ -1,5 +1,7 @@
 local imenus = require("modules.menus.layouts.insert")
 
+--TODO: SPLIT THIS INTO MULTIPLE MENUS
+
 ----------------------------------------------------------
 -- func:    optionsMenu
 -- inputs:  none
