@@ -3,6 +3,8 @@ local imenus = require("modules.menus.layouts.insert")
 local function subPage(page, settingsLocation, notify)
   local menu = imenus.newMenu()
   local sets = {}
+  menu.title = page.name
+  menu.info = page.info
 
   ----------------------------------------------------------
   -- func:    updater
