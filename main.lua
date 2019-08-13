@@ -232,6 +232,7 @@ local function main()
   end
 
   monitor.setupMonitor(mon)
+  mon.setBackgroundColor(colors.black)
 
   print("Checking Cache")
   os.sleep(0.1)
