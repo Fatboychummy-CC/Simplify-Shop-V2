@@ -2,7 +2,8 @@ local funcs = {}
 local meta = {}
 local met = {}
 meta.__index = met
-meta.__type = "menuObject"
+meta.__type = "module"
+meta.__subType = "menuObject"
 
 local ers = require("modules.etc.errors")
 local ec = ers.create
@@ -159,9 +160,9 @@ end
 function met:go(timeout)
   do
     -- check self
-    local tp = type(self)
-    self = tp == "menuObject" and self
-        or error(ec(0, "menuObject", self))
+    local tp, stp = type(self)
+    self = tp == "module" and stp == "menuObject" and self
+        or error(ec(0, "module (subtype:menuObject)", self))
   end
   --
   local oldbg = term.getBackgroundColor()

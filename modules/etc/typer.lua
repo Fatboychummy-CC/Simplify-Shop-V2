@@ -13,7 +13,7 @@ local function typer(_, input)
 
   if ok and oldInType == "table" and oldType(a) == "table" then
     if a.__type then
-      return a.__type
+      return a.__type, a.__subType
     end
     return "table"
   end

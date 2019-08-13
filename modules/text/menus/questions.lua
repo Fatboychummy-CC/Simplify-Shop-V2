@@ -2,7 +2,8 @@ local funcs = {}
 local meta = {}
 local met = {}
 meta.__index = met
-met.__type = "menuObject"
+met.__type = "module"
+met.__subType = "menuObject"
 
 local e = require("modules.etc.errors")
 local ew = e.watch
@@ -10,7 +11,7 @@ local ec = e.create
 
 function met:ask(questionIndex)
   ew(1, "table", self)
-  if self.__type ~= "menuObject" then
+  if self.__subType ~= "menuObject" then
     error(ec(1, "menuObject", self))
   end
 

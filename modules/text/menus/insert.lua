@@ -125,9 +125,9 @@ end
 
 function met:go(updater)
   do
-  local tp = type(self)
-  self = tp == "menuObject" and self
-           or error(ec(0, "menuObject", self))
+  local tp, stp = type(self)
+  self = tp == "moduled" and stp == "menuObject" and self
+           or error(ec(0, "module (subtype:menuObject)", self))
 
   end
   local oldbg = term.getBackgroundColor()
