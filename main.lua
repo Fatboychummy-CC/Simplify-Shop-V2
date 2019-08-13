@@ -5,9 +5,9 @@
 
 -- requires
 
-local smenus = require("modules.text.menus.layouts.simple")
-local imenus = require("modules.text.menus.layouts.insert")
-local qmenus = require("modules.text.menus.layouts.questions")
+local smenus = require("modules.menus.layouts.simple")
+local imenus = require("modules.menus.layouts.insert")
+local qmenus = require("modules.menus.layouts.questions")
 local cache = require("modules.item.cache")
 local bsod = require("modules.etc.bsod")
 local monitor = require("modules.etc.monitor")
@@ -138,7 +138,7 @@ end
 -- returns: nil
 -- info:    runs the 'title screen' menu
 ----------------------------------------------------------
-local mainMenu = require("modules.text.menus.mainMenu")
+local mainMenu = require("modules.menus.mainMenu")
 
 ----------------------------------------------------------
 -- func:    optionsMenu
@@ -265,24 +265,7 @@ end
 -- returns: selected|number
 -- info:    displays the error menu, after an error occurs.
 ----------------------------------------------------------
-local function errorMenu(err)
-  local menu = smenus.newMenu()
-  menu.title = "Error"
-  menu.info = err
-
-  menu:addMenuItem(
-    "Reboot",
-    "Reboot the shop.",
-    "Reboot the shop."
-  )
-  menu:addMenuItem(
-    "Return",
-    "",
-    "Return to the shell."
-  )
-
-  return menu:go(settings.get("shop.rebootTime") or 30)
-end
+local errorMenu = require("modules.menus.errorMenu")
 
 ----------------------------------------------------------
 -- func:    scanChest

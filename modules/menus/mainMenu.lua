@@ -1,4 +1,4 @@
-local smenus = require("modules.text.menus.layouts.simple")
+local smenus = require("modules.menus.layouts.simple")
 
 ----------------------------------------------------------
 -- func:    mainMenu

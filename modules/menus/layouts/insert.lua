@@ -1,6 +1,6 @@
 local funcs = {}
 local ers = require("modules.etc.errors")
-local simple = require("modules.text.menus.layouts.simple")
+local simple = require("modules.menus.layouts.simple")
 local dCopy = require("modules.etc.dcop")
 local meta = getmetatable(simple.newMenu())
 meta = dCopy(meta)
