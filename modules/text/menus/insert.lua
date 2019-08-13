@@ -126,7 +126,7 @@ end
 function met:go(updater)
   do
   local tp, stp = type(self)
-  self = tp == "moduled" and stp == "menuObject" and self
+  self = tp == "module" and stp == "menuObject" and self
            or error(ec(0, "module (subtype:menuObject)", self))
 
   end
