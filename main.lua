@@ -127,9 +127,17 @@ local function notify(...)
       mon = peripheral.wrap(monName)
       settings.set("shop.monitor.monitor", monName)
     end
+
+    local scale = settings.get("shop.monitor.textScale")
+    if scale > 4 then
+      settings.set("shop.monitor.textScale", 4)
+    elseif scale < 0.5 then
+      settings.set("shop.monitor.textScale", 0.5)
+    end
+
+    settings.save(settingsLocation)
+    monitor.setupMonitor(mon)
   end
-  settings.save(settingsLocation)
-  monitor.setupMonitor(mon)
 end
 
 ----------------------------------------------------------
