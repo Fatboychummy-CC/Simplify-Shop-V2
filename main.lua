@@ -276,28 +276,7 @@ local addItem = require("modules.menus.item.addItem")
 -- info:    Asks the player if they would like to "actually remove"
 --          the item they selected.
 ----------------------------------------------------------
-local function actuallyRemove(registry)
-  local menu = smenus.newMenu()
-  menu.title = "Confirmation"
-  menu.info = "Item to be deleted: " .. tostring(registry.key) .. " ["
-              .. tostring(registry.damage) .. "]"
-
-  menu:addMenuItem(
-    "Yes",
-    "Delete item.",
-    "Delete the item (Warning: this is permanent)."
-  )
-  menu:addMenuItem(
-    "No",
-    "Keep item.",
-    "Do not remove the item from the shop."
-  )
-
-  local ans = menu:go()
-  if ans == 1 then
-    cache.removeFromCache(registry.key, registry.damage)
-  end
-end
+local actuallyRemove = require("modules.menus.item.actuallyRemove")
 
 ----------------------------------------------------------
 -- func:    removeItem
@@ -343,7 +322,7 @@ local function removeItem()
       break
     else
       -- ask the player if they really want to remove the selected item.
-      actuallyRemove(registry[ans])
+      actuallyRemove(registry[ans], cache)
     end
   end
 end
