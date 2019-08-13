@@ -420,11 +420,11 @@ local function addRemove()
   while true do
     local ans = menu:go()
     if ans == 1 then
-      addItem(scanChest, getDetails, cache) -- move scanChest, getDetails into here
+      addItem(scanChest, getDetails, cache) --TODO: move scanChest, getDetails into here
     elseif ans == 2 then
       editItem()
     elseif ans == 3 then
-      removeItem(cache, actuallyRemove) -- move actuallyRemove into here
+      removeItem(cache, actuallyRemove) --TODO: move actuallyRemove into here
     elseif ans == menu:count() then
       -- return to main
       return
