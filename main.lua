@@ -157,49 +157,6 @@ local optionsMenu = require("modules.menus.optionsMenu")
 local errorMenu = require("modules.menus.errorMenu")
 
 ----------------------------------------------------------
--- func:    getDetails
--- inputs:  items|table
--- returns: items|table
--- info:    loops through the items inputted, and asks
---          the user for it's name and value in krist
-----------------------------------------------------------
-local getDetails = require("modules.menus.item.getDetails")
-
-----------------------------------------------------------
--- func:    actuallyRemove
--- inputs:  registry|table
--- returns: nil
--- info:    Asks the player if they would like to "actually remove"
---          the item they selected.
-----------------------------------------------------------
-local actuallyRemove = require("modules.menus.item.actuallyRemove")
-
-----------------------------------------------------------
--- func:    removeItem
--- inputs:  none
--- returns: nil
--- info:    Runs the remove item prompt.
-----------------------------------------------------------
-local removeItem = require("modules.menus.item.removeItem")
-
-----------------------------------------------------------
--- func:    cacheEdit
--- inputs:  c: cache|table, registry: registry|table
--- returns: nil
--- info:    Edit a single cache entry.
-----------------------------------------------------------
-local cacheEdit = require("modules.menus.item.cacheEdit")
-
-----------------------------------------------------------
--- func:    editItem
--- inputs:  none
--- returns: nil
--- info:    Loads each item in the cache, and lists them
---          for the player to be edited.
-----------------------------------------------------------
-local editItem = require("modules.menus.item.editItem")
-
-----------------------------------------------------------
 -- func:    addRemove
 -- inputs:  none
 -- returns: nil
@@ -295,7 +252,7 @@ local function main()
     if selection == 2 then
       --TODO: update
     elseif selection == 3 then
-      addRemove(editItem, removeItem, cache, cacheEdit, actuallyRemove, getDetails) --TODO: move all these into here.
+      addRemove(cache)
     elseif selection == 4 then
       optionsMenu(sets, settingsLocation, notify)
     elseif selection == 5 then

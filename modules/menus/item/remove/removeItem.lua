@@ -1,12 +1,14 @@
 local smenus = require("modules.menus.layouts.simple")
 
+local actuallyRemove = require("modules.menus.item.remove.actuallyRemove")
+
 ----------------------------------------------------------
 -- func:    removeItem
 -- inputs:  none
 -- returns: nil
 -- info:    Runs the remove item prompt.
 ----------------------------------------------------------
-local function removeItem(cache, actuallyRemove)
+local function removeItem(cache)
   while true do
     local menu = smenus.newMenu()
     menu.title = "Delete items."

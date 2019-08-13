@@ -1,5 +1,7 @@
 local smenus = require("modules.menus.layouts.simple")
 
+local cacheEdit = require("modules.menus.item.edit.cacheEdit")
+
 ----------------------------------------------------------
 -- func:    editItem
 -- inputs:  none
@@ -7,7 +9,7 @@ local smenus = require("modules.menus.layouts.simple")
 -- info:    Loads each item in the cache, and lists them
 --          for the player to be edited.
 ----------------------------------------------------------
-local function editItem(cache, cacheEdit)
+local function editItem(cache)
   while true do
     local c = cache.getCache()
 
