@@ -262,14 +262,6 @@ end
 local getDetails = require("modules.menus.item.getDetails")
 
 ----------------------------------------------------------
--- func:    addItem
--- inputs:  none
--- returns: nil
--- info:    Runs the add item menu.
-----------------------------------------------------------
-local addItem = require("modules.menus.item.addItem")
-
-----------------------------------------------------------
 -- func:    actuallyRemove
 -- inputs:  registry|table
 -- returns: nil
@@ -399,7 +391,7 @@ local function main()
     if selection == 2 then
       --TODO: update
     elseif selection == 3 then
-      addRemove(addItem, editItem, removeItem, cache, cacheEdit, actuallyRemove, scanChest, getDetails) --TODO: move all these into here.
+      addRemove(editItem, removeItem, cache, cacheEdit, actuallyRemove, scanChest, getDetails) --TODO: move all these into here.
     elseif selection == 4 then
       optionsMenu(sets, settingsLocation, notify)
     elseif selection == 5 then

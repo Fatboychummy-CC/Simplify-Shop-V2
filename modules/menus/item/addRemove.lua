@@ -1,12 +1,14 @@
 local smenus = require("modules.menus.layouts.simple")
 
+local addItem = require("modules.menus.item.add.addItem")
+
 ----------------------------------------------------------
 -- func:    addRemove
 -- inputs:  none
 -- returns: nil
 -- info:    Runs the "Add or Remove Items" prompt
 ----------------------------------------------------------
-local function addRemove(addItem, editItem, removeItem, cache, cacheEdit, actuallyRemove, scanChest, getDetails)
+local function addRemove(editItem, removeItem, cache, cacheEdit, actuallyRemove, scanChest, getDetails)
   local menu = smenus.newMenu()
 
   menu.title = "Add or Remove Items"
