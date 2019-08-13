@@ -5,9 +5,9 @@
 
 -- requires
 
-local smenus = require("modules.text.menus.simple")
-local imenus = require("modules.text.menus.insert")
-local qmenus = require("modules.text.menus.questions")
+local smenus = require("modules.text.menus.layouts.simple")
+local imenus = require("modules.text.menus.layouts.insert")
+local qmenus = require("modules.text.menus.layouts.questions")
 local cache = require("modules.item.cache")
 local bsod = require("modules.etc.bsod")
 local monitor = require("modules.etc.monitor")
@@ -138,42 +138,7 @@ end
 -- returns: nil
 -- info:    runs the 'title screen' menu
 ----------------------------------------------------------
-local function mainMenu()
-  local menu = smenus.newMenu()
-  menu.title = "Simplify Shop V2B" .. tostring(build)
-  menu:addMenuItem(
-    "Run",
-    "Run the shop.",
-    "Run the shop."
-  )
-  --
-  menu:addMenuItem(
-    "Update",
-    updateCheckString(),
-    "Updates the shop and reboots."
-  )
-  --
-  menu:addMenuItem(
-    "Add/Remove",
-    "Add/Remove shop item(s).",
-    "Use a helpful UI to add or remove items in your shop."
-  )
-  --
-  menu:addMenuItem(
-    "Options",
-    "Edit shop config.",
-    "Open a menu which allows you to change core settings for the shop."
-  )
-  --
-  menu:addMenuItem(
-    "Error",
-    "Debug Error",
-    "Force an error to do some random debugging."
-  )
-
-  return menu:go(settings.get("shop.autorun")
-                 and settings.get("shop.autorunTime"))
-end
+local mainMenu = require("modules.text.menus.mainMenu")
 
 ----------------------------------------------------------
 -- func:    optionsMenu
@@ -805,7 +770,7 @@ local function main()
 
   local selection = 0
   repeat
-    selection = mainMenu()
+    selection = mainMenu(build, updateCheckString())
     if selection == 2 then
       --TODO: update
     elseif selection == 3 then

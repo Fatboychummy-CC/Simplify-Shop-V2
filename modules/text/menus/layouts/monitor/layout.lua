@@ -2,10 +2,23 @@ local lay = {}
 local meta = {}
 local met = {}
 meta.__index = meta
-meta.__type = "monitorMenu"
+meta.__type = "monitorObject"
+
+require("modules.etc.typer")
+
+
 
 function met:addObject(object)
+  local us, tp = type(object)
+  if us == "userdata" then
+    if tp == "button" then
 
+    elseif tp == "box" then
+
+    elseif tp == "TextBox" then
+
+    end
+  end
 end
 
 function lay.newLayout()
