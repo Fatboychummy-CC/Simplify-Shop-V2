@@ -74,9 +74,21 @@ end
 -- info:    removes an item from the cache
 ----------------------------------------------------------
 function funcs.removeFromCache(itemID, itemDamage)
-  if cache[itemID] then
+  local flg = true
+
+  if cache[itemID] then -- remove item damage value
     cache[itemID][itemDamage] = nil
   end
+
+  for k, v in pairs(cache[itemID]) do -- check if any other damage values exist
+    flg = false
+    break
+  end
+
+  if flg then -- if no other damage values exist, remove the whole entry.
+    cache[itemID] = nil
+  end
+
   save()
 end
 
