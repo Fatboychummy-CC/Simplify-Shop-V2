@@ -46,6 +46,7 @@ local sets = {
   "shop.monitor.textScale",
   -- krist
   "shop.krist.password",
+  "shop.krist.address",
   defaults = {
     "Unnamed Shop",
     "Unknown",
@@ -62,7 +63,8 @@ local sets = {
                         -- is set to.
     0.5,
     -- krist
-    "1"
+    "1",
+    "kkkkkkkk"
   }
 }
 
