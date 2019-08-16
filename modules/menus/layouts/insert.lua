@@ -15,9 +15,9 @@ function met:addMenuItem(selection, tp,  append, info)
                 or error(ec(1, "string", selection))
   --
   tp = type(tp) == "string" and tp or error(ec(2, "string", tp))
-  if tp ~= "boolean" and tp ~= "string" and tp ~= "number" then
-    error("Bad argument #2, expected string stating 'boolean', 'string', or "
-          .. "'number'", 2)
+  if tp ~= "boolean" and tp ~= "string" and tp ~= "number" and tp ~= "password" then
+    error("Bad argument #2, expected string stating 'boolean', 'string', "
+          .. "'password', or 'number'", 2)
   end
   --
   append = type(append) == "string" and append
@@ -85,10 +85,18 @@ function met:draw()
         end
       else
         term.setCursorPos(15, inc + ind)
-        io.write(
-          #tostring(append) < mx - 15 and tostring(append)
-            or tostring(append):sub(1, mx - 18) .. "..."
-        )
+        if self.menuItems.types[i] == "password" then
+          io.write(
+            #tostring(append) < mx - 15
+            and string.rep('*', #tostring(append))
+            or string.rep('*', #(tostring(append):sub(1, mx - 18))) .. "..."
+          )
+        else
+          io.write(
+            #tostring(append) < mx - 15 and tostring(append)
+              or tostring(append):sub(1, mx - 18) .. "..."
+          )
+        end
       end
       ind = ind + 1
     end
@@ -100,6 +108,7 @@ function met:draw()
 end
 
 local function getInsertion(self, typ)
+  print(typ) os.sleep(3)
   term.setBackgroundColor(self.colors.selectedbg)
   term.setTextColor(self.colors.selectedfg)
   if typ == "boolean" then
@@ -108,18 +117,18 @@ local function getInsertion(self, typ)
     else
       return true
     end
-  elseif typ == "string" then
+  elseif typ == "string" or typ == "password" then
     term.setCursorPos(15, self.menuItems.lineStart + self.slot)
     io.write("                          ")
     term.setCursorPos(15, self.menuItems.lineStart + self.slot)
-    return io.read()
+    return read(typ == "password" and "*" or nil)
   elseif typ == "number" then
     term.setCursorPos(15, self.menuItems.lineStart + self.slot)
     io.write("                          ")
     term.setCursorPos(15, self.menuItems.lineStart + self.slot)
-    return tonumber(io.read()) or 0
+    return tonumber(read()) or 0
   else
-    error(ec(1, "string", typ))
+    error(ec(2, "string", typ))
   end
 end
 
@@ -161,6 +170,8 @@ function met:go(updater)
           table.remove(self.menuItems.appends, #self.menuItems.appends)
           break
         end
+        print("BB:", self.menuItems.types[sel])
+        os.sleep(3)
         local temp = getInsertion(self, self.menuItems.types[sel])
         self.menuItems.appends[sel] = temp
         if type(updater) == "function" then

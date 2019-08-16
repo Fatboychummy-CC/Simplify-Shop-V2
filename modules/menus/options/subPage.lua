@@ -61,6 +61,12 @@ local function subPage(page, settingsLocation, notify)
       else
         return "ERROR_5"
       end
+    elseif tp == "password" then
+      if type(set) == "string" then
+        return set
+      else
+        return "ERROR_5"
+      end
     elseif tp == "number" then
       if type(set) == "number" then
         return set
