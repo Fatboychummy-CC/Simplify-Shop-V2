@@ -104,6 +104,19 @@ local function optionsMenu(sets, settingsLocation, notify)
           "The scale of the text for the monitor. Min 0.5, max 4."
         }
       }
+    },
+    {
+      name = "Krist",
+      info = "Change Krist settings.",
+      bigInfo = "Change things such as your krist-password, and etc.",
+      settings = {
+        {
+          "shop.krist.password",
+          "Password",
+          "password",
+          "Your kristwallet password."
+        }
+      }
     }
   }
 

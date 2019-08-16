@@ -43,6 +43,7 @@ local sets = {
   "shop.autorunTime",
   "shop.monitor.monitor",
   "shop.monitor.textScale",
+  "shop.krist.password",
   defaults = {
     "Unnamed Shop",
     "Unknown",
@@ -56,7 +57,8 @@ local sets = {
     "FIX ME PLS EEEEE", -- no it doesn't actually need to be fixed
                         -- the shop does this automatically, no matter what this
                         -- is set to.
-    0.5
+    0.5,
+    "1"
   }
 }
 
