@@ -114,7 +114,13 @@ local function optionsMenu(sets, settingsLocation, notify)
           "shop.krist.password",
           "Password",
           "password",
-          "Your kristwallet password."
+          "Your kristwallet password.  Without this you may not send refunds."
+        },
+        {
+          "shop.krist.address",
+          "Address",
+          "string",
+          "Your kristwallet address. ie: kxo123ds."
         }
       }
     }
