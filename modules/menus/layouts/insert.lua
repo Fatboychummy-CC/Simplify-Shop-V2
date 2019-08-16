@@ -108,7 +108,6 @@ function met:draw()
 end
 
 local function getInsertion(self, typ)
-  print(typ) os.sleep(3)
   term.setBackgroundColor(self.colors.selectedbg)
   term.setTextColor(self.colors.selectedfg)
   if typ == "boolean" then
@@ -170,8 +169,7 @@ function met:go(updater)
           table.remove(self.menuItems.appends, #self.menuItems.appends)
           break
         end
-        print("BB:", self.menuItems.types[sel])
-        os.sleep(3)
+
         local temp = getInsertion(self, self.menuItems.types[sel])
         self.menuItems.appends[sel] = temp
         if type(updater) == "function" then
