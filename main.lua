@@ -41,8 +41,10 @@ local sets = {
   "shop.rebootTime",
   "shop.autorun",
   "shop.autorunTime",
+  -- monitor
   "shop.monitor.monitor",
   "shop.monitor.textScale",
+  -- krist
   "shop.krist.password",
   defaults = {
     "Unnamed Shop",
@@ -54,10 +56,12 @@ local sets = {
     30,
     true,
     5,
+    -- monitor
     "FIX ME PLS EEEEE", -- no it doesn't actually need to be fixed
                         -- the shop does this automatically, no matter what this
                         -- is set to.
     0.5,
+    -- krist
     "1"
   }
 }
@@ -123,22 +127,26 @@ local function notify(...)
 
   -- Also updates "ourself" by notifying ourself
   if args[1] == "settings_update" then
-    mon = peripheral.wrap(settings.get("shop.monitor.monitor"))
-    if type(mon) ~= "table" then
-      local monName = peripheral.findString("monitor")[1]
-      mon = peripheral.wrap(monName)
-      settings.set("shop.monitor.monitor", monName)
-    end
+    if args[2] == "shop.monitor.monitor"
+        or args[2] == "shop.monitor.textScale" then
+      mon = peripheral.wrap(settings.get("shop.monitor.monitor"))
 
-    local scale = settings.get("shop.monitor.textScale")
-    if scale > 4 then
-      settings.set("shop.monitor.textScale", 4)
-    elseif scale < 0.5 then
-      settings.set("shop.monitor.textScale", 0.5)
-    end
+      if type(mon) ~= "table" then
+        local monName = peripheral.findString("monitor")[1]
+        mon = peripheral.wrap(monName)
+        settings.set("shop.monitor.monitor", monName)
+      end
 
-    settings.save(settingsLocation)
-    monitor.setupMonitor(mon)
+      local scale = settings.get("shop.monitor.textScale")
+      if scale > 4 then
+        settings.set("shop.monitor.textScale", 4)
+      elseif scale < 0.5 then
+        settings.set("shop.monitor.textScale", 0.5)
+      end
+
+      settings.save(settingsLocation)
+      monitor.setupMonitor(mon)
+    end
   end
 end
 

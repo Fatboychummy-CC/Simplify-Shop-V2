@@ -173,7 +173,7 @@ function met:go(updater)
         local temp = getInsertion(self, self.menuItems.types[sel])
         self.menuItems.appends[sel] = temp
         if type(updater) == "function" then
-          updater()
+          updater(sel)
         end
       end
     end

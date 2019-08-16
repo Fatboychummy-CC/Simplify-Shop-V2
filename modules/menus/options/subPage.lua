@@ -13,22 +13,16 @@ local function subPage(page, settingsLocation, notify)
   -- info:    to be run by the menu when a menu option is updated.
   --          Notifies other modules of a settings update.
   ----------------------------------------------------------
-  local function updater()
+  local function updater(index)
     -- for each setting, set them to the new menu option
-    for i = 1, #sets do
-      settings.set(sets[i], menu.menuItems.appends[i])
-    end
+    settings.set(sets[index], menu.menuItems.appends[index])
     settings.save(settingsLocation)
-    notify("settings_update") -- notify all modules
+    
+    notify("settings_update", sets[index]) -- notify all modules
 
     -- sets the menu options back to the settings.
     -- since the settings may be changed after notifying.
-    for i = 1, #sets do
-      local append = menu.menuItems.appends[i]
-      if settings.get(sets[i]) ~= append then
-        menu.menuItems.appends[i] = settings.get(sets[i])
-      end
-    end
+    menu.menuItems.appends[index] = settings.get(sets[index])
   end
 
   --[[
@@ -93,8 +87,6 @@ local function subPage(page, settingsLocation, notify)
   end
 
   menu:go(updater)
-
-  updater()
 
 
 end
