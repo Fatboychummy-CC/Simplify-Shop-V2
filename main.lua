@@ -20,6 +20,7 @@ local bsod = require("modules.etc.bsod")
 local monitor = require("modules.etc.monitor")
 local ep = require("modules.etc.extraPeripherals")
 local fileGrab = require("modules.http.fileGrabby")
+local shop = require("modules.shop.main")
 local _ = require("modules.etc.typer")
 
 local modules = {
@@ -29,7 +30,9 @@ local modules = {
   cache,
   bsod,
   monitor,
-  ep
+  ep,
+  fileGrab,
+  shop
 }
 
 -- miniinit
@@ -236,7 +239,7 @@ local addRemove = require("modules.menus.item.addRemove")
 -- func:    main
 -- inputs:  none
 -- returns: nil
--- info:    The main bulk of the program, controls everything
+-- info:    The main prompt
 ----------------------------------------------------------
 local function main()
   -- init
@@ -341,6 +344,7 @@ local function main()
   until selection == 1
     --TODO: shop
     mon:print("Running.")
+    shop.go(mon)
 end
 
 
