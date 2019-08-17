@@ -243,7 +243,6 @@ local function main()
   print("Initializing.")
   os.sleep(0.1)
 
-
   local monitorName
 
   local function fixMonitor()
@@ -310,6 +309,14 @@ local function main()
     print("No cache file found.")
     os.sleep(0.5)
   end
+
+  print("Notifying other modules of init status.")
+  notify("init",
+    {
+      notify = notify
+    }
+  )
+
   mon:print("Awaiting input...")
   mon:print()
   mon:print(
