@@ -7,6 +7,8 @@ met.__type = "cache"
 local cache = {}
 local saveLocation = "/cache.ic"
 
+--TODO: allow access via nbttag
+
 ----------------------------------------------------------
 -- func:    save
 -- inputs:  none
