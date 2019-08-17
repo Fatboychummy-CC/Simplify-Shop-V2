@@ -3,6 +3,13 @@
 
 ]]
 
+--[[
+This program uses os.sleep() during boot to allow the user some time to skim
+information as it scrolls by.
+
+It is not meant as a "fake loading time" thing.
+]]
+
 -- requires
 
 local smenus = require("modules.menus.layouts.simple")
