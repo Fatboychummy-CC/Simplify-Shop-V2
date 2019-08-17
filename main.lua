@@ -81,10 +81,9 @@ local function checkFiles()
     local fileInfo = {...}
     local name = fileInfo[1]
     print("Checking for " .. name .. '.')
-    os.sleep(0.2)
     if not fs.exists(name) then
       print("File is missing.  Downloading.")
-      os.sleep(1)
+      os.sleep(0.2)
       if tp == "http" then
         fileGrab.get(fileInfo[2], name)
       elseif tp == "pastebin" then
@@ -96,7 +95,7 @@ local function checkFiles()
       end
     else
       print("File is ok.")
-      os.sleep(1)
+      os.sleep(0.2)
     end
   end
 
@@ -237,8 +236,6 @@ local function main()
   print("Initializing.")
   os.sleep(0.1)
 
-  print("Checking for missing side-files.")
-  checkFiles()
 
   local monitorName
 
@@ -291,6 +288,14 @@ local function main()
   monitor.setupMonitor(mon)
   mon.setBackgroundColor(colors.black)
 
+  mon.clear()
+  mon.setCursorPos(1, 1)
+  mon:print("Starting...")
+  os.sleep(0.1)
+
+  print("Checking for missing side-files.")
+  checkFiles()
+
   print("Checking Cache")
   os.sleep(0.1)
   cache.setSaveLocation(settings.get("shop.cacheSaveName"))
@@ -298,11 +303,6 @@ local function main()
     print("No cache file found.")
     os.sleep(0.5)
   end
-
-  mon.clear()
-  mon.setCursorPos(1, 1)
-  mon:print("Starting...")
-  os.sleep(0.1)
   mon:print("Awaiting input...")
   mon:print()
   mon:print(
