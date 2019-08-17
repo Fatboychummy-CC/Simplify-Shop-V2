@@ -55,6 +55,7 @@ function funcs.print(monitor, ...)
     end
   end
 
+  monitor.flush()
   return count
 end
 
