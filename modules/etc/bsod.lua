@@ -12,6 +12,7 @@ local function bsod(err, monitor)
   color.fg = colors.white
 
   monitor.setBackgroundColor(color.bg)
+  monitor.setTextColor(color.fg)
   monitor.clear()
 
   monitor.setCursorPos(1, 1)

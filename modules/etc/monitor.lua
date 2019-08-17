@@ -2,6 +2,7 @@ local funcs = {}
 
 local ep = require("modules.etc.extraPeripherals")
 local e = require("modules.etc.errors")
+local buffer = require("modules.etc.buffer")
 
 ----------------------------------------------------------
 -- func:    print
@@ -69,6 +70,7 @@ function funcs.setupMonitor(mon)
       mon[k] = v
     end
   end
+  buffer.bufferize(mon)
   local scale = settings.get("shop.monitor.textScale")
   mon.clear()
   mon.setCursorPos(1, 1)
