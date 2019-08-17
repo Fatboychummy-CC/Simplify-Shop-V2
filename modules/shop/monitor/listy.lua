@@ -2,6 +2,10 @@ local funcs = {}
 local met = {}
 local meta = {__index = met}
 
+local ers = require("modules.etc.errors")
+local ec = ers.create
+local ew = ers.watch
+
 function met:getItem(i)
   return self.list.item[i]
 end
@@ -24,7 +28,17 @@ function met:delItem(i)
   table.remove(self.list.item, i)
 end
 
-function funcs.createList()
+function funcs.createList(x1, y1, x2, y2)
+  ew(1, "number", x1)
+  ew(2, "number", y1)
+  ew(3, "number", x2)
+  if x2 < x1 then
+    error("Bad argument #3: Expected to be greater than argument #1", 2)
+  end
+  ew(4, "number", y2)
+  if y2 < y1 then
+      error("Bad argument #4: Expected to be greater than argument #2", 2)
+  end
   local tmp = setmetatable({}, meta)
 
   tmp.headers = {
@@ -35,6 +49,7 @@ function funcs.createList()
     item = {},
     price = {}
   }
+  tmp.pos = {x1, y1, x2, y2}
 
   return tmp
 end
