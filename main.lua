@@ -12,6 +12,7 @@ local cache = require("modules.item.cache")
 local bsod = require("modules.etc.bsod")
 local monitor = require("modules.etc.monitor")
 local ep = require("modules.etc.extraPeripherals")
+local fileGrab = require("modules.http.fileGrabby")
 local _ = require("modules.etc.typer")
 
 local modules = {
@@ -67,6 +68,47 @@ local sets = {
     "kkkkkkkk"
   }
 }
+
+----------------------------------------------------------
+-- func:    checkFiles
+-- inputs:  none
+-- returns: nil
+-- info:    checks for missing files, downloads them if
+--          necessary.
+----------------------------------------------------------
+local function checkFiles()
+  local function cad(tp, ...) -- check and download
+    local fileInfo = {...}
+    local name = fileInfo[1]
+    print("Checking for " .. name .. '.')
+    os.sleep(0.2)
+    if not fs.exists(name) then
+      print("File is missing.  Downloading.")
+      os.sleep(1)
+      if tp == "http" then
+        fileGrab.get(fileInfo[1], name)
+      elseif tp == "pastebin" then
+        fileGrab.pastebin(fileInfo[1], name)
+      elseif tp == "github" then
+        fileGrab.github(
+          fileInfo[1], fileInfo[2], fileInfo[3], fileInfo[4], name
+        )
+      end
+    else
+      print("File is ok.")
+      os.sleep(1)
+    end
+  end
+
+  local tpm = "tmpim"
+  local mst = "master"
+
+  cad("pastebin", "json.lua", "4nRg9CHU")
+  cad("github", "jua.lua", tpm, "Jua", mst, "jua.lua")
+  cad("github", "w.lua", tpm, "w.lua", mst, "w.lua")
+  cad("github", "r.lua", tpm, "r.lua", mst, "r.lua")
+  cad("github", "k.lua", tpm, "k.lua", mst, "k.lua")
+end
 
 ----------------------------------------------------------
 -- func:    checkSettings()
@@ -194,6 +236,9 @@ local function main()
   -- init
   print("Initializing.")
   os.sleep(0.1)
+
+  print("Checking for missing side-files.")
+  checkFiles()
 
   local monitorName
 
