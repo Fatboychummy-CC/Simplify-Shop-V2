@@ -86,12 +86,12 @@ local function checkFiles()
       print("File is missing.  Downloading.")
       os.sleep(1)
       if tp == "http" then
-        fileGrab.get(fileInfo[1], name)
+        fileGrab.get(fileInfo[2], name)
       elseif tp == "pastebin" then
-        fileGrab.pastebin(fileInfo[1], name)
+        fileGrab.pastebin(fileInfo[2], name)
       elseif tp == "github" then
         fileGrab.github(
-          fileInfo[1], fileInfo[2], fileInfo[3], fileInfo[4], name
+          fileInfo[2], fileInfo[3], fileInfo[4], fileInfo[5], name
         )
       end
     else
