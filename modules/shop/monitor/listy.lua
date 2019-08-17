@@ -28,6 +28,12 @@ function met:delItem(i)
   table.remove(self.list.item, i)
 end
 
+function met:draw()
+  local mon = peripheral.wrap(settings.get("shop.monitor.monitor"))
+  if not mon then error("Failed to get monitor for listy.", 2) end
+  
+end
+
 function funcs.createList(x1, y1, x2, y2)
   ew(1, "number", x1)
   ew(2, "number", y1)
