@@ -1,4 +1,5 @@
 local funcs = {}
+local moni = require("modules.etc.monitor")
 
 local onotify
 
@@ -10,7 +11,10 @@ function funcs.notify(ev, ...)
   end
 end
 
-function funcs.go(mon)
+function funcs.go()
+  local mon = peripheral.wrap(settings.get("shop.monitor.monitor"))
+  moni.setupMonitor(mon, true)
+
   while true do
     mon.clear()
     mon.setCursorPos(1, 1)

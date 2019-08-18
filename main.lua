@@ -344,7 +344,7 @@ local function main()
   until selection == 1
     --TODO: shop
     mon:print("Running.")
-    shop.go(mon)
+    shop.go()
 end
 
 
