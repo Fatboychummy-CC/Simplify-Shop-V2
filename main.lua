@@ -248,6 +248,33 @@ local errorMenu = require("modules.menus.errorMenu")
 local addRemove = require("modules.menus.item.addRemove")
 
 ----------------------------------------------------------
+-- func:    doShop
+-- inputs:  none
+-- returns: nil
+-- info:    Runs the shop
+----------------------------------------------------------
+local function doShop()
+  --TODO: shop
+  mon:print("Running.")
+  local ok, err = pcall(shop.go)
+  if not ok then
+    if err == "Terminated" then
+      mon.setBackgroundColor(colors.black)
+      mon.setTextColor(colors.white)
+      mon.clear()
+      mon.setCursorPos(1, 1)
+      mon.write("Shop halted, returned to menu.")
+      if mon.flush then mon.flush() end
+      return
+    else
+      error(err, 0)
+    end
+  else
+    error("Shop stopped for unknown reason.")
+  end
+end
+
+----------------------------------------------------------
 -- func:    main
 -- inputs:  none
 -- returns: nil
@@ -342,9 +369,11 @@ local function main()
   )
 
   local selection = 0
-  repeat
+  while true do
     selection = mainMenu(build, updateCheckString())
-    if selection == 2 then
+    if selection == 1 then
+      doShop()
+    elseif selection == 2 then
       --TODO: update
     elseif selection == 3 then
       addRemove(cache)
@@ -353,10 +382,7 @@ local function main()
     elseif selection == 5 then
       error("Generated error " .. tostring(math.random(1, 1000000)))
     end
-  until selection == 1
-    --TODO: shop
-    mon:print("Running.")
-    shop.go()
+  end
 end
 
 
