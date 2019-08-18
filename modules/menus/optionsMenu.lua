@@ -134,7 +134,40 @@ local function optionsMenu(sets, settingsLocation, notify)
           "shop.listing.decimalPlaces",
           "Decimal Pl.",
           "number",
-          "How many decimal places should the shop show (0.000 is 3, 0.00 is 2)?"
+          "How many decimal places should the shop show (1.000 is 3, 1.00 is 2)?"
+        },
+        --[[
+        "shop.listing.leftStop",
+        "shop.listing.rightStop",
+        "shop.listing.topStop",
+        "shop.listing.maxItemsPerPage",
+        ]]
+        {
+          "shop.listing.leftStop",
+          "Left Stop",
+          "number",
+          "How far from the left of the screen should the shop start the item "
+          .. "list?"
+        },
+        {
+          "shop.listing.rightStop",
+          "Right Stop",
+          "number",
+          "How far from the left of the screen should the shop stop the item "
+          .. "list?"
+        },
+        {
+          "shop.listing.topStop",
+          "Top Stop",
+          "number",
+          "How far from the top of the screen should the shop start the item "
+          .. "list?"
+        },
+        {
+          "shop.listing.maxItemsPerPage",
+          "Max Items",
+          "number",
+          "How many items should be displayed per page?"
         }
       }
     }

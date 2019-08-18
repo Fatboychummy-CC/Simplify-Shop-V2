@@ -57,6 +57,10 @@ local sets = {
   "shop.monitor.textScale",
   -- shop listings
   "shop.listing.decimalPlaces",
+  "shop.listing.leftStop",
+  "shop.listing.rightStop",
+  "shop.listing.topStop",
+  "shop.listing.maxItemsPerPage",
   -- krist
   "shop.krist.password",
   "shop.krist.address",
@@ -77,6 +81,10 @@ local sets = {
     0.5,
     -- shop listings
     2,
+    1,
+    10,
+    1,
+    4,
     -- krist
     "1",
     "kkkkkkkk"
