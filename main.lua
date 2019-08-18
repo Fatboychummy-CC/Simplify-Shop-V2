@@ -186,6 +186,7 @@ local function notify(...)
     if tp == "table" or tp == "module" then
       if type(module.notify) == "function" then
         module.notify(table.unpack(args))
+        settings.save(settingsLocation)
       end
     end
   end
