@@ -49,7 +49,7 @@ function met:draw(m, dcml)
   m.setTextColor(self.headers.colors.fg)
   m.write(line)
 
-  m.setCursorPos(self.pos[1], self.pos[2])
+  m.setCursorPos(self.pos[1] + 1, self.pos[2])
   m.write(self.headers[1])
 
   m.setCursorPos(self.pos[3] - #self.headers[2], self.pos[2])
@@ -64,7 +64,7 @@ function met:draw(m, dcml)
     m.setTextColor(i % 2 == 0 and self.colors[1].fg or self.colors[2].fg)
     m.write(line)
 
-    m.setCursorPos(self.pos[1], self.pos[2] + i)
+    m.setCursorPos(self.pos[1] + 1, self.pos[2] + i)
     m.write(self.list.item[i])
 
     if dcml > 0 then
