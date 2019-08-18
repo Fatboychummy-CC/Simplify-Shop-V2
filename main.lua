@@ -55,6 +55,8 @@ local sets = {
   -- monitor
   "shop.monitor.monitor",
   "shop.monitor.textScale",
+  -- shop listings
+  "shop.listing.decimalPlaces",
   -- krist
   "shop.krist.password",
   "shop.krist.address",
@@ -73,6 +75,8 @@ local sets = {
                         -- the shop does this automatically, no matter what this
                         -- is set to.
     0.5,
+    -- shop listings
+    2,
     -- krist
     "1",
     "kkkkkkkk"
