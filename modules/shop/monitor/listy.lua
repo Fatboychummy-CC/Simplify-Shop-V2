@@ -43,6 +43,7 @@ function met:draw(m)
   ew(2, "table", m)
 
   local line = string.rep(' ', self.pos[3] - self.pos[1] + 1)
+  local dcml = settings.get("shop.listing.decimalPlaces")
 
   m.setCursorPos(self.pos[1], self.pos[2])
   m.setBackgroundColor(self.headers.colors.bg)
@@ -67,6 +68,16 @@ function met:draw(m)
     m.setCursorPos(self.pos[1], self.pos[2] + i)
     m.write(self.list.item[i])
 
+    if dcml > 0 then
+      m.setCursorPos(self.pos[3] - 2 - dcml, self.pos[2] + i)
+      m.write('.' .. string.rep('0', dcml))
+
+      m.setCursorPos(
+        self.pos[3] - 2 - #(string.match(tostring(price), "(%d+)%.?")) - dcml,
+        self.pos[2] + i
+      )
+      m.write(tostring(price))
+    end
   end
 end
 
