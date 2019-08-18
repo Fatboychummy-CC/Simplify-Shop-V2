@@ -66,7 +66,6 @@ function met:draw(m)
 
     m.setCursorPos(self.pos[1], self.pos[2] + i)
     m.write(self.list.item[i])
-    m.write(".000")
 
   end
 end
