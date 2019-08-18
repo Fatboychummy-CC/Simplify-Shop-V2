@@ -123,6 +123,20 @@ local function optionsMenu(sets, settingsLocation, notify)
           "Your kristwallet address. ie: kxo123ds."
         }
       }
+    },
+    {
+      name = "Listings",
+      info = "Change Item Lists.",
+      bigInfo = "Change item list information like size, max items, and decimal"
+                .. " places",
+      settings = {
+        {
+          "shop.listing.decimalPlaces",
+          "Decimal Pl.",
+          "number",
+          "How many decimal places should the shop show (0.000 is 3, 0.00 is 2)?"
+        }
+      }
     }
   }
 
