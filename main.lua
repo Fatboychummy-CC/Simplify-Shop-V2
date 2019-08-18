@@ -82,9 +82,9 @@ local sets = {
     -- shop listings
     2,
     1,
-    10,
+    25,
     1,
-    4,
+    6,
     -- krist
     "1",
     "kkkkkkkk"
