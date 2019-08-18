@@ -1,8 +1,9 @@
 local funcs = {}
 local met = {}
-local meta = {__index = met}
+local meta = {__index = met, __type = "list"}
 
-local ers = require("modules.etc.errors")
+local ers = require(".modules.etc.errors")
+require(".modules.etc.typer")
 local ec = ers.create
 local ew = ers.watch
 
@@ -20,6 +21,10 @@ function met:setPrice(i, price)
 end
 
 function met:addItem(item, price)
+  ew(1, "list", self)
+  ew(2, "string", item)
+  ew(3, "number", price)
+
   self:setItem(#self.list.item + 1, item)
   self:setPrice(#self.list.price + 1, price)
 end
@@ -28,10 +33,42 @@ function met:delItem(i)
   table.remove(self.list.item, i)
 end
 
-function met:draw()
-  local mon = peripheral.wrap(settings.get("shop.monitor.monitor"))
-  if not mon then error("Failed to get monitor for listy.", 2) end
-  
+function met:getSize()
+  ew(1, "list", self)
+  return #self.list.item
+end
+
+function met:draw(m)
+  ew(1, "list", self)
+  ew(2, "table", m)
+
+  local line = string.rep(' ', self.pos[3] - self.pos[1] + 1)
+
+  m.setCursorPos(self.pos[1], self.pos[2])
+  m.setBackgroundColor(self.headers.colors.bg)
+  m.setTextColor(self.headers.colors.fg)
+  m.write(line)
+
+  m.setCursorPos(self.pos[1], self.pos[2])
+  m.write(self.headers[1])
+
+  m.setCursorPos(self.pos[3] - #self.headers[2] - 1, self.pos[2])
+  m.write(self.headers[2])
+
+  for i = 1, self:getSize() do
+    local item = self.list.item[i]
+    local price = self.list.price[i]
+
+    m.setCursorPos(self.pos[1], self.pos[2] + i)
+    m.setBackgroundColor(i % 2 == 1 and self.colors[1].bg or self.colors[2].bg)
+    m.setTextColor(i % 2 == 0 and self.colors[1].fg or self.colors[2].fg)
+    m.write(line)
+
+    m.setCursorPos(self.pos[1], self.pos[2] + i)
+    m.write(self.list.item[i])
+    m.write(".000")
+
+  end
 end
 
 function funcs.createList(x1, y1, x2, y2)
@@ -49,11 +86,25 @@ function funcs.createList(x1, y1, x2, y2)
 
   tmp.headers = {
     "Item",
-    "Price"
+    "Price",
+    colors = {
+      bg = colors.purple,
+      fg = colors.white
+    }
   }
   tmp.list = {
     item = {},
     price = {}
+  }
+  tmp.colors = {
+    {
+      bg = colors.gray,
+      fg = colors.white
+    },
+    {
+      bg = colors.black,
+      fg = colors.white
+    }
   }
   tmp.pos = {x1, y1, x2, y2}
 
