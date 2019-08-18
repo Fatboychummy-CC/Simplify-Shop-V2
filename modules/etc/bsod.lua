@@ -34,9 +34,6 @@ local function bsod(err, monitor)
     monitor,
     "Please let Fatboychummy#4287 on Discord know."
   )
-
-  monitor.flush()
-
 end
 
 return bsod

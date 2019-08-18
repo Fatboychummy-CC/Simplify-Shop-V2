@@ -55,7 +55,9 @@ function funcs.print(monitor, ...)
     end
   end
 
-  monitor.flush()
+  if monitor.flush then
+    monitor.flush()
+  end
   return count
 end
 
@@ -65,13 +67,15 @@ end
 -- returns: nil
 -- info:    adds some methods to the monitor inputted
 ----------------------------------------------------------
-function funcs.setupMonitor(mon)
+function funcs.setupMonitor(mon, bufferize)
   for k, v in pairs(funcs) do
     if k ~= "setupMonitor" then -- don't add this function, but add all else.
       mon[k] = v
     end
   end
-  buffer.bufferize(mon)
+  if bufferize then
+    buffer.bufferize(mon)
+  end
   local scale = settings.get("shop.monitor.textScale")
   mon.clear()
   mon.setCursorPos(1, 1)
