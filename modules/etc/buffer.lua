@@ -178,18 +178,21 @@ function funcs.bufferize(mon)
       error("Arguments must be the same length", 2)
     end
 
+    local bfOffset = buffer.p[1] - 1
+    local afOffset = buffer.p[1] + #txt
+
     local line = buffer.lines[buffer.p[2]]
-    local stt = string.sub(line[1], 0, buffer.p[1] - 1)
-    local edt = string.sub(line[1], buffer.p[1] + #txt)
+    local stt = string.sub(line[1], 0, bfOffset)
+    local edt = string.sub(line[1], afOffset)
     local text = stt .. txt .. edt
 
-    local stf = string.sub(line[2], 0, buffer.p[1] - 1)
-    local edf = string.sub(line[2], buffer.p[1] + #txt)
-    fg = stf .. string.rep(fg, #txt) .. edf
+    local stf = string.sub(line[2], 0, bfOffset)
+    local edf = string.sub(line[2], afOffset)
+    fg = stf .. fg .. edf
 
-    local stb = string.sub(line[3], 0, buffer.p[1] - 1)
-    local edb = string.sub(line[3], buffer.p[1] + #txt)
-    bg = stb .. string.rep(bg, #txt) .. edb
+    local stb = string.sub(line[3], 0, bfOffset)
+    local edb = string.sub(line[3], afOffset)
+    bg = stb .. bg .. edb
 
     buffer.lines[buffer.p[2]] = {
       text,
