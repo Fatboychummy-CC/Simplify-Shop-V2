@@ -53,7 +53,7 @@ function met:draw(m)
   m.setCursorPos(self.pos[1], self.pos[2])
   m.write(self.headers[1])
 
-  m.setCursorPos(self.pos[3] - #self.headers[2] - 1, self.pos[2])
+  m.setCursorPos(self.pos[3] - #self.headers[2], self.pos[2])
   m.write(self.headers[2])
 
   for i = 1, self:getSize() do
@@ -69,13 +69,16 @@ function met:draw(m)
     m.write(self.list.item[i])
 
     if dcml > 0 then
-      m.setCursorPos(self.pos[3] - 2 - dcml, self.pos[2] + i)
+      m.setCursorPos(self.pos[3] - 1 - dcml, self.pos[2] + i)
       m.write('.' .. string.rep('0', dcml))
 
       m.setCursorPos(
-        self.pos[3] - 2 - #(string.match(tostring(price), "(%d+)%.?")) - dcml,
+        self.pos[3] - 1 - #(string.match(tostring(price), "(%d+)%.?")) - dcml,
         self.pos[2] + i
       )
+      m.write(tostring(price))
+    else
+      m.setCursorPos(self.pos[3] - #(tostring(price)), self.pos[2] + i)
       m.write(tostring(price))
     end
   end
