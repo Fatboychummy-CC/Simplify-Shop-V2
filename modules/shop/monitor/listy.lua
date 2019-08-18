@@ -38,12 +38,11 @@ function met:getSize()
   return #self.list.item
 end
 
-function met:draw(m)
+function met:draw(m, dcml)
   ew(1, "list", self)
   ew(2, "table", m)
 
   local line = string.rep(' ', self.pos[3] - self.pos[1] + 1)
-  local dcml = settings.get("shop.listing.decimalPlaces")
 
   m.setCursorPos(self.pos[1], self.pos[2])
   m.setBackgroundColor(self.headers.colors.bg)
