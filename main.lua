@@ -373,6 +373,11 @@ local function main()
   while true do
     selection = mainMenu(build, updateCheckString())
     if selection == 1 then
+      term.clear()
+      term.setCursorPos(1, 1)
+      print("Shop is running.")
+      print()
+      print("Hold ctrl+t to stop.")
       doShop()
     elseif selection == 2 then
       --TODO: update
