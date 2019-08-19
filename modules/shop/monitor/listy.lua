@@ -20,6 +20,12 @@ function met:setPrice(i, price)
   self.list.price[i] = price
 end
 
+function met:clearItems()
+  self.list = {
+    item = {},
+    price = {}
+  }
+end
 function met:addItem(item, price)
   ew(1, "list", self)
   ew(2, "string", item)
