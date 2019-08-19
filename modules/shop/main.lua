@@ -1,6 +1,7 @@
 local funcs = {}
 local moni = require("modules.etc.monitor")
 local l = require("modules.shop.monitor.listy")
+local b = require("modules.shop.monitor.infoBox")
 
 local onotify
 
@@ -40,7 +41,9 @@ function funcs.go()
   local dcml = settings.get("shop.listing.decimalPlaces")
 
   local list = l.createList(lef, top, rig, top + mx)
+
   while true do
+    list:clearItems()
     mon.setBackgroundColor(colors.black)
     mon.clear()
     list:draw(mon, dcml)
