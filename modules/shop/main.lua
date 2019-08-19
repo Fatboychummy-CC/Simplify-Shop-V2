@@ -11,6 +11,9 @@ function funcs.notify(ev, ...)
     onotify = args["notify"]
   elseif ev == "settings_update" then
     local set = args[1]
+    if not set then
+      error("Missing setting in settings_update notification.", 3)
+    end
     local t = settings.get(set)
     if set == "shop.listing.topStop" or set == "shop.listing.leftStop" then
       if t < 1 then

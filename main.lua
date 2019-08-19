@@ -293,7 +293,7 @@ local function main()
     if monitorName then
       settings.set("shop.monitor.monitor", monitorName)
       settings.save(settingsLocation)
-      notify("settings_update")
+      notify("settings_update", "shop.monitor.monitor")
       print("No monitor was selected (or there is no monitor with the name "
             .. "saved), Auto-selected " .. monitorName)
       os.sleep(3)
