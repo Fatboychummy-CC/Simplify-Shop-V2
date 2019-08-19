@@ -236,12 +236,9 @@ function funcs.bufferize(mon)
       if flag2 or flags[i] then
         oldscp(1, i)
         oldb(table.unpack(buffer.lines[i]))
-        print("Updating line " .. tostring(i) .. ' ' .. math.random(1, 100))
       else
-        io.write('.')
       end
     end
-    print()
     mon.setCursorPos(table.unpack(buffer.p))
     lastBuffer = dcopy(buffer)
   end
