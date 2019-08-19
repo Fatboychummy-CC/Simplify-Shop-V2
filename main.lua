@@ -386,6 +386,7 @@ local function main()
       term.setBackgroundColor(colors.black)
       term.clear()
       term.setCursorPos(1, 1)
+      notify("stop")
       print("Simplify Shop has stopped.")
       return
     end
