@@ -35,8 +35,14 @@ local function mainMenu(build, update)
   --
   menu:addMenuItem(
     "Error",
-    "Debug Error",
+    "Debug Error.",
     "Force an error to do some random debugging."
+  )
+  --
+  menu:addMenuItem(
+    "Exit",
+    "Exit Simplify.",
+    "Exit this menu and return to the shell."
   )
 
   return menu:go(settings.get("shop.autorun")

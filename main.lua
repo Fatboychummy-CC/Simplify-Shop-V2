@@ -382,6 +382,12 @@ local function main()
       optionsMenu(sets, settingsLocation, notify)
     elseif selection == 5 then
       error("Generated error " .. tostring(math.random(1, 1000000)))
+    elseif selection == 6 then
+      term.setBackgroundColor(colors.black)
+      term.clear()
+      term.setCursorPos(1, 1)
+      print("Simplify Shop has stopped.")
+      return
     end
   end
 end
