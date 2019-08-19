@@ -1,6 +1,6 @@
 local funcs = {}
 
-local ers = require(".modules.etc.errors")
+local ers = require("modules.etc.errors")
 local ec = ers.create
 local ew = ers.watch
 

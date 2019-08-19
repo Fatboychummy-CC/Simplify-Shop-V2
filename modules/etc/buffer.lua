@@ -1,7 +1,7 @@
 local funcs = {}
 
-local dcopy = require(".modules.etc.dcop")
-local ers = require(".modules.etc.errors")
+local dcopy = require("modules.etc.dcop")
+local ers = require("modules.etc.errors")
 local ec = ers.create
 local ew = ers.watch
 

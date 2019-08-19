@@ -2,8 +2,8 @@ local funcs = {}
 local met = {}
 local meta = {__index = met, __type = "list"}
 
-local ers = require(".modules.etc.errors")
-require(".modules.etc.typer")
+local ers = require("modules.etc.errors")
+require("modules.etc.typer")
 local ec = ers.create
 local ew = ers.watch
 
