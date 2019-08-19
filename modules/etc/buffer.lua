@@ -148,7 +148,7 @@ function funcs.bufferize(mon)
     local bg = toP(mon.getBackgroundColor())
     local fg = toP(mon.getTextColor())
 
-    local line = buffer.lines[buffer.p[2]]
+    local line = buffer.lines[buffer.p[2]] or {"","",""}
     local stt = string.sub(line[1], 0, buffer.p[1] - 1)
     local edt = string.sub(line[1], buffer.p[1] + #txt)
     local text = stt .. txt .. edt
@@ -183,7 +183,7 @@ function funcs.bufferize(mon)
     local bfOffset = buffer.p[1] - 1
     local afOffset = buffer.p[1] + #txt
 
-    local line = buffer.lines[buffer.p[2]]
+    local line = buffer.lines[buffer.p[2]] or {"","",""}
     local stt = string.sub(line[1], 0, bfOffset)
     local edt = string.sub(line[1], afOffset)
     local text = stt .. txt .. edt
@@ -216,8 +216,8 @@ function funcs.bufferize(mon)
       -- then run code once
       flag2 = false
       for i = 1, #buffer.lines do
-        local cLine = buffer.lines[i]
-        local lcLine = lastBuffer.lines[i]
+        local cLine = buffer.lines[i] or {"","",""}
+        local lcLine = lastBuffer.lines[i] or {"","",""}
         if lcLine[1] == cLine[1]
             and lcLine[2] == cLine[2]
             and lcLine[3] == cLine[3]
