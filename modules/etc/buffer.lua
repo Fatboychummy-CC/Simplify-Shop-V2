@@ -5,6 +5,8 @@ local ers = require("modules.etc.errors")
 local ec = ers.create
 local ew = ers.watch
 
+local lastBuffer = {}
+
 local buffer = {
   bg = colors.black,    -- background color
   fg = colors.white,    -- foreground color
@@ -207,11 +209,41 @@ function funcs.bufferize(mon)
 
 
   function mon.flush()
-    for i = 1, #buffer.lines do
-      oldscp(1, i)
-      oldb(table.unpack(buffer.lines[i]))
+    local flags = {}
+    local flag2 = true
+    for k, v in pairs(lastBuffer) do -- check if there are items in lastBuffer
+      -- if there are, that means we've copied it already.
+      -- then run code once
+      flag2 = false
+      for i = 1, #buffer.lines do
+        local cLine = buffer.lines[i]
+        local lcLine = lastBuffer.lines[i]
+        if lcLine[1] == cLine[1]
+            and lcLine[2] == cLine[2]
+            and lcLine[3] == cLine[3]
+            then
+          table.insert(flags, false) -- if nothing changed, don't redraw line
+        else
+          table.insert(flags, true) -- if things changed, redraw that line
+        end
+      end
+      break
+      -- only run the above once, if and only if there are items in lastBuffer
     end
+
+
+    for i = 1, #buffer.lines do
+      if flag2 or flags[i] then
+        oldscp(1, i)
+        oldb(table.unpack(buffer.lines[i]))
+        print("Updating line " .. tostring(i) .. ' ' .. math.random(1, 100))
+      else
+        io.write('.')
+      end
+    end
+    print()
     mon.setCursorPos(table.unpack(buffer.p))
+    lastBuffer = dcopy(buffer)
   end
 
   buffer.p = {oldgcp()}
