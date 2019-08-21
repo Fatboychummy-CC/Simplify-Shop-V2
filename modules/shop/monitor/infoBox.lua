@@ -1,6 +1,6 @@
 local funcs = {}
 local met = {}
-local meta = {__index = met}
+local meta = {__index = met, __type = "infoBox"}
 
 local ers = require("modules.etc.errors")
 local ec = ers.create
@@ -15,7 +15,17 @@ local function box(m, x1, y1, x2, y2)
   end
 end
 
+function met:setLine(index, line)
+  ew(1, "infoBox", self)
+  ew(2, "number", index)
+  ew(3, "string", line)
+  self.lines[index] = line
+end
+
 function met:draw(m)
+  ew(1, "infoBox", self)
+  ew(2, "table", m)
+
   m.setBackgroundColor(self.colors.bg)
   m.setTextColor(self.colors.fg)
   box(m, table.unpack(self.pos))
