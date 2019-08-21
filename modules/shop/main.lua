@@ -41,12 +41,24 @@ function funcs.go()
   local dcml = settings.get("shop.listing.decimalPlaces")
 
   local list = l.createList(lef, top, rig, top + mx)
+  local shopInfoBox = b.new(1, 15, 20, 22, colors.black, colors.white)
+
+  local toDrawSimple = {
+    shopInfoBox
+  }
 
   while true do
     list:clearItems()
     mon.setBackgroundColor(colors.black)
     mon.clear()
+
+    -- "Complex" redraws which require extra inputs.
     list:draw(mon, dcml)
+
+    -- simple redraws (don't require added inputs)
+    for i, item in ipairs(toDrawSimple) do
+      item:draw(mon)
+    end
     mon.flush()
     os.sleep(5)
   end
