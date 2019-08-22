@@ -34,13 +34,17 @@ function funcs.go()
   local mon = peripheral.wrap(settings.get("shop.monitor.monitor"))
   moni.setupMonitor(mon, true)
 
-  local top = settings.get("shop.listing.topStop")
-  local lef = settings.get("shop.listing.leftStop")
-  local rig = settings.get("shop.listing.rightStop")
-  local mx = settings.get("shop.listing.maxItemsPerPage")
+  local listtop = settings.get("shop.listing.topStop")
+  local listmx = settings.get("shop.listing.maxItemsPerPage")
   local dcml = settings.get("shop.listing.decimalPlaces")
 
-  local list = l.createList(lef, top, rig, top + mx)
+  local list = l.createList(
+    settings.get("shop.listing.leftStop")
+    listtop,
+    settings.get("shop.listing.rightStop")
+    listtop + listmx,
+    settings.get("shop.listing.enabled")
+  )
   local shopInfoBox = b.new(1, 15, 20, 22, colors.black, colors.white)
 
   local toDrawSimple = {

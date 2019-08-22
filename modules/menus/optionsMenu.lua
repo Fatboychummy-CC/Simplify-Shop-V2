@@ -131,6 +131,12 @@ local function optionsMenu(sets, settingsLocation, notify)
                 .. " places",
       settings = {
         {
+          "shop.listing.enabled",
+          "Enabled",
+          "boolean",
+          "Should this item be displayed on the monitor?"
+        },
+        {
           "shop.listing.decimalPlaces",
           "Decimal Pl.",
           "number",
