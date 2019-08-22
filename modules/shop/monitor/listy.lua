@@ -110,6 +110,7 @@ function funcs.createList(x1, y1, x2, y2, enabled)
 
   tmp.headers = {
     "Item",
+    "Count",
     "Price",
     colors = {
       bg = colors.purple,
@@ -118,6 +119,7 @@ function funcs.createList(x1, y1, x2, y2, enabled)
   }
   tmp.list = {
     item = {},
+    count = {},
     price = {}
   }
   tmp.colors = {
@@ -128,6 +130,10 @@ function funcs.createList(x1, y1, x2, y2, enabled)
     {
       bg = colors.black,
       fg = colors.white
+    },
+    selected = {
+      bg = colors.white,
+      fg = colors.black
     }
   }
   tmp.pos = {x1, y1, x2, y2}
