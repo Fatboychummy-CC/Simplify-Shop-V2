@@ -62,6 +62,17 @@ local sets = {
   "shop.listing.rightStop",
   "shop.listing.topStop",
   "shop.listing.maxItemsPerPage",
+  -- shop information box
+  "shop.info.enabled",
+  "shop.info.centered",
+  "shop.info.leftStop",
+  "shop.info.rightStop",
+  "shop.info.topStop",
+  "shop.info.bottomStop",
+  "shop.info.line1",
+  "shop.info.line2",
+  "shop.info.line3",
+  "shop.info.line4",
   -- krist
   "shop.krist.password",
   "shop.krist.address",
@@ -87,6 +98,18 @@ local sets = {
     25,
     1,
     6,
+    -- shop information box
+    true,
+    false,
+    1,
+    30,
+    9,
+    14,
+    "Simplify Shop",
+    "Created by Fatboychummy",
+    "Change these by going to",
+    "options>Info Box>lines",
+
     -- krist
     "1",
     "kkkkkkkk"
