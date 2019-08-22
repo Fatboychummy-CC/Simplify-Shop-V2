@@ -56,6 +56,7 @@ local sets = {
   "shop.monitor.monitor",
   "shop.monitor.textScale",
   -- shop listings
+  "shop.listing.enabled",
   "shop.listing.decimalPlaces",
   "shop.listing.leftStop",
   "shop.listing.rightStop",
@@ -80,6 +81,7 @@ local sets = {
                         -- is set to.
     0.5,
     -- shop listings
+    true,
     2,
     1,
     25,
