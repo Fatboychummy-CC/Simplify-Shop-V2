@@ -42,7 +42,7 @@ local meta = {
       return self.toColor[col] or self.toColour[col]
     elseif type(col) == "string" then
       return self.fromColor[col] or self.fromColour[col]
-    else
+    elseif type(col) ~= "nil" then
       error("Expected string or number, got " .. type(col) .. ".", 2)
     end
   end
