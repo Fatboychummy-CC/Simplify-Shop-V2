@@ -13,11 +13,17 @@ end
 function met:getPrice(i)
   return self.list.price[i]
 end
+function met:getCount(i)
+  return self.list.count[i]
+end
 function met:setItem(i, item)
   self.list.item[i] = item
 end
 function met:setPrice(i, price)
   self.list.price[i] = price
+end
+function met:setCount(i, count)
+  self.list.count[i] = count
 end
 
 function met:clearItems()
@@ -26,12 +32,14 @@ function met:clearItems()
     price = {}
   }
 end
-function met:addItem(item, price)
+function met:addItem(item, count, price)
   ew(1, "list", self)
   ew(2, "string", item)
-  ew(3, "number", price)
+  ew(3, "number", count)
+  ew(4, "number", price)
 
   self:setItem(#self.list.item + 1, item)
+  self:setCount(#self.list.count + 1, count)
   self:setPrice(#self.list.price + 1, price)
 end
 function met:delItem(i)
@@ -44,7 +52,7 @@ function met:getSize()
   return #self.list.item
 end
 
-function met:draw(m, dcml)
+function met:draw(m, dcml, selected)
   ew(1, "list", self)
   if self.enabled then
     ew(2, "table", m)
@@ -59,20 +67,31 @@ function met:draw(m, dcml)
     m.setCursorPos(self.pos[1] + 1, self.pos[2])
     m.write(self.headers[1])
 
-    m.setCursorPos(self.pos[3] - #self.headers[2], self.pos[2])
+    m.setCursorPos(math.floor(self.pos[3] * 0.75), self.pos[2])
     m.write(self.headers[2])
+
+    m.setCursorPos(self.pos[3] - #self.headers[3], self.pos[2])
+    m.write(self.headers[3])
 
     for i = 1, self:getSize() do
       local item = self.list.item[i]
       local price = self.list.price[i]
-
       m.setCursorPos(self.pos[1], self.pos[2] + i)
-      m.setBackgroundColor(i % 2 == 1 and self.colors[1].bg or self.colors[2].bg)
-      m.setTextColor(i % 2 == 0 and self.colors[1].fg or self.colors[2].fg)
+
+      if i ~= selected then
+        m.setBackgroundColor(i % 2 == 1 and self.colors[1].bg or self.colors[2].bg)
+        m.setTextColor(i % 2 == 0 and self.colors[1].fg or self.colors[2].fg)
+      else
+        m.setBackgroundColor(self.colors.selected.bg)
+        m.setTextColor(self.colors.selected.fg)
+      end
       m.write(line)
 
       m.setCursorPos(self.pos[1] + 1, self.pos[2] + i)
       m.write(self.list.item[i])
+
+      m.setCursorPos(math.floor(self.pos[3] * 0.75), self.pos[2] + i)
+      m.write(self.list.count[i] or '0')
 
       if dcml > 0 then
         m.setCursorPos(self.pos[3] - 1 - dcml, self.pos[2] + i)
