@@ -1,7 +1,13 @@
 local imenus = require("modules.menus.layouts.insert")
+local smenus = require("modules.menus.layouts.simple")
 
 local function subPage(page, settingsLocation, notify)
-  local menu = imenus.newMenu()
+  local menu
+  if not page.type then
+    menu = imenus.newMenu()
+  elseif page.type == 1 then
+    menu = smenus.newMenu()
+  end
   local sets = {}
   menu.title = page.name
   menu.info = page.info
@@ -17,7 +23,7 @@ local function subPage(page, settingsLocation, notify)
     -- for each setting, set them to the new menu option
     settings.set(sets[index], menu.menuItems.appends[index])
     settings.save(settingsLocation)
-    
+
     notify("settings_update", sets[index]) -- notify all modules
 
     -- sets the menu options back to the settings.
@@ -45,48 +51,74 @@ local function subPage(page, settingsLocation, notify)
     }
   }
   ]]
+  if not page.type then
+    local function getSetting(tp, name)
+      local set = settings.get(name)
 
-  local function getSetting(tp, name)
-    local set = settings.get(name)
-
-    if tp == "string" then
-      if type(set) == "string" then
-        return set
-      else
-        return "ERROR_5"
-      end
-    elseif tp == "password" then
-      if type(set) == "string" then
-        return set
-      else
-        return "ERROR_5"
-      end
-    elseif tp == "number" then
-      if type(set) == "number" then
-        return set
-      else
-        return 0
-      end
-    elseif tp == "boolean" then
-      if type(set) == "boolean" then
-        return set
-      else
-        return 'a'
+      if tp == "string" then
+        if type(set) == "string" then
+          return set
+        else
+          return "ERROR_5"
+        end
+      elseif tp == "password" then
+        if type(set) == "string" then
+          return set
+        else
+          return "ERROR_5"
+        end
+      elseif tp == "number" then
+        if type(set) == "number" then
+          return set
+        else
+          return 0
+        end
+      elseif tp == "boolean" then
+        if type(set) == "boolean" then
+          return set
+        else
+          return 'a'
+        end
       end
     end
-  end
 
-  for i, setting in pairs(page.settings) do
-    sets[#sets + 1] = setting[1]
+    for i, setting in ipairs(page.settings) do
+      sets[#sets + 1] = setting[1]
+      menu:addMenuItem(
+        setting[2],
+        setting[3],
+        getSetting(setting[3], setting[1]),
+        setting[4]
+      )
+    end
+
+    menu:go(updater)
+
+  elseif page.type == 1 then
+    local ohnorecursion = require("modules.menus.options.subPage")
+
+    for i, pagen in ipairs(page.subPages) do
+      menu:addMenuItem(
+        pagen.name,
+        pagen.info,
+        pagen.bigInfo
+      )
+    end
+
     menu:addMenuItem(
-      setting[2],
-      setting[3],
-      getSetting(setting[3], setting[1]),
-      setting[4]
+      "Return",
+      "Go back.",
+      "Return to the previous page."
     )
-  end
 
-  menu:go(updater)
+    local sel
+    repeat
+      sel = menu:go()
+      if sel ~= menu:count() then
+        ohnorecursion(page.subPages[sel], settingsLocation, notify)
+      end
+    until sel == menu:count()
+  end
 
 
 end

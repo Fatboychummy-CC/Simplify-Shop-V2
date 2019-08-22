@@ -124,59 +124,78 @@ local function optionsMenu(sets, settingsLocation, notify)
         }
       }
     },
+    ----------------
     {
-      name = "Listings",
-      info = "Change Item Lists.",
-      bigInfo = "Change item list information like size, max items, and decimal"
-                .. " places",
-      settings = {
+      name = "Aesthetics",
+      info = "Change shop aesthetics.",
+      bigInfo = "Change locations, colors, and more of each part of the shop.",
+      ["type"] = 1,
+
+      subPages = {
         {
-          "shop.listing.enabled",
-          "Enabled",
-          "boolean",
-          "Should this item be displayed on the monitor?"
+          name = "Listings",
+          info = "Change item listings.",
+          bigInfo = "Change the way the item list is displayed by the shop.",
+          settings = {
+            {
+              "shop.listing.enabled",
+              "Enabled",
+              "boolean",
+              "Should this item be displayed on the monitor?"
+            },
+            {
+              "shop.listing.decimalPlaces",
+              "Decimal Pl.",
+              "number",
+              "How many decimal places should the shop show (1.000 is 3, 1.00 is 2)?"
+            },
+            {
+              "shop.listing.leftStop",
+              "Left Stop",
+              "number",
+              "How far from the left of the screen should the shop start the item "
+              .. "list?"
+            },
+            {
+              "shop.listing.rightStop",
+              "Right Stop",
+              "number",
+              "How far from the left of the screen should the shop stop the item "
+              .. "list?"
+            },
+            {
+              "shop.listing.topStop",
+              "Top Stop",
+              "number",
+              "How far from the top of the screen should the shop start the item "
+              .. "list?"
+            },
+            {
+              "shop.listing.maxItemsPerPage",
+              "Max Items",
+              "number",
+              "How many items should be displayed per page?"
+            }
+          }
         },
+        ------------
         {
-          "shop.listing.decimalPlaces",
-          "Decimal Pl.",
-          "number",
-          "How many decimal places should the shop show (1.000 is 3, 1.00 is 2)?"
-        },
-        --[[
-        "shop.listing.leftStop",
-        "shop.listing.rightStop",
-        "shop.listing.topStop",
-        "shop.listing.maxItemsPerPage",
-        ]]
-        {
-          "shop.listing.leftStop",
-          "Left Stop",
-          "number",
-          "How far from the left of the screen should the shop start the item "
-          .. "list?"
-        },
-        {
-          "shop.listing.rightStop",
-          "Right Stop",
-          "number",
-          "How far from the left of the screen should the shop stop the item "
-          .. "list?"
-        },
-        {
-          "shop.listing.topStop",
-          "Top Stop",
-          "number",
-          "How far from the top of the screen should the shop start the item "
-          .. "list?"
-        },
-        {
-          "shop.listing.maxItemsPerPage",
-          "Max Items",
-          "number",
-          "How many items should be displayed per page?"
+          name = "Info Box",
+          info = "Change info box info.",
+          bigInfo = "Change the information displayed in the large "
+                    .. "information box.",
+          settings = {
+            {
+              "shop.info.enabled",
+              "Enabled",
+              "boolean",
+              "Should this item be displayed on the monitor?"
+            }
+          }
         }
       }
     }
+    ----------------
   }
 
   for i, subPage in ipairs(subPages) do
