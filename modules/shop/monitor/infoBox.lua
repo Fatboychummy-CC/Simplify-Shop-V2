@@ -39,13 +39,19 @@ function met:draw(m)
   end
 end
 
-function funcs.new(x1, y1, x2, y2, bgcolor, fgcolor, centered)
+function funcs.new(x1, y1, x2, y2, bgcolor, fgcolor, centered, enabled)
   ew(1, "number", x1)
   ew(2, "number", y1)
   ew(3, "number", x2)
   ew(4, "number", y2)
   ew(5, "number", bgcolor)
   ew(6, "number", fgcolor)
+  if type(centered) ~= "boolean" and centered ~= nil then
+    error(ec(7, "boolean or nil", centered))
+  end
+  if type(enabled) ~= "boolean" and enabled ~= nil then
+    error(ec(8, "boolean or nil", enabled))
+  end
 
   local tmp = setmetatable({}, meta)
 
@@ -55,7 +61,17 @@ function funcs.new(x1, y1, x2, y2, bgcolor, fgcolor, centered)
     fg = fgcolor
   }
   tmp.lines = {}
-  tmp.centered = centered
+
+  if type(centered) == "boolean" then
+    tmp.centered = centered
+  else
+    tmp.centered = false
+  end
+  if type(enabled) == "boolean" then
+    tmp.enabled = enabled
+  else
+    tmp.enabled = true
+  end
 
   return tmp
 end
