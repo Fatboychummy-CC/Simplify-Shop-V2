@@ -109,7 +109,7 @@ local sets = {
     30,
     9,
     14,
-    "Simplify Shop",
+    "Simplify Shop V2",
     "Created by Fatboychummy",
     "Change these by going to",
     "options>Info Box>lines",
