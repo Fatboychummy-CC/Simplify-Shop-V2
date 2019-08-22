@@ -45,7 +45,19 @@ function funcs.go()
     listtop + listmx,
     settings.get("shop.listing.enabled")
   )
-  local shopInfoBox = b.new(1, 15, 20, 22, colors.black, colors.white)
+  local shopInfoBox = b.new(
+    settings.get("shop.info.leftStop"),
+    settings.get("shop.info.topStop"),
+    settings.get("shop.info.rightStop"),
+    settings.get("shop.info.bottomStop"),
+    settings.get("shop.info.bgcolor"),
+    settings.get("shop.info.fgcolor"),
+    settings.get("shop.info.centered"),
+    settings.get("shop.info.enabled")
+  )
+  for i = 1, 4 do
+    shopInfoBox:setLine(i, settings.get("shop.info.line" .. tostring(i)) or "")
+  end
 
   local toDrawSimple = {
     shopInfoBox
