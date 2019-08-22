@@ -24,17 +24,19 @@ end
 
 function met:draw(m)
   ew(1, "infoBox", self)
-  ew(2, "table", m)
+  if self.enabled then
+    ew(2, "table", m)
 
-  m.setBackgroundColor(self.colors.bg)
-  m.setTextColor(self.colors.fg)
-  box(m, table.unpack(self.pos))
-  for i, line in ipairs(self.lines) do
-    if centered then
+    m.setBackgroundColor(self.colors.bg)
+    m.setTextColor(self.colors.fg)
+    box(m, table.unpack(self.pos))
+    for i, line in ipairs(self.lines) do
+      if centered then
 
-    else
-      m.setCursorPos(self.pos[1] + 1, self.pos[2] + i)
-      m.write(line)
+      else
+        m.setCursorPos(self.pos[1] + 1, self.pos[2] + i)
+        m.write(line)
+      end
     end
   end
 end
