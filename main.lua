@@ -65,6 +65,8 @@ local sets = {
   -- shop information box
   "shop.info.enabled",
   "shop.info.centered",
+  "shop.info.bgcolor",
+  "shop.info.fgcolor",
   "shop.info.leftStop",
   "shop.info.rightStop",
   "shop.info.topStop",
@@ -101,6 +103,8 @@ local sets = {
     -- shop information box
     true,
     false,
+    colors.gray,
+    colors.white,
     1,
     30,
     9,
