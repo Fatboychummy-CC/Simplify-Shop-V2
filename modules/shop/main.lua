@@ -38,6 +38,8 @@ function funcs.go()
   local listmx = settings.get("shop.listing.maxItemsPerPage")
   local dcml = settings.get("shop.listing.decimalPlaces")
 
+  local sleepTime = settings.get("shop.refreshRate")
+
   local list = l.createList(
     settings.get("shop.listing.leftStop"),
     listtop,
@@ -76,7 +78,7 @@ function funcs.go()
       item:draw(mon)
     end
     mon.flush()
-    os.sleep(5)
+    os.sleep(sleepTime)
   end
 end
 
