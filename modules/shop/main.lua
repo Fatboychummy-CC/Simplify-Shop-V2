@@ -39,9 +39,9 @@ function funcs.go()
   local dcml = settings.get("shop.listing.decimalPlaces")
 
   local list = l.createList(
-    settings.get("shop.listing.leftStop")
+    settings.get("shop.listing.leftStop"),
     listtop,
-    settings.get("shop.listing.rightStop")
+    settings.get("shop.listing.rightStop"),
     listtop + listmx,
     settings.get("shop.listing.enabled")
   )
