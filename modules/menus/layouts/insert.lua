@@ -2,6 +2,7 @@ local funcs = {}
 local ers = require("modules.etc.errors")
 local simple = require("modules.menus.layouts.simple")
 local dCopy = require("modules.etc.dcop")
+local converter = require("modules.etc.colors")
 local meta = getmetatable(simple.newMenu())
 meta = dCopy(meta)
 local met = meta.__index
@@ -15,9 +16,9 @@ function met:addMenuItem(selection, tp,  append, info)
                 or error(ec(1, "string", selection))
   --
   tp = type(tp) == "string" and tp or error(ec(2, "string", tp))
-  if tp ~= "boolean" and tp ~= "string" and tp ~= "number" and tp ~= "password" then
+  if tp ~= "boolean" and tp ~= "string" and tp ~= "number" and tp ~= "password" and tp ~= "color" then
     error("Bad argument #2, expected string stating 'boolean', 'string', "
-          .. "'password', or 'number'", 2)
+          .. "'password', 'color', or 'number'", 2)
   end
   --
   append = type(append) == "string" and append
@@ -91,6 +92,8 @@ function met:draw()
             and string.rep('*', #tostring(append))
             or string.rep('*', #(tostring(append):sub(1, mx - 18))) .. "..."
           )
+        elseif self.menuItems.types[i] == "color" then
+          io.write((converter(append) or "err") .. " (" .. tostring(append) .. ")")
         else
           io.write(
             #tostring(append) < mx - 15 and tostring(append)
@@ -105,6 +108,37 @@ function met:draw()
   self:update2()
 
   return self
+end
+
+local function getColorInput(self)
+  local function writeAt(stf)
+    term.setCursorPos(15, self.menuItems.lineStart + self.slot)
+    io.write("                          ")
+    term.setCursorPos(15, self.menuItems.lineStart + self.slot)
+    io.write(stf)
+  end
+  local done = false
+  while true do
+    writeAt("")
+    local input = read()
+    if tonumber(input) then
+      if converter(tonumber(input)) then
+        return tonumber(input)
+      else
+        writeAt("Not a color!")
+        os.sleep(1)
+        writeAt("")
+      end
+    else
+      if converter(input) then
+        return converter(input)
+      else
+        writeAt("Not a color!")
+        os.sleep(1)
+        writeAt("")
+      end
+    end
+  end
 end
 
 local function getInsertion(self, typ)
@@ -126,6 +160,8 @@ local function getInsertion(self, typ)
     io.write("                          ")
     term.setCursorPos(15, self.menuItems.lineStart + self.slot)
     return tonumber(read()) or 0
+  elseif typ == "color" then
+    return getColorInput(self)
   else
     error(ec(2, "string", typ))
   end
