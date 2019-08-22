@@ -68,7 +68,7 @@ function met:draw(m, dcml, selected)
     m.setCursorPos(self.pos[1] + 1, self.pos[2])
     m.write(self.headers[1])
 
-    m.setCursorPos(math.floor(self.pos[3] * 0.75), self.pos[2])
+    m.setCursorPos(math.floor(self.pos[3] * 0.75) - 5, self.pos[2])
     m.write(self.headers[2])
 
     m.setCursorPos(self.pos[3] - #self.headers[3], self.pos[2])
@@ -91,8 +91,8 @@ function met:draw(m, dcml, selected)
       m.setCursorPos(self.pos[1] + 1, self.pos[2] + i)
       m.write(self.list.item[i])
 
-      m.setCursorPos(math.floor(self.pos[3] * 0.75), self.pos[2] + i)
-      m.write(self.list.count[i] or '0')
+      m.setCursorPos(math.floor(self.pos[3] * 0.75) - 2 - (#tostring(self.list.count[i]) or 1), self.pos[2] + i)
+      m.write(tostring(self.list.count[i]) or '0')
 
       if dcml > 0 then
         m.setCursorPos(self.pos[3] - 1 - dcml, self.pos[2] + i)
@@ -157,6 +157,7 @@ function funcs.createList(x1, y1, x2, y2, enabled)
     }
   }
   tmp.pos = {x1, y1, x2, y2}
+
   if type(enabled) == "boolean" then
     tmp.enabled = enabled
   else
