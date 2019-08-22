@@ -29,6 +29,7 @@ end
 function met:clearItems()
   self.list = {
     item = {},
+    count = {},
     price = {}
   }
 end
