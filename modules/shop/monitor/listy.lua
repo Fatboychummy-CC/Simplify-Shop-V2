@@ -91,7 +91,7 @@ function met:draw(m, dcml)
   end
 end
 
-function funcs.createList(x1, y1, x2, y2)
+function funcs.createList(x1, y1, x2, y2, enabled)
   ew(1, "number", x1)
   ew(2, "number", y1)
   ew(3, "number", x2)
@@ -102,6 +102,10 @@ function funcs.createList(x1, y1, x2, y2)
   if y2 < y1 then
       error("Bad argument #4: Expected to be greater than argument #2", 2)
   end
+  if type(enabled) ~= "boolean" and enabled ~= nil then
+    error(ec(5, "boolean or nil", enabled))
+  end
+
   local tmp = setmetatable({}, meta)
 
   tmp.headers = {
@@ -127,7 +131,11 @@ function funcs.createList(x1, y1, x2, y2)
     }
   }
   tmp.pos = {x1, y1, x2, y2}
-  tmp.enabled = true
+  if type(enabled) == "boolean" then
+    tmp.enabled = enabled
+  else
+    tmp.enabled = true
+  end
 
   return tmp
 end
