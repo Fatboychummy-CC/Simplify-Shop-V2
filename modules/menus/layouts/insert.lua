@@ -167,7 +167,7 @@ local function getInsertion(self, typ)
   elseif typ == "color" then
     return getColorInput(self)
   elseif typ == "subpage" then
-    return "SUB"
+    return self
   else
     error(ec(2, "string", typ))
   end
@@ -210,7 +210,7 @@ function met:go(updater)
         end
 
         local temp = getInsertion(self, self.menuItems.types[sel])
-        if temp == "SUB" then
+        if temp == self then
           return self.selected
         end
         self.menuItems.appends[sel] = temp

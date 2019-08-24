@@ -60,6 +60,22 @@ function funcs.go()
   for i = 1, 5 do
     shopInfoBox:setLine(i, settings.get("shop.info.line" .. tostring(i)) or "")
   end
+  list:setSelectionColor(
+    settings.get("shop.listing.selectionfgcolor"),
+    settings.get("shop.listing.selectionbgcolor")
+  )
+  list:setEvenColor(
+    settings.get("shop.listing.fgcolor2"),
+    settings.get("shop.listing.bgcolor2")
+  )
+  list:setOddColor(
+    settings.get("shop.listing.fgcolor1"),
+    settings.get("shop.listing.bgcolor1")
+  )
+  list:setHeaderColor(
+    settings.get("shop.listing.fgheader"),
+    settings.get("shop.listing.bgheader")
+  )
 
   local toDrawSimple = {
     shopInfoBox

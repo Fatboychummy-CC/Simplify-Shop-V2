@@ -53,6 +53,31 @@ function met:getSize()
   return #self.list.item
 end
 
+function met:setSelectionColor(fg, bg)
+  self.colors.selected = {
+    bg = bg,
+    fg = fg
+  }
+end
+function met:setOddColor(fg, bg)
+  self.colors[2] = {
+    bg = bg,
+    fg = fg
+  }
+end
+function met:setEvenColor(fg, bg)
+  self.colors[1] = {
+    bg = bg,
+    fg = fg
+  }
+end
+function met:setHeaderColor(fg, bg)
+  self.colors.header = {
+    bg = bg,
+    fg = fg
+  }
+end
+
 function met:draw(m, dcml, selected)
   ew(1, "list", self)
   if self.enabled then
@@ -61,8 +86,8 @@ function met:draw(m, dcml, selected)
     local line = string.rep(' ', self.pos[3] - self.pos[1] + 1)
 
     m.setCursorPos(self.pos[1], self.pos[2])
-    m.setBackgroundColor(self.headers.colors.bg)
-    m.setTextColor(self.headers.colors.fg)
+    m.setBackgroundColor(self.colors.header.bg)
+    m.setTextColor(self.colors.header.fg)
     m.write(line)
 
     m.setCursorPos(self.pos[1] + 1, self.pos[2])
@@ -132,10 +157,6 @@ function funcs.createList(x1, y1, x2, y2, enabled)
     "Item",
     "Count",
     "Price",
-    colors = {
-      bg = colors.purple,
-      fg = colors.white
-    }
   }
   tmp.list = {
     item = {},
@@ -152,7 +173,7 @@ function funcs.createList(x1, y1, x2, y2, enabled)
       fg = colors.white
     },
     header = {
-      bg = colors.magenta,
+      bg = colors.purple,
       fg = colors.white
     },
     selected = {

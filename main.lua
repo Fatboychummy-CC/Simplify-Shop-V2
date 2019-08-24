@@ -112,11 +112,11 @@ local sets = {
     6,
     -- shop listing colors
     colors.white,
-    colors.magenta,
+    colors.purple,
     colors.white,
-    colors.gray,
     colors.white,
     colors.black,
+    colors.gray,
     colors.white,
     colors.black,
     -- shop information box
@@ -421,6 +421,8 @@ local function main()
   while true do
     selection = mainMenu(build, updateCheckString())
     if selection == 1 then
+      term.setBackgroundColor(colors.black)
+      term.setTextColor(colors.white)
       term.clear()
       term.setCursorPos(1, 1)
       print("Shop is running.")
