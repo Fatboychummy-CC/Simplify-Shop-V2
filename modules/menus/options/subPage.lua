@@ -43,7 +43,7 @@ local function subPage(page, settingsLocation, notify)
       else
         return "ERROR_5"
       end
-    elseif tp == "number" then
+    elseif tp == "number" or tp == "color" then
       if type(set) == "number" then
         return set
       else
