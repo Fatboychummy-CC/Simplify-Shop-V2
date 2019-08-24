@@ -57,7 +57,7 @@ function funcs.go()
     settings.get("shop.info.centered"),
     settings.get("shop.info.enabled")
   )
-  for i = 1, 4 do
+  for i = 1, 5 do
     shopInfoBox:setLine(i, settings.get("shop.info.line" .. tostring(i)) or "")
   end
 
