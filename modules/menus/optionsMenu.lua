@@ -190,13 +190,100 @@ local function optionsMenu(sets, settingsLocation, notify)
               "Enabled",
               "boolean",
               "Should this item be displayed on the monitor?"
+            },
+            {
+              "shop.info.centered",
+              "Centered",
+              "boolean",
+              "Should the info box's text be centered?"
+            },
+            {
+              "shop.info.leftStop",
+              "Left Stop",
+              "number",
+              "How far from the left of the screen should the shop start the "
+              .. "info box?"
+            },
+            {
+              "shop.info.rightStop",
+              "Right Stop",
+              "number",
+              "How far from the left of the screen should the shop stop the "
+              .. "info box?"
+            },
+            {
+              "shop.info.topStop",
+              "Top Stop",
+              "number",
+              "How far from the top of the screen should the shop start the "
+              .. "info box?"
+            },
+            {
+              "shop.info.bottomStop",
+              "Bottom Stop",
+              "number",
+              "How far from the top will the infobox stop? Affects # info "
+              .. "lines displayed."
+            },
+            {
+              "shop.info.bgcolor",
+              "BG color",
+              "color",
+              "What color should the background of the info box be?"
+            },
+            {
+              "shop.info.fgcolor",
+              "Text Color",
+              "color",
+              "What color should the text in the info box be?"
+            }
+          },
+          subPages = {
+            {
+              name = "Lines",
+              info = "Change info lines.",
+              bigInfo = "Change the lines the shop info box displays.",
+              settings = {
+                {
+                  "shop.info.line1",
+                  "Line 1",
+                  "string",
+                  "Change the information on this line (Blank = Empty)."
+                },
+                {
+                  "shop.info.line2",
+                  "Line 2",
+                  "string",
+                  "Change the information on this line (Blank = Empty)."
+                },
+                {
+                  "shop.info.line3",
+                  "Line 3",
+                  "string",
+                  "Change the information on this line (Blank = Empty)."
+                },
+                {
+                  "shop.info.line4",
+                  "Line 4",
+                  "string",
+                  "Change the information on this line (Blank = Empty)."
+                },
+                {
+                  "shop.info.line5",
+                  "Line 5",
+                  "string",
+                  "Change the information on this line (Blank = Empty)."
+                },
+              }
             }
           }
         }
+        ------------
       }
     }
     ----------------
   }
+
 
   for i, subPage in ipairs(subPages) do
     menu:addMenuItem(

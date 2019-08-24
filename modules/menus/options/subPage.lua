@@ -2,12 +2,10 @@ local imenus = require("modules.menus.layouts.insert")
 local smenus = require("modules.menus.layouts.simple")
 
 local function subPage(page, settingsLocation, notify)
-  local menu
-  if not page.type then
-    menu = imenus.newMenu()
-  elseif page.type == 1 then
-    menu = smenus.newMenu()
-  end
+  if not page then error("no page", 3) end
+  if not settingsLocation then error("no set", 2) end
+  if not notify then error("no notif", 2) end
+  local menu = imenus.newMenu()
   local sets = {}
   menu.title = page.name
   menu.info = page.info
@@ -31,57 +29,35 @@ local function subPage(page, settingsLocation, notify)
     menu.menuItems.appends[index] = settings.get(sets[index])
   end
 
-  --[[
-  {
-    name = "Monitor",
-    info = "Change monitor settings.",
-    bigInfo = "Change things such as text-display size, and which monitor "
-              .. "to display on.",
-    settings = {
-      [ "shop.monitor.monitor" ] = {
-        "Monitor",
-        "type"
-        "The name of the monitor on the wired network."
-      },
-      [ "shop.monitor.textScale" ] = {
-        "Text Scale",
-        "type"
-        "The scale of the text for the monitor. Min 0.5, max 4."
-      }
-    }
-  }
-  ]]
-  if not page.type then
-    local function getSetting(tp, name)
-      local set = settings.get(name)
-
-      if tp == "string" then
-        if type(set) == "string" then
-          return set
-        else
-          return "ERROR_5"
-        end
-      elseif tp == "password" then
-        if type(set) == "string" then
-          return set
-        else
-          return "ERROR_5"
-        end
-      elseif tp == "number" then
-        if type(set) == "number" then
-          return set
-        else
-          return 0
-        end
-      elseif tp == "boolean" then
-        if type(set) == "boolean" then
-          return set
-        else
-          return 'a'
-        end
+  local function getSetting(tp, name)
+    local set = settings.get(name)
+    if tp == "string" then
+      if type(set) == "string" then
+        return set
+      else
+        return "ERROR_5"
+      end
+    elseif tp == "password" then
+      if type(set) == "string" then
+        return set
+      else
+        return "ERROR_5"
+      end
+    elseif tp == "number" then
+      if type(set) == "number" then
+        return set
+      else
+        return 0
+      end
+    elseif tp == "boolean" then
+      if type(set) == "boolean" then
+        return set
+      else
+        return 'a'
       end
     end
-
+  end
+  if page.settings then
     for i, setting in ipairs(page.settings) do
       sets[#sets + 1] = setting[1]
       menu:addMenuItem(
@@ -91,36 +67,32 @@ local function subPage(page, settingsLocation, notify)
         setting[4]
       )
     end
+  end
 
-    menu:go(updater)
-
-  elseif page.type == 1 then
+  if page.subPages then
     local ohnorecursion = require("modules.menus.options.subPage")
 
     for i, pagen in ipairs(page.subPages) do
       menu:addMenuItem(
         pagen.name,
+        "subpage",
         pagen.info,
         pagen.bigInfo
       )
     end
 
-    menu:addMenuItem(
-      "Return",
-      "Go back.",
-      "Return to the previous page."
-    )
-
     local sel
     repeat
-      sel = menu:go()
-      if sel ~= menu:count() then
+      sel = menu:go(updater)
+      if sel ~= menu:count() and menu:getType(sel) == "subpage" then
+        sel = sel - (page.settings and #page.settings or 0)
         ohnorecursion(page.subPages[sel], settingsLocation, notify)
       end
     until sel == menu:count()
+    return sel
   end
 
-
+  return menu:go(updater)
 end
 
 return subPage

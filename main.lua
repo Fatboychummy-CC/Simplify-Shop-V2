@@ -75,6 +75,7 @@ local sets = {
   "shop.info.line2",
   "shop.info.line3",
   "shop.info.line4",
+  "shop.info.line5",
   -- krist
   "shop.krist.password",
   "shop.krist.address",
@@ -113,7 +114,7 @@ local sets = {
     "Created by Fatboychummy",
     "Change these by going to",
     "options>Info Box>lines",
-
+    "",
     -- krist
     "1",
     "kkkkkkkk"

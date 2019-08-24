@@ -16,9 +16,9 @@ function met:addMenuItem(selection, tp,  append, info)
                 or error(ec(1, "string", selection))
   --
   tp = type(tp) == "string" and tp or error(ec(2, "string", tp))
-  if tp ~= "boolean" and tp ~= "string" and tp ~= "number" and tp ~= "password" and tp ~= "color" then
+  if tp ~= "boolean" and tp ~= "string" and tp ~= "number" and tp ~= "password" and tp ~= "color" and tp ~= "subpage" then
     error("Bad argument #2, expected string stating 'boolean', 'string', "
-          .. "'password', 'color', or 'number'", 2)
+          .. "'password', 'color', 'subpage', or 'number'", 2)
   end
   --
   append = type(append) == "string" and append
@@ -42,6 +42,10 @@ function met:addMenuItem(selection, tp,  append, info)
   table.insert(m.types, tp)
 
   return self
+end
+
+function met:getType(i)
+  return self.menuItems.types[i]
 end
 
 function met:draw()
@@ -162,6 +166,8 @@ local function getInsertion(self, typ)
     return tonumber(read()) or 0
   elseif typ == "color" then
     return getColorInput(self)
+  elseif typ == "subpage" then
+    return "SUB"
   else
     error(ec(2, "string", typ))
   end
@@ -176,11 +182,12 @@ function met:go(updater)
   end
   local oldbg = term.getBackgroundColor()
   local oldfg = term.getTextColor()
-
-  table.insert(self.menuItems.selectables, "Exit")
-  table.insert(self.menuItems.types, "string")
-  table.insert(self.menuItems.infos, "Return to the previous screen.")
-  table.insert(self.menuItems.appends, "Exit this menu")
+  if self.menuItems.selectables[self:count()] ~= "Exit" then
+    table.insert(self.menuItems.selectables, "Exit")
+    table.insert(self.menuItems.types, "string")
+    table.insert(self.menuItems.infos, "Return to the previous screen.")
+    table.insert(self.menuItems.appends, "Exit this menu")
+  end
 
   while true do
     local ev = {os.pullEvent()}
@@ -199,14 +206,13 @@ function met:go(updater)
         -- enter key pressed
         local sel = self.selected
         if sel == self:count() then
-          table.remove(self.menuItems.selectables, #self.menuItems.selectables)
-          table.remove(self.menuItems.types, #self.menuItems.types)
-          table.remove(self.menuItems.infos, #self.menuItems.infos)
-          table.remove(self.menuItems.appends, #self.menuItems.appends)
-          break
+          return self:count()
         end
 
         local temp = getInsertion(self, self.menuItems.types[sel])
+        if temp == "SUB" then
+          return self.selected
+        end
         self.menuItems.appends[sel] = temp
         if type(updater) == "function" then
           updater(sel)
@@ -217,7 +223,7 @@ function met:go(updater)
     self:draw()
   end
 
-  return true
+  return false
 end
 
 function funcs.newMenu()
