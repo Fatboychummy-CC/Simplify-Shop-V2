@@ -62,6 +62,15 @@ local sets = {
   "shop.listing.rightStop",
   "shop.listing.topStop",
   "shop.listing.maxItemsPerPage",
+  -- shop listing colors
+  "shop.listing.fgheader",
+  "shop.listing.bgheader",
+  "shop.listing.fgcolor1",
+  "shop.listing.fgcolor2",
+  "shop.listing.bgcolor1",
+  "shop.listing.bgcolor2",
+  "shop.listing.selectionfgcolor",
+  "shop.listing.selectionbgcolor",
   -- shop information box
   "shop.info.enabled",
   "shop.info.centered",
@@ -101,6 +110,15 @@ local sets = {
     25,
     1,
     6,
+    -- shop listing colors
+    colors.white,
+    colors.magenta,
+    colors.white,
+    colors.gray,
+    colors.white,
+    colors.black,
+    colors.white,
+    colors.black,
     -- shop information box
     true,
     false,
