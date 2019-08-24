@@ -222,8 +222,8 @@ local function optionsMenu(sets, settingsLocation, notify)
               "shop.info.bottomStop",
               "Bottom Stop",
               "number",
-              "How far from the top will the infobox stop? Affects # info "
-              .. "lines displayed."
+              "How far from the top of the screen should the shop start the "
+              .. "info box?"
             },
             {
               "shop.info.bgcolor",
