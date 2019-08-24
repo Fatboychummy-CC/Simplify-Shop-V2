@@ -151,6 +151,10 @@ function funcs.createList(x1, y1, x2, y2, enabled)
       bg = colors.black,
       fg = colors.white
     },
+    header = {
+      bg = colors.magenta,
+      fg = colors.white
+    },
     selected = {
       bg = colors.white,
       fg = colors.black
