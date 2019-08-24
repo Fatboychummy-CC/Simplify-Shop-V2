@@ -176,6 +176,63 @@ local function optionsMenu(sets, settingsLocation, notify)
               "number",
               "How many items should be displayed per page?"
             }
+          },
+          subPages = {
+            {
+              name = "Colors",
+              info = "Change list colors.",
+              bigInfo = "Change colors of each line in the item list.",
+              settings = {
+                {
+                  "shop.listing.fgheader",
+                  "Header Text",
+                  "color",
+                  "Change the text color of the header."
+                },
+                {
+                  "shop.listing.bgheader",
+                  "Header BG",
+                  "color",
+                  "Change the background color of the header."
+                },
+                {
+                  "shop.listing.fgcolor1",
+                  "Text Even",
+                  "color",
+                  "Change the text color of odd-numbered items."
+                },
+                {
+                  "shop.listing.bgcolor1",
+                  "BG Even",
+                  "color",
+                  "Change the background color of odd-numbered items."
+                },
+                {
+                  "shop.listing.fgcolor2",
+                  "Text Odd",
+                  "color",
+                  "Change the text color of even-numbered items."
+                },
+                {
+                  "shop.listing.bgcolor2",
+                  "BG Odd",
+                  "color",
+                  "Change the background color of even-numbered items."
+                },
+                {
+                  "shop.listing.selectionfgcolor",
+                  "Selected Txt",
+                  "color",
+                  "Change the text color of the selected item."
+                },
+                {
+                  "shop.listing.selectionbgcolor",
+                  "Selected BG",
+                  "color",
+                  "Change the text color of the selected item."
+                }
+              }
+            }
           }
         },
         ------------
