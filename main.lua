@@ -261,6 +261,8 @@ local function notify(...)
       settings.save(settingsLocation)
       monitor.setupMonitor(mon)
     end
+    shop.setup()
+    shop.draw(true)
   end
 end
 
@@ -304,10 +306,17 @@ local addRemove = require("modules.menus.item.addRemove")
 ----------------------------------------------------------
 local function doShop()
   --TODO: shop
-  mon:print("Running.")
-  local ok, err = pcall(shop.go)
+  mon:print("Setting up...")
+  local ok, err = pcall(shop.setup)
   if not ok then
-    if err == "Terminated" then
+    error(err, 0)
+  else
+    mon:print("Passed setup")
+  end
+
+  local ok2, err2 = pcall(shop.go)
+  if not ok2 then
+    if err2 == "Terminated" then
       mon.setBackgroundColor(colors.black)
       mon.setTextColor(colors.white)
       mon.clear()
@@ -316,7 +325,7 @@ local function doShop()
       if mon.flush then mon.flush() end
       return
     else
-      error(err, 0)
+      error(err2, 0)
     end
   else
     error("Shop stopped for unknown reason.")
@@ -384,7 +393,8 @@ local function main()
 
   monitor.setupMonitor(mon)
   mon.setBackgroundColor(colors.black)
-
+  mon.setTextColor(colors.white)
+  
   mon.clear()
   mon.setCursorPos(1, 1)
   mon:print("Starting...")
