@@ -82,6 +82,8 @@ function met:draw(m, dcml, selected)
   ew(1, "list", self)
   if self.enabled then
     ew(2, "table", m)
+    ew(3, "number", dcml)
+    ew(4, "number", selected)
 
     local line = string.rep(' ', self.pos[3] - self.pos[1] + 1)
 
