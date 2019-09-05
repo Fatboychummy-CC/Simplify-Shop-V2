@@ -5,6 +5,8 @@ local b = require("modules.shop.monitor.infoBox")
 
 local onotify
 
+local mon, list, shopInfoBox, toDrawSimple
+
 function funcs.notify(ev, ...)
   local args = {...}
 
@@ -30,24 +32,21 @@ function funcs.notify(ev, ...)
   end
 end
 
-function funcs.go()
-  local mon = peripheral.wrap(settings.get("shop.monitor.monitor"))
+function funcs.setup()
+  mon = peripheral.wrap(settings.get("shop.monitor.monitor"))
   moni.setupMonitor(mon, true)
 
   local listtop = settings.get("shop.listing.topStop")
   local listmx = settings.get("shop.listing.maxItemsPerPage")
-  local dcml = settings.get("shop.listing.decimalPlaces")
 
-  local sleepTime = settings.get("shop.refreshRate")
-
-  local list = l.createList(
+  list = l.createList(
     settings.get("shop.listing.leftStop"),
     listtop,
     settings.get("shop.listing.rightStop"),
     listtop + listmx,
     settings.get("shop.listing.enabled")
   )
-  local shopInfoBox = b.new(
+  shopInfoBox = b.new(
     settings.get("shop.info.leftStop"),
     settings.get("shop.info.topStop"),
     settings.get("shop.info.rightStop"),
@@ -76,24 +75,39 @@ function funcs.go()
     settings.get("shop.listing.fgheader"),
     settings.get("shop.listing.bgheader")
   )
+  toDrawSimple = {shopInfoBox}
+end
 
-  local toDrawSimple = {
-    shopInfoBox
-  }
+function funcs.draw(fake)
+  list:clearItems()
+  local dcml = settings.get("shop.listing.decimalPlaces")
 
+  if fake then
+    list:addItem("LISTING 1 NORMAL", 1, 1)
+    list:addItem("LISTING 2 NORMAL", 1, 1)
+    list:addItem("LISTING 1 EMPTY", 0, 1)
+    list:addItem("LISTING 2 EMPTY", 0, 1)
+    list:addItem("LISTING 1 SELECT", 1, 1)
+    list:addItem("LISTING 2 SELECT", 1, 1)
+  end
+
+  mon.setBackgroundColor(colors.black)
+  mon.clear()
+
+  -- "Complex" redraws which require extra inputs.
+  list:draw(mon, dcml, 0)
+
+  -- simple redraws (don't require added inputs)
+  for i, item in ipairs(toDrawSimple) do
+    item:draw(mon)
+  end
+  mon.flush()
+end
+
+function funcs.go()
+  local sleepTime = settings.get("shop.refreshRate")
   while true do
-    list:clearItems()
-    mon.setBackgroundColor(colors.black)
-    mon.clear()
-
-    -- "Complex" redraws which require extra inputs.
-    list:draw(mon, dcml)
-
-    -- simple redraws (don't require added inputs)
-    for i, item in ipairs(toDrawSimple) do
-      item:draw(mon)
-    end
-    mon.flush()
+    funcs.draw(true)
     os.sleep(sleepTime)
   end
 end
