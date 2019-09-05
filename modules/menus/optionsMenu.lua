@@ -199,25 +199,25 @@ local function optionsMenu(sets, settingsLocation, notify)
                   "shop.listing.fgcolor1",
                   "Text Even",
                   "color",
-                  "Change the text color of odd-numbered items."
+                  "Change the text color of even-numbered items."
                 },
                 {
                   "shop.listing.bgcolor1",
                   "BG Even",
                   "color",
-                  "Change the background color of odd-numbered items."
+                  "Change the background color of even-numbered items."
                 },
                 {
                   "shop.listing.fgcolor2",
                   "Text Odd",
                   "color",
-                  "Change the text color of even-numbered items."
+                  "Change the text color of odd-numbered items."
                 },
                 {
                   "shop.listing.bgcolor2",
                   "BG Odd",
                   "color",
-                  "Change the background color of even-numbered items."
+                  "Change the background color of odd-numbered items."
                 },
                 {
                   "shop.listing.selectionfgcolor",
