@@ -108,7 +108,7 @@ function met:draw(m, dcml, selected)
 
       if i ~= selected then
         m.setBackgroundColor(i % 2 == 1 and self.colors[1].bg or self.colors[2].bg)
-        m.setTextColor(i % 2 == 0 and self.colors[1].fg or self.colors[2].fg)
+        m.setTextColor(i % 2 == 1 and self.colors[1].fg or self.colors[2].fg)
       else
         m.setBackgroundColor(self.colors.selected.bg)
         m.setTextColor(self.colors.selected.fg)
