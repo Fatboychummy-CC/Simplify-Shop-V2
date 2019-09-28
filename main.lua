@@ -15,7 +15,7 @@ It is not meant as a "fake loading time" thing.
 local smenus = require("modules.menus.layouts.simple")
 local imenus = require("modules.menus.layouts.insert")
 local qmenus = require("modules.menus.layouts.questions")
-local cache = require("modules.item.cache")
+local costCache = require("modules.item.costCache")
 local bsod = require("modules.etc.bsod")
 local monitor = require("modules.etc.monitor")
 local ep = require("modules.etc.extraPeripherals")
@@ -394,7 +394,7 @@ local function main()
   monitor.setupMonitor(mon)
   mon.setBackgroundColor(colors.black)
   mon.setTextColor(colors.white)
-  
+
   mon.clear()
   mon.setCursorPos(1, 1)
   mon:print("Starting...")
