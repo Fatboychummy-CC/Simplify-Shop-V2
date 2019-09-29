@@ -20,14 +20,15 @@ function funcs.new()
   return tmp
 end
 
-function met:addItem(name, dmg, display, count)
+function met:addItem(name, dmg, display, count, price)
   table.insert(
     self.t,
     {
       name = name,
       damage = dmg,
       displayName = display,
-      count = count
+      count = count,
+      cost = price
     }
   )
 end
