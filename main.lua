@@ -101,12 +101,12 @@ local sets = {
     "FIX ME PLS EEEEE", -- no it doesn't actually need to be fixed
                         -- the shop does this automatically, no matter what this
                         -- is set to.
-    0.5,
+    1,
     -- shop listings
     true,
     2,
     1,
-    25,
+    39,
     1,
     6,
     -- shop listing colors
@@ -124,9 +124,9 @@ local sets = {
     colors.gray,
     colors.white,
     1,
-    30,
-    9,
+    26,
     14,
+    19,
     "Simplify Shop V2",
     "Created by Fatboychummy",
     "Change these by going to",
