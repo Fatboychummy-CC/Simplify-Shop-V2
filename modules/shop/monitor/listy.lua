@@ -78,6 +78,24 @@ function met:setHeaderColor(fg, bg)
   }
 end
 
+function met:hit(x, y)
+  ew(1, "list", self)
+  ew(2, "number", x)
+  ew(3, "number", y)
+
+  local sx, sx2, sy, sy2 = self.pos[1], self.pos[3], self.pos[2], self.pos[4]
+
+  if x >= sx and x <= sx2 and y > sy and y <= sy2 then
+    local itm = self:getItem(y - sy)
+    if itm then
+      return "Item", itm, y - sy
+    else
+      return false
+    end
+  end
+  return false
+end
+
 function met:draw(m, dcml, selected)
   ew(1, "list", self)
   if self.enabled then
