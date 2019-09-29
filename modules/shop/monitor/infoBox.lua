@@ -7,7 +7,7 @@ local ec = ers.create
 local ew = ers.watch
 
 local function box(m, x1, y1, x2, y2)
-  local line = string.rep(' ', x2 - x1)
+  local line = string.rep(' ', x2 - x1 + 1)
 
   for i = y1, y2 do
     m.setCursorPos(x1, i)
