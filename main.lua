@@ -261,7 +261,7 @@ local function notify(...)
       monitor.setupMonitor(mon)
     end
     shop.setup()
-    shop.draw(true)
+    shop.draw(nil, 5, true)
   end
 end
 
@@ -309,8 +309,6 @@ local function doShop()
   local ok, err = pcall(shop.setup)
   if not ok then
     error(err, 0)
-  else
-    mon:print("Passed setup")
   end
 
   local ok2, err2 = pcall(shop.go)
