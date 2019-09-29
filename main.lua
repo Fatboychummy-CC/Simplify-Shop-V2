@@ -15,7 +15,6 @@ It is not meant as a "fake loading time" thing.
 local smenus = require("modules.menus.layouts.simple")
 local imenus = require("modules.menus.layouts.insert")
 local qmenus = require("modules.menus.layouts.questions")
-local costCache = require("modules.item.costCache")
 local bsod = require("modules.etc.bsod")
 local monitor = require("modules.etc.monitor")
 local ep = require("modules.etc.extraPeripherals")
