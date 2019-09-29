@@ -1,5 +1,6 @@
 local funcs = {}
 local moni = require("modules.etc.monitor")
+local items = require("modules.item.itemCache")
 local l = require("modules.shop.monitor.listy")
 local b = require("modules.shop.monitor.infoBox")
 
@@ -78,7 +79,7 @@ function funcs.setup()
   toDrawSimple = {shopInfoBox}
 end
 
-function funcs.draw(fake)
+function funcs.draw(displayItems, selection, fake)
   list:clearItems()
   local dcml = settings.get("shop.listing.decimalPlaces")
 
@@ -87,15 +88,23 @@ function funcs.draw(fake)
     list:addItem("LISTING 2 NORMAL", 1, 1)
     list:addItem("LISTING 1 EMPTY", 0, 1)
     list:addItem("LISTING 2 EMPTY", 0, 1)
-    list:addItem("LISTING 1 SELECT", 1, 1)
-    list:addItem("LISTING 2 SELECT", 1, 1)
+    list:addItem("LISTING SELECT", 1, 1)
+  else
+    for i = 1, #displayItems do
+      local c = displayItems[i]
+      list:addItem(
+        c.displayName,
+        c.count,
+        c.cost
+      )
+    end
   end
 
   mon.setBackgroundColor(colors.black)
   mon.clear()
 
   -- "Complex" redraws which require extra inputs.
-  list:draw(mon, dcml, 0)
+  list:draw(mon, dcml, selection or 0)
 
   -- simple redraws (don't require added inputs)
   for i, item in ipairs(toDrawSimple) do
@@ -106,9 +115,16 @@ end
 
 function funcs.go()
   local sleepTime = settings.get("shop.refreshRate")
+  local tmr = os.startTimer(sleepTime)
+  funcs.draw({}, 0, false)
+
   while true do
-    funcs.draw(true)
-    os.sleep(sleepTime)
+    local ev = {os.pullEvent()}
+    funcs.draw({}, 0, false)
+
+    if ev[1] == "timer" and ev[2] == tmr then
+      tmr = os.startTimer(sleepTime)
+    end
   end
 end
 
