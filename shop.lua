@@ -1,11 +1,39 @@
 local debug = true
 local expect = require("cc.expect").expect
 
-local smd5Location = "https://raw.githubusercontent.com/kikito/md5.lua/master/md5.lua"
-local sTampererLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Tamperer/master/minified.lua"
-local sFrameLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Frame/master/Frame.lua"
-local sLoggerLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Compendium/master/modules/core/logger.lua"
 
+--##############################################################
+-- Initial setup stuff, so we can download dependencies we need
+--##############################################################
+local sAbsoluteDir = "/" .. shell.dir() .. "/"
+local sSelfLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/shop.lua"
+local sSelfName = sAbsoluteDir .. "shop.lua"
+local smd5Location = "https://raw.githubusercontent.com/kikito/md5.lua/master/md5.lua"
+local smd5Name = sAbsoluteDir .. "modules/md5.lua"
+local sTampererLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Tamperer/master/minified.lua"
+local sTampererName = sAbsoluteDir .. "modules/Tamperer.lua"
+local sFrameLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Frame/master/Frame.lua"
+local sFrameName = sAbsoluteDir .. "modules/Frame.lua"
+local sLoggerLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Compendium/master/modules/core/logger.lua"
+local sLoggerName = sAbsoluteDir .. "modules/Logger.lua"
+local sMainMenuLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.lson"
+
+-- Reads a local file and returns the data in a string
+local function readFile(sFileName)
+  expect(1, sFileName, "string")
+
+  local h, err = io.open(sFileName, 'r')
+  if h then
+    local sData = h:read("*a")
+    h:close()
+    return sData
+  else
+    printError(string.format("Failed to open file '%s' for reading.", sFileName))
+    error(err, 2)
+  end
+end
+
+-- Downloads a file using http from sFileLocation
 local function getFile(sFileLocation)
   expect(1, sFileLocation, "string")
 
@@ -20,6 +48,7 @@ local function getFile(sFileLocation)
   end
 end
 
+-- writes sData to sFileName
 local function writeFile(sFileName, sData)
   expect(1, sFileName, "string")
   expect(2, sData, "string")
@@ -33,28 +62,29 @@ local function writeFile(sFileName, sData)
   end
 end
 
-if not fs.exists("/md5.lua") then
-  print("Installing initial md5 file.")
-  writeFile("/md5.lua", getFile(smd5Location))
+-- checks if sFileName exists, and if not, downloads it from sLocation
+local function checkAndDownload(sFileName, sLocation)
+  expect(1, sFileName, "string")
+  expect(2, sLocation, "string")
+
+  if not fs.exists(sFileName) then
+    print(string.format(
+      "Missing dependency: %s\nDownloading: %s",
+      sFileName,
+      sLocation
+    ))
+    writeFile(sFileName, getFile(sLocation))
+  end
 end
 
-if not fs.exists("/Frame.lua") then
-  print("Installing initial Frame file.")
-  writeFile("/Frame.lua", getFile(sFrameLocation))
-end
+-- check and download dependencies
+checkAndDownload(smd5Name, smd5Location)
+checkAndDownload(sFrameName, sFrameLocation)
+checkAndDownload(sTampererName, sTampererLocation)
+checkAndDownload(sLoggerName, sLoggerLocation)
 
-if not fs.exists("/Tamperer.lua") then
-  print("Installing initial Tamperer file.")
-  writeFile("/Tamperer.lua", getFile(sTampererLocation))
-end
-
-if not fs.exists("/Logger.lua") then
-  print("Installing initial logger file.")
-  writeFile("/Logger.lua", getFile(sLoggerLocation))
-end
-
-local md5 = require "md5"
-local Frame = require "Frame"
-local Tamperer = require "Tamperer"
-local Logger = require "Logger"
+local md5 = require "modules.md5"
+local Frame = require "modules.Frame"
+local Tamperer = require "modules.Tamperer"
+local Logger = require "modules.Logger"
 local log = Logger("Shop")
