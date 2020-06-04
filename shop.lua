@@ -6,17 +6,32 @@ local expect = require("cc.expect").expect
 -- Initial setup stuff, so we can download dependencies we need
 --##############################################################
 local sAbsoluteDir = "/" .. shell.dir() .. "/"
-local sSelfLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/shop.lua"
-local sSelfName = sAbsoluteDir .. "shop.lua"
-local smd5Location = "https://raw.githubusercontent.com/kikito/md5.lua/master/md5.lua"
-local smd5Name = sAbsoluteDir .. "modules/md5.lua"
-local sTampererLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Tamperer/master/minified.lua"
-local sTampererName = sAbsoluteDir .. "modules/Tamperer.lua"
-local sFrameLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Frame/master/Frame.lua"
-local sFrameName = sAbsoluteDir .. "modules/Frame.lua"
-local sLoggerLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Compendium/master/modules/core/logger.lua"
-local sLoggerName = sAbsoluteDir .. "modules/Logger.lua"
-local sMainMenuLocation = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.lson"
+local tFiles = {
+  self = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/shop.lua",
+    name = shell.getRunningProgram()
+  },
+  md5 = {
+    location = "https://raw.githubusercontent.com/kikito/md5.lua/master/md5.lua",
+    name = sAbsoluteDir .. "modules/md5.lua"
+  },
+  Tamperer = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Tamperer/master/minified.lua",
+    name = sAbsoluteDir .. "modules/Tamperer.lua"
+  },
+  Frame = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Frame/master/Frame.lua",
+    sAbsoluteDir .. "modules/Frame.lua"
+  },
+  Logger = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Compendium/master/modules/core/logger.lua",
+    sAbsoluteDir .. "modules/Logger.lua"
+  },
+  MainMenu = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.lson",
+    sAbsoluteDir .. "data/main.lson"
+  }
+}
 
 -- Reads a local file and returns the data in a string
 local function readFile(sFileName)
@@ -78,10 +93,11 @@ local function checkAndDownload(sFileName, sLocation)
 end
 
 -- check and download dependencies
-checkAndDownload(smd5Name, smd5Location)
-checkAndDownload(sFrameName, sFrameLocation)
-checkAndDownload(sTampererName, sTampererLocation)
-checkAndDownload(sLoggerName, sLoggerLocation)
+for sModule, tData in pairs(tFiles) do
+  if sModule ~= "self" then
+    checkAndDownload(tData.name, tData.location)
+  end
+end
 
 local md5 = require "modules.md5"
 local Frame = require "modules.Frame"
