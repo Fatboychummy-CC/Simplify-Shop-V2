@@ -21,15 +21,15 @@ local tFiles = {
   },
   Frame = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Frame/master/Frame.lua",
-    sAbsoluteDir .. "modules/Frame.lua"
+    name = sAbsoluteDir .. "modules/Frame.lua"
   },
   Logger = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Compendium/master/modules/core/logger.lua",
-    sAbsoluteDir .. "modules/Logger.lua"
+    name = sAbsoluteDir .. "modules/Logger.lua"
   },
   MainMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.lson",
-    sAbsoluteDir .. "data/main.lson"
+    name = sAbsoluteDir .. "data/main.lson"
   }
 }
 
