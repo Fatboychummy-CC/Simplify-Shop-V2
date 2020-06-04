@@ -28,8 +28,12 @@ local tFiles = {
     name = sAbsoluteDir .. "modules/Logger.lua"
   },
   MainMenu = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.lson",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.tamp",
     name = sAbsoluteDir .. "data/main.lson"
+  },
+  OptionsMenu = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/options.tamp"
+    name = sAbsoluteDir .. "data/options.tamp"
   }
 }
 
