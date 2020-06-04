@@ -29,7 +29,7 @@ local tFiles = {
   },
   MainMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.tamp",
-    name = sAbsoluteDir .. "data/main.lson"
+    name = sAbsoluteDir .. "data/main.tamp"
   },
   OptionsMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/options.tamp",
