@@ -104,3 +104,22 @@ local Frame = require "modules.Frame"
 local Tamperer = require "modules.Tamperer"
 local Logger = require "modules.Logger"
 local log = Logger("Shop")
+
+local function checkUpdates()
+  log.info("Checking for updates...")
+
+  local function checkSingleUpdate(tData)
+    local sLocalHash = md5.sum(readFile(tData.name))
+    local sRemoteHash = md5.sum(getFile(tData.location))
+    if sLocalHash ~= sRemoteHash then
+      return true
+    end
+    return false
+  end
+
+  local tCheck = {}
+  for sModule, tData in pairs(tFiles) do
+    tCheck[sModule] = checkSingleUpdate(tData)
+  end
+  return tCheck
+end
