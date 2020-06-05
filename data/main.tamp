@@ -1,0 +1,46 @@
+{
+  name = "Main Menu",
+  info = "Select an option",
+  bigInfo = "",
+  platform = "all",
+  colors = {
+    bg = {
+      main = "black",
+    },
+    fg = {
+      main = "white",
+      title = "yellow",
+      info = "lightGray",
+      listInfo = "gray",
+      listTitle = "white",
+      bigInfo = "lightGray",
+      selector = "yellow",
+      arrowDisabled = "gray",
+      arrowEnabled = "white",
+      input = "yellow",
+      error = "red",
+    }
+  },
+  selections = {
+    {
+      title = "Run Shop",
+      info = "Run the shop",
+      bigInfo = "Exit this menu and run the shop."
+    },
+    {
+      title = "Updates",
+      info = "<FILL ME IN DADDY>",
+      bigInfo = "<FILL ME IN DADDY>"
+    },
+    {
+      title = "Settings",
+      info = "Change shop settings",
+      bigInfo = "Change settings like Krist password/address, add/remove items, and change shop visuals."
+    },
+  },
+  settings = {
+    location = ".shopSettings",
+  },
+  subPages = {},
+  final = "Exit"
+}
