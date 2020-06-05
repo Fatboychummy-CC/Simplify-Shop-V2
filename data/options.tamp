@@ -1,0 +1,63 @@
+{
+  name = "Options Menu",
+  info = "Change some options my guy",
+  bigInfo = "",
+  platform = "all",
+  colors = {
+    bg = {
+      main = "black",
+    },
+    fg = {
+      main = "white",
+      title = "yellow",
+      info = "lightGray",
+      listInfo = "gray",
+      listTitle = "white",
+      bigInfo = "lightGray",
+      selector = "yellow",
+      arrowDisabled = "gray",
+      arrowEnabled = "white",
+      input = "yellow",
+      error = "red",
+    }
+  },
+  selections = {
+  },
+  settings = {
+    location = ".shopSettings",
+    {
+      setting = "shop.owner",
+      title = "Owner",
+      tp = "string",
+      bigInfo = "Who is the owner of this shop?"
+    },
+    {
+      setting = "shop.KristAddress",
+      title = "Krist Addr",
+      tp = "string",
+      bigInfo = "What is the krist address of this shop?"
+    },
+    {
+      setting = "shop.KristWallet",
+      title = "pkey",
+      tp = "password",
+      store = "kristwallet",
+      bigInfo = "What is the pkey of your wallet?  This will be transformed into and stored as a Kristwallet hash."
+    }
+  },
+  subPages = {
+    {
+      name = "Visuals",
+      info = "Change Visuals",
+      bigInfo = "Change how your shop looks!",
+      final = "Go back."
+    },
+    {
+      name = "Items",
+      info = "Add/Remove/Edit Items",
+      bigInfo = "Add, remove, or edit items you wish to sell at your shop.",
+      final = "Go back."
+    }
+  },
+  final = "Go back."
+}
