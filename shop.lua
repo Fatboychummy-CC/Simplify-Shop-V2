@@ -110,6 +110,7 @@ local Logger = require "modules.Logger"
 local log = Logger("Shop")
 
 local function checkUpdates()
+  print("Checking for updates...")
   log.info("Checking for updates...")
 
   local function checkSingleUpdate(tData)
@@ -121,9 +122,51 @@ local function checkUpdates()
     return false
   end
 
-  local tCheck = {}
+  local tCheck = {n = 0}
   for sModule, tData in pairs(tFiles) do
-    tCheck[sModule] = checkSingleUpdate(tData)
+    local bVal = checkSingleUpdate(tData)
+    tCheck[sModule] = bVal
+    if bVal then
+      tCheck.n = tCheck.n + 1
+    end
   end
   return tCheck
+end
+
+local function options()
+end
+
+local function updater(tUpdates)
+end
+
+local function mainMenu()
+  local fLoad, err = load("return " .. readFile(tFiles.MainMenu.name))
+
+  if fLoad then
+    local tMenu = fLoad()
+    local tUpdates = checkUpdates()
+    tMenu.selections[2].info = tUpdates.n == 1 and "1 update available"
+                              or string.format("%d updates available", tUpdates.n)
+    tMenu.selections[2].bigInfo = tUpdates.n == 0 and "There are no updates available at this time."
+                              or tUpdates.n == 1 and "There is one update available at this time."
+                              or string.format("There are %d updates available at this time.", tUpdates.n)
+
+    local iSelection = Tamperer.display(tMenu, nil, 15)
+    if iSelection == 1 then
+      -- run the shop
+    elseif iSelection == 2 then
+      -- updater
+      -- presented as a seperate page to allow a "save and exit" sort of functionality.
+      updater(tUpdates)
+    elseif iSelection == 3 then
+      -- options menu
+      -- Presented as a seperate page rather than a subpage to allow the visuals customizer to start when swapped to.
+      options()
+    elseif iSelection == 4 then
+      -- exit
+    end
+  else
+    printError("Failed to load the main menu.")
+    error(err, 0)
+  end
 end
