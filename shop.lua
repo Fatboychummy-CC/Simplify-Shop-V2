@@ -103,6 +103,9 @@ for sModule, tData in pairs(tFiles) do
   end
 end
 
+--##############################################################
+-- Start main program
+--##############################################################
 local md5 = require "modules.md5"
 local Frame = require "modules.Frame"
 local Tamperer = require "modules.Tamperer"
@@ -113,6 +116,8 @@ local function checkUpdates()
   print("Checking for updates...")
   log.info("Checking for updates...")
 
+  -- check if a single module needs an update by getting both hashes and comparing
+  -- if the hash is different, an update is available
   local function checkSingleUpdate(tData)
     local sLocalHash = md5.sum(readFile(tData.name))
     local sRemoteHash = md5.sum(getFile(tData.location))
@@ -122,6 +127,7 @@ local function checkUpdates()
     return false
   end
 
+  -- check each module
   local tCheck = {n = 0}
   for sModule, tData in pairs(tFiles) do
     local bVal = checkSingleUpdate(tData)
@@ -133,40 +139,58 @@ local function checkUpdates()
   return tCheck
 end
 
+-- run the options page
 local function options()
 end
 
+-- run the updater page
 local function updater(tUpdates)
 end
 
+-- run the main menu
 local function mainMenu()
+  -- load the page (the same way tamperer does)
   local fLoad, err = load("return " .. readFile(tFiles.MainMenu.name))
 
+  -- if no errors
   if fLoad then
+    -- turn the page into a table
     local tMenu = fLoad()
+    -- check for updates
     local tUpdates = checkUpdates()
+
+    -- set the value of the update selection to match update check
     tMenu.selections[2].info = tUpdates.n == 1 and "1 update available"
                               or string.format("%d updates available", tUpdates.n)
     tMenu.selections[2].bigInfo = tUpdates.n == 0 and "There are no updates available at this time."
                               or tUpdates.n == 1 and "There is one update available at this time."
                               or string.format("There are %d updates available at this time.", tUpdates.n)
 
-    local iSelection = Tamperer.display(tMenu, nil, 15)
-    if iSelection == 1 then
-      -- run the shop
-    elseif iSelection == 2 then
-      -- updater
-      -- presented as a seperate page to allow a "save and exit" sort of functionality.
-      updater(tUpdates)
-    elseif iSelection == 3 then
-      -- options menu
-      -- Presented as a seperate page rather than a subpage to allow the visuals customizer to start when swapped to.
-      options()
-    elseif iSelection == 4 then
-      -- exit
+    local flg = true
+    while true do
+      -- display the page
+      -- if first time running the page, timeout of 15 seconds
+      local iSelection = Tamperer.display(tMenu, nil, flg and 15 or nil)
+      flg = false
+      if iSelection == 1 then
+        -- run the shop
+      elseif iSelection == 2 then
+        -- updater
+        -- presented as a seperate page to allow a "save and exit" sort of functionality.
+        updater(tUpdates)
+      elseif iSelection == 3 then
+        -- options menu
+        -- Presented as a seperate page rather than a subpage to allow the visuals customizer to start when swapped to.
+        options()
+      elseif iSelection == 4 then
+        -- exit
+        break
+      end
     end
   else
     printError("Failed to load the main menu.")
     error(err, 0)
   end
 end
+
+mainMenu()
