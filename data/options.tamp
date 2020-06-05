@@ -43,6 +43,12 @@
       tp = "password",
       store = "kristwallet",
       bigInfo = "What is the pkey of your wallet?  This will be transformed into and stored as a Kristwallet hash."
+    },
+    {
+      setting = "shop.autorun",
+      title = "Autorun",
+      tp = "number",
+      bigInfo = "How long in seconds should the shop wait in the menu before autorunning?  Set to 0 to disable."
     }
   },
   subPages = {
