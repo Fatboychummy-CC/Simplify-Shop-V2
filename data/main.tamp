@@ -29,8 +29,8 @@
     },
     {
       title = "Updates",
-      info = "<FILL ME IN DADDY>",
-      bigInfo = "<FILL ME IN DADDY>"
+      info = "An error occured.",
+      bigInfo = "An error occured."
     },
     {
       title = "Settings",
