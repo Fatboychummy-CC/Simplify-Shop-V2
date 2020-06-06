@@ -34,6 +34,10 @@ local tFiles = {
   OptionsMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/options.tamp",
     name = sAbsoluteDir .. "data/options.tamp"
+  },
+  UpdaterMenu = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/updates.tamp",
+    name = sAbsoluteDir .. "data/updates.tamp"
   }
 }
 
@@ -112,6 +116,8 @@ local Tamperer = require "modules.Tamperer"
 local Logger = require "modules.Logger"
 local log = Logger("Shop")
 
+-- update checker
+-- returns a table of boolean values.
 local function checkUpdates()
   print("Checking for updates...")
   log.info("Checking for updates...")
@@ -139,12 +145,41 @@ local function checkUpdates()
   return tCheck
 end
 
+-- define some default settings
+local function defineSettings()
+  settings.define("shop.autorun", {type = "number", default = 15})
+end
+
 -- run the options page
 local function options()
+  defineSettings()
+  local function settingHandler(sFileName, sSetting, NewVal, tPage)
+    --TODO: This should display the shop when any visual change is made
+  end
+  Tamperer.displayFile(tFiles.OptionsMenu.name, settingHandler)
 end
 
 -- run the updater page
 local function updater(tUpdates)
+  local fLoad, err = load("return " .. readFile(tFiles.UpdaterMenu.name))
+  if fLoad then
+    local tMenu = fLoad()
+    tUpdates.n = nil
+    for sModule, bIsUpdate in pairs(tUpdates) do
+      if bIsUpdate then
+        tMenu.settings[#tMenu.settings + 1] = {
+          setting = "UPDATE." .. sModule,
+          title = #sModule < 10 and sModule or sModule:sub(1, 7) .. "...",
+          tp = "boolean",
+          bigInfo = string.format("Set to true to update the module %s.", sModule)
+        }
+        settings.set("UPDATE." .. sModule, false)
+      end
+    end
+    settings.save(tMenu.settings.location)
+
+    Tamperer.display(tMenu)
+  end
 end
 
 -- run the main menu
