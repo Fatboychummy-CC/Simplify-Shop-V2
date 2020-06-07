@@ -133,13 +133,25 @@ local function checkUpdates()
     return false
   end
 
+  -- count modules
+  local iCount = 0
+  for _, _ in pairs(tFiles) do
+    iCount = iCount + 1
+  end
+
   -- check each module
   local tCheck = {n = 0}
+  local i = 0
   for sModule, tData in pairs(tFiles) do
     local bVal = checkSingleUpdate(tData)
     tCheck[sModule] = bVal
     if bVal then
       tCheck.n = tCheck.n + 1
+    i = i + 1
+    term.setCursorPos(iX, iY)
+    io.write(string.rep(' ', mX - iX))
+    term.setCursorPos(iX, iY)
+    io.write(string.format("%d / %d)", i, iCount))
     end
   end
   return tCheck
@@ -165,6 +177,7 @@ local function updater(tUpdates)
   if fLoad then
     local tMenu = fLoad()
     tUpdates.n = nil
+    local tResolver = {}
     for sModule, bIsUpdate in pairs(tUpdates) do
       if bIsUpdate then
         tMenu.settings[#tMenu.settings + 1] = {
@@ -174,11 +187,38 @@ local function updater(tUpdates)
           bigInfo = string.format("Set to true to update the module %s.", sModule)
         }
         settings.set("UPDATE." .. sModule, false)
+        tResolver["UPDATE." .. sModule] = sModule
       end
     end
     settings.save(tMenu.settings.location)
 
-    Tamperer.display(tMenu)
+    local result = Tamperer.display(tMenu)
+
+    -- if we chose to update
+    if result == 1 then
+      term.setBackgroundColor(colors.black)
+      term.setTextColor(colors.white)
+      term.clear()
+      term.setCursorPos(1, 1)
+      log.info("Update started.")
+      print("Update started.")
+      local iUpdated = 0
+      for k, v in pairs(tResolver) do
+        if settings.get(k) then -- if the update selection was true
+          log.info(string.format("Updating module %s.", v))
+          print(string.format("Updating module %s.", v))
+          fs.delete(tFiles[v].location)
+          writeFile(tFiles[v].name, getFile(tFiles[v].location))
+          iUpdated = iUpdated + 1
+        end
+      end
+      log.info("Update completed.")
+      Logger.close()
+      print(string.format("Update completed. Updated %d module(s).", iUpdated))
+      print("Rebooting...")
+      os.sleep(4)
+      os.reboot()
+    end
   end
 end
 
@@ -229,3 +269,5 @@ local function mainMenu()
 end
 
 mainMenu()
+
+Logger.close()
