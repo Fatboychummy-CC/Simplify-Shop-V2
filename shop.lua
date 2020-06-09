@@ -123,7 +123,9 @@ local log = Logger("Shop")
 -- update checker
 -- returns a table of boolean values.
 local function checkUpdates()
-  print("Checking for updates...")
+  io.write("Checking for updates (")
+  local iX, iY = term.getCursorPos()
+  local mX = term.getSize()
   log.info("Checking for updates...")
 
   -- check if a single module needs an update by getting both hashes and comparing
@@ -156,6 +158,13 @@ local function checkUpdates()
     io.write(string.rep(' ', mX - iX))
     term.setCursorPos(iX, iY)
     io.write(string.format("%d / %d)", i, iCount))
+
+  log.info(string.format("Found %d update(s).", tCheck.n))
+  if tCheck.n > 0 then
+    for k, v in pairs(tCheck) do
+      if k ~= "n" then
+        log.info(string.format("  %s", k))
+      end
     end
   end
   return tCheck
