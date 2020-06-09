@@ -38,6 +38,10 @@ local tFiles = {
   UpdaterMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/updates.tamp",
     name = sAbsoluteDir .. "data/updates.tamp"
+  },
+  ItemsMenu = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/items.tamp",
+    name = sAbsoluteDir .. "data/items.tamp"
   }
 }
 

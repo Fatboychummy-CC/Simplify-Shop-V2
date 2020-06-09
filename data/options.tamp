@@ -57,12 +57,6 @@
       info = "Change Visuals",
       bigInfo = "Change how your shop looks!",
       final = "Go back."
-    },
-    {
-      name = "Items",
-      info = "Add/Remove/Edit Items",
-      bigInfo = "Add, remove, or edit items you wish to sell at your shop.",
-      final = "Go back."
     }
   },
   final = "Go back."

@@ -37,6 +37,11 @@
       info = "Change shop settings",
       bigInfo = "Change settings like Krist password/address, add/remove items, and change shop visuals."
     },
+    {
+      title = "Items",
+      info = "Add/Remove/Edit Items",
+      bigInfo = "Add, remove, or edit items you wish to sell at your shop.",
+    }
   },
   settings = {
     location = ".shopSettings",
