@@ -120,6 +120,43 @@ local Tamperer = require "modules.Tamperer"
 local Logger = require "modules.Logger"
 local log = Logger("Shop")
 
+local tTampBase = {
+  bigInfo = "",
+  platform = "all",
+  colors = {
+    bg = {
+      main = "black",
+    },
+    fg = {
+      main = "white",
+      title = "yellow",
+      info = "lightGray",
+      listInfo = "gray",
+      listTitle = "white",
+      bigInfo = "lightGray",
+      selector = "yellow",
+      arrowDisabled = "gray",
+      arrowEnabled = "white",
+      input = "yellow",
+      error = "red",
+    }
+  },
+  final = "Confirm"
+}
+
+
+local function dCopy(tCopy)
+  local tReturn = {}
+  for k, v in pairs(tCopy) do
+    if type(v) == "table" then
+      tReturn[k] = dCopy(v)
+    else
+      tReturn[k] = v
+    end
+  end
+  return tReturn
+end
+
 -- update checker
 -- returns a table of boolean values.
 local function checkUpdates()
@@ -168,6 +205,223 @@ local function checkUpdates()
     end
   end
   return tCheck
+end
+
+-- edit single item
+local function edit(tItem)
+  local tTampCurrent = dCopy(tTampBase)
+  tTampCurrent.name = "Edit Item"
+  tTampCurrent.info = "Edit the selected item"
+  tTampCurrent.final = "Confirm"
+
+  settings.define("tempdata.displayName", {default = tItem.displayName})
+  settings.define("tempdata.price", {default = tItem.price})
+
+  tTampCurrent.settings = {
+    location = "data/.temp",
+    {
+      setting = "tempdata.displayName",
+      title = "Name",
+      tp = "string",
+      bigInfo = string.format(
+        "Set the name of the item %s (with damage %d).",
+        tItem.name,
+        tItem.damage
+      )
+    },
+    {
+      setting = "tempdata.price",
+      title = "Price",
+      tp = "number",
+      min = 0,
+      bigInfo = "Set the price of this item."
+    }
+  }
+
+  Tamperer.display(tTampCurrent)
+  tItem.displayName = settings.get("tempdata.displayName")
+  tItem.price = settings.get("tempdata.price")
+  settings.unset("tempdata.displayName")
+  settings.unset("tempdata.price")
+  settings.undefine("tempdata.displayName")
+  settings.undefine("tempdata.price")
+  settings.save(tTampCurrent.settings.location)
+end
+
+-- edit items
+local function editItems(tItems)
+  while true do
+    local tTampCurrent = dCopy(tTampBase)
+
+    tTampCurrent.name = "Edit Items"
+    tTampCurrent.info = "Edit items here."
+    tTampCurrent.final = "Exit."
+
+    tTampCurrent.selections = {}
+    for i = 1, #tItems do
+      local tCurrent = tItems[i]
+      tTampCurrent.selections[#tTampCurrent.selections + 1] = {
+        title = tCurrent.displayName:sub(1, 12),
+        info = string.format(
+          "Edit item %s (%d)",
+          tCurrent.displayName,
+          tCurrent.damage
+        ):sub(1, 25),
+        bigInfo = string.format(
+          "Edit the item '%s' (with damage %d%s).  Currently priced at %.2f.",
+          tCurrent.displayName,
+          tCurrent.damage,
+          tCurrent.nbtHash and " and with a nbtHash" or "",
+          tCurrent.price
+        )
+      }
+    end
+
+    local iSelection = Tamperer.display(tTampCurrent)
+
+    if iSelection == #tItems + 1 then
+      return
+    else
+      edit(tItems[iSelection])
+    end
+  end
+end
+
+-- compare two tables, ignoring anything at lower depths.
+-- will return false if the tables contain subtables.
+local function compare(t1, t2)
+  local function check(t1, t2)
+    for k, v in pairs(t1) do
+      if not t2[k] or t2[k] ~= v then
+        return false
+      end
+    end
+
+    return true
+  end
+
+  return check(t1, t2) and check(t2, t1)
+end
+
+-- checks for table entries that are the same, recursively.
+local function collapse(tTable)
+  local tRemovals = {}
+  -- compare each table to each table, marking similar tables for removal
+  for i = 1, #tTable - 1 do
+    for o = i + 1, #tTable do
+      if compare(tTable[i], tTable[o]) then
+        tRemovals[#tRemovals + 1] = o
+      end
+    end
+  end
+  table.sort(tRemovals)
+
+  -- remove things marked for removal
+  local iLast = 0
+  for i = #tRemovals, 1, -1 do
+    -- but only if we haven't already removed it (ie something gets marked twice)
+    if tRemovals[i] ~= iLast then
+      table.remove(tTable, tRemovals[i])
+    end
+    iLast = tRemovals[i]
+  end
+end
+
+local function addItems()
+  term.setTextColor(colors.white)
+  term.setBackgroundColor(colors.black)
+  term.clear()
+  term.setCursorPos(1, 1)
+  log.info("Item addition start")
+  print("Entering item addition setup...")
+
+  -- get the basic item information
+  local bOk, tItems = pcall(peripheral.call, "front", "list")
+  if bOk and tItems then
+    local iSize = peripheral.call("front", "size")
+    if iSize then
+      local tDetailedItems = {}
+
+      -- get detailed information about each item
+      for i = 1, iSize do
+        if tItems[i] then
+          -- we want to keep the name, damage, display name, and nbthash (if exists)
+          local tCurrent = tItems[i]
+          local iDamage = tCurrent.damage
+          local sName = tCurrent.name
+          print(string.format("Getting metadata for item %s (%d)", sName, iDamage))
+          local tMeta = peripheral.call("front", "getItemMeta", i)
+          if tMeta then
+            tDetailedItems[#tDetailedItems + 1] = {
+              name = sName,
+              damage = iDamage,
+              displayName = tMeta.displayName,
+              nbtHash = tMeta.nbtHash, -- TODO: Filter by nbthash?
+              price = 1
+            }
+          else
+            print(string.format("Failed to get metadata for item %s (%d)", sName, iDamage))
+            log.warn(string.format("Failed to get metadata for item %s (%d)", sName, iDamage))
+          end
+        end
+      end
+      print("Got all items.")
+      print("Removing duplicates")
+      collapse(tDetailedItems)
+      print("Done.")
+      os.sleep(2)
+
+      -- enter edit page.
+      editItems(tDetailedItems)
+
+      return
+    else
+      log.warn("Failed to get chest size.")
+      printError("Failed to get chest size.  Exiting...")
+    end
+  else
+    log.warn("No chest for item addition!")
+    printError("No chest detected in front of the machine! Exiting...")
+  end
+  os.sleep(5)
+end
+
+local function items()
+  while true do
+    local iSelection = Tamperer.displayFile(tFiles.ItemsMenu.name)
+
+    local tTampCurrent = dCopy(tTampBase)
+
+    if iSelection == 1 then
+      -- add items
+      tTampCurrent.name = "Add Items"
+      tTampCurrent.info = "Item addition wizard"
+      tTampCurrent.final = "Cancel"
+
+      tTampCurrent.selections = {{
+        title = "Ready",
+        info = "Select when ready.",
+        bigInfo = "Place a chest with the items you wish to add in front of this machine, then select this."
+      }}
+      local iResult = Tamperer.display(tTampCurrent)
+      if iResult == 1 then
+        addItems()
+      end
+    elseif iSelection == 2 then
+      -- edit items
+      tTampCurrent.name = "Edit Items"
+      tTampCurrent.info = "Edit items here"
+      tTampCurrent.final = "Go back."
+
+
+    elseif iSelection == 3 then
+      -- remove items
+      tTampCurrent.name = "Remove Items"
+      tTampCurrent.info = "Remove items here"
+    else
+      return
+    end
+  end
 end
 
 -- define some default settings
@@ -271,6 +525,10 @@ local function mainMenu()
         -- Presented as a seperate page rather than a subpage to allow the visuals customizer to start when swapped to.
         options()
       elseif iSelection == 4 then
+        -- items menu
+        -- Presented as a seperate page rather than a subpage to allow
+        items()
+      elseif iSelection == 5 then
         -- exit
         break
       end
