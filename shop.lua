@@ -119,6 +119,11 @@ local Frame = require "modules.Frame"
 local Tamperer = require "modules.Tamperer"
 local Logger = require "modules.Logger"
 local log = Logger("Shop")
+local sCacheLocation = "data/cache"
+settings.load(fs.combine(sAbsoluteDir, sCacheLocation))
+settings.define("cache", {default = {}})
+local tCache = settings.get("cache")
+tCache.n = #tCache
 
 local tTampBase = {
   bigInfo = "",
@@ -144,6 +149,12 @@ local tTampBase = {
   final = "Confirm"
 }
 
+local function saveCache()
+  settings.clear()
+  settings.set("cache", tCache)
+  settings.save(fs.combine(sAbsoluteDir, sCacheLocation))
+  settings.clear()
+end
 
 local function dCopy(tCopy)
   local tReturn = {}
@@ -207,6 +218,23 @@ local function checkUpdates()
   return tCheck
 end
 
+-- get a yes or no answer
+local function ensure(sTitle, sInfo, sInfoYes, sBigInfoYes)
+  local tTampCurrent = dCopy(tTampBase)
+  tTampCurrent.name = sTitle or ""
+  tTampCurrent.info = sInfo or "Are you sure?"
+  tTampCurrent.selections = {
+    {
+      title = "Yes",
+      info = sInfoYes or "",
+      bigInfo = sBigInfoYes or ""
+    }
+  }
+  tTampCurrent.final = "No"
+
+  return Tamperer.display(tTampCurrent) == 1
+end
+
 -- edit single item
 local function edit(tItem)
   local tTampCurrent = dCopy(tTampBase)
@@ -216,6 +244,11 @@ local function edit(tItem)
 
   settings.set("tempdata.displayName", tItem.displayName)
   settings.set("tempdata.price", tItem.price)
+  local bShow = tItem.show
+  if type(bShow) ~= "boolean" then
+    bShow = true
+  end
+  settings.set("tempdata.show", bShow)
 
   tTampCurrent.settings = {
     location = "data/.temp",
@@ -235,16 +268,20 @@ local function edit(tItem)
       tp = "number",
       min = 0,
       bigInfo = "Set the price of this item."
+    },
+    {
+      setting = "tempdata.show",
+      title = "Show",
+      tp = "boolean",
+      bigInfo = "Show this item in the shop?"
     }
   }
 
   Tamperer.display(tTampCurrent)
   tItem.displayName = settings.get("tempdata.displayName")
   tItem.price = settings.get("tempdata.price")
-  settings.unset("tempdata.displayName")
-  settings.unset("tempdata.price")
-  settings.undefine("tempdata.displayName")
-  settings.undefine("tempdata.price")
+  tItem.show = settings.get("tempdata.show")
+  settings.clear()
   settings.save(tTampCurrent.settings.location)
 end
 
@@ -327,6 +364,110 @@ local function collapse(tTable)
   end
 end
 
+--
+local function configureDuplicates(tNewItems)
+  -- determine duplicates
+  local tDupes = {}
+  for i = 1, #tNewItems do
+    local tNItem = tNewItems[i]
+    for j = 1, tCache.n do
+      local tCItem = tCache[j]
+      if tNItem.name == tCItem.name and tNItem.nbthash == tCItem.nbthash then
+        tDupes[#tDupes + 1] = {i, j}
+      end
+    end
+  end
+  -- get which duplicate to keep
+  for i = 1, #tDupes do
+    local tCurrent = tDupes[i]
+    local tTampCurrent = dCopy(tTampBase)
+    tTampCurrent.name = "Duplicate"
+    tTampCurrent.info = "Choose which to keep."
+    tTampCurrent.final = "None"
+    tTampCurrent.selections = {
+      {
+        title = "Old",
+        info = tCache[tCurrent[2]].displayName,
+        bigInfo = string.format(
+          "Item: %s | Damage: %d | Price: %s",
+          tCache[tCurrent[2]].name,
+          tCache[tCurrent[2]].damage,
+          tCache[tCurrent[2]].price
+        )
+      },
+      {
+        title = "New",
+        info = tNewItems[tCurrent[1]].displayName,
+        bigInfo = string.format(
+          "Item: %s | Damage: %d | Price: %s",
+          tNewItems[tCurrent[1]].name,
+          tNewItems[tCurrent[1]].damage,
+          tNewItems[tCurrent[1]].price
+        )
+      }
+    }
+
+    local sel = Tamperer.display(tTampCurrent)
+    if sel == 2 then
+      -- if they selected to keep the new one
+      tCache[tCurrent[2]] = dCopy(tNewItems[tCurrent[1]])
+    elseif sel == 3 then
+      -- if they decided to keep none of them
+      table.remove(tCache, tCurrent[2])
+      tCache.n = tCache.n - 1
+    end
+  end
+
+  -- add the other items
+  for i = 1, #tNewItems do
+    if #tDupes == 0 then
+      tCache.n = tCache.n + 1
+      tCache[tCache.n] = dCopy(tNewItems[i])
+    else
+      for j = 1, #tDupes do
+        if tDupes[j][1] ~= i then
+          tCache.n = tCache.n + 1
+          tCache[tCache.n] = dCopy(tNewItems[i])
+        end
+      end
+    end
+  end
+end
+
+local function removeItems()
+  local tTampCurrent = dCopy(tTampBase)
+  tTampCurrent.name = "Remove Items"
+  tTampCurrent.info = "Remove Items Here"
+  tTampCurrent.final = "Go back"
+  while true do
+    tTampCurrent.selections = {}
+    for i = 1, tCache.n do
+      local tItem = tCache[i]
+      tTampCurrent.selections[#tTampCurrent.selections + 1] = {
+        title = tItem.displayName:sub(1, 12),
+        info = "Remove this item.",
+        bigInfo = string.format(
+          "Remove the item %s with damage %d%s.",
+          tItem.name,
+          tItem.damage,
+          tItem.nbtHash and " with nbthash" or ""
+        )
+      }
+    end
+
+    local sel = Tamperer.display(tTampCurrent)
+    if sel ~= tCache.n + 1 then
+      if ensure("Remove?", nil, "Delete item.", "This action cannot be undone.") then
+        table.remove(tCache, sel)
+        tCache.n = tCache.n - 1
+        saveCache()
+      end
+    else
+      return
+    end
+  end
+end
+
 local function addItems()
   term.setTextColor(colors.white)
   term.setBackgroundColor(colors.black)
@@ -369,11 +510,17 @@ local function addItems()
       print("Removing duplicates")
       collapse(tDetailedItems)
       print("Done.")
-      os.sleep(2)
+      os.sleep(1)
 
       -- enter edit page.
       editItems(tDetailedItems)
 
+      local tDupes = {}
+      -- Check for duplicates, and add the items
+
+      configureDuplicates(tDetailedItems)
+
+      saveCache()
       return
     else
       log.warn("Failed to get chest size.")
@@ -409,15 +556,12 @@ local function items()
       end
     elseif iSelection == 2 then
       -- edit items
-      tTampCurrent.name = "Edit Items"
-      tTampCurrent.info = "Edit items here"
-      tTampCurrent.final = "Go back."
-
-
+      editItems(tCache)
+      saveCache()
     elseif iSelection == 3 then
       -- remove items
-      tTampCurrent.name = "Remove Items"
-      tTampCurrent.info = "Remove items here"
+      removeItems()
+      saveCache()
     else
       return
     end
