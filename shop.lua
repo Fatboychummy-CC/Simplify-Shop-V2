@@ -214,8 +214,8 @@ local function edit(tItem)
   tTampCurrent.info = "Edit the selected item"
   tTampCurrent.final = "Confirm"
 
-  settings.define("tempdata.displayName", {default = tItem.displayName})
-  settings.define("tempdata.price", {default = tItem.price})
+  settings.set("tempdata.displayName", tItem.displayName)
+  settings.set("tempdata.price", tItem.price)
 
   tTampCurrent.settings = {
     location = "data/.temp",
