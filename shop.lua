@@ -366,6 +366,7 @@ end
 
 --
 local function configureDuplicates(tNewItems)
+  local tRemovals = {}
   -- determine duplicates
   local tDupes = {}
   for i = 1, #tNewItems do
@@ -413,9 +414,14 @@ local function configureDuplicates(tNewItems)
       tCache[tCurrent[2]] = dCopy(tNewItems[tCurrent[1]])
     elseif sel == 3 then
       -- if they decided to keep none of them
-      table.remove(tCache, tCurrent[2])
-      tCache.n = tCache.n - 1
+      tRemovals[#tRemovals + 1] = tCurrent[2]
     end
+  end
+
+  table.sort(tRemovals)
+  for i = #tRemovals, 1, -1 do
+    table.remove(tCache, tRemovals[i])
+    tCache.n = tCache.n - 1
   end
 
   -- add the other items
@@ -424,11 +430,15 @@ local function configureDuplicates(tNewItems)
       tCache.n = tCache.n + 1
       tCache[tCache.n] = dCopy(tNewItems[i])
     else
+      local bNoDupe = true
       for j = 1, #tDupes do
-        if tDupes[j][1] ~= i then
-          tCache.n = tCache.n + 1
-          tCache[tCache.n] = dCopy(tNewItems[i])
+        if tDupes[j][1] == i then
+          bNoDupe = false
         end
+      end
+      if bNoDupe then
+        tCache.n = tCache.n + 1
+        tCache[tCache.n] = dCopy(tNewItems[i])
       end
     end
   end
