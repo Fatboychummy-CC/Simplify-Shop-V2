@@ -156,6 +156,15 @@ local function saveCache()
   settings.clear()
 end
 
+function peripheral.findFirstName(sType)
+  local tPeriphs = peripheral.getNames()
+  for i = 1, #tPeriphs do
+    if peripheral.getType(tPeriphs[i]) == sType then
+      return tPeriphs[i]
+    end
+  end
+end
+
 local function dCopy(tCopy)
   local tReturn = {}
   for k, v in pairs(tCopy) do
@@ -581,6 +590,7 @@ end
 -- define some default settings
 local function defineSettings()
   settings.define("shop.autorun", {type = "number", default = 15})
+  settings.define("shop.monitor", {type = "string", default = peripheral.findFirstName("monitor")})
 end
 
 -- run the options page
