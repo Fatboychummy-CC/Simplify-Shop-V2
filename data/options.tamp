@@ -62,7 +62,104 @@
       name = "Visuals",
       info = "Change Visuals",
       bigInfo = "Change how your shop looks!",
+      subPages = {
+        {
+          name = "Item list",
+          info = "Item List Visuals",
+          bigInfo = "Change how the item list looks!",
+          settings = {
+            {
+              setting = "shop.visual.itemlist.showLegend",
+              title = "Show Legend",
+              tp = "boolean",
+              bigInfo = "Should the legend above the items be displayed?"
+            },
+            {
+              setting = "shop.visual.itemlist.legendBG",
+              title = "Legend BG",
+              tp = "color",
+              bigInfo = "What color should the background of the legend be?"
+            },
+            {
+              setting = "shop.visual.itemlist.legendFG",
+              title = "Legend Text",
+              tp = "color",
+              bigInfo = "What color should the text of the legend be?"
+            },
+            {
+              setting = "shop.visual.itemlist.oddBG",
+              title = "Odd Item BG",
+              tp = "color",
+              bigInfo = "What color should the background of the odd items in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.oddFG",
+              title = "Odd Item FG",
+              tp = "color",
+              bigInfo = "What color should the text of the odd items in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.evenBG",
+              title = "Even Item BG",
+              tp = "color",
+              bigInfo = "What color should the text of the even items in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.evenFG",
+              title = "Even Item FG",
+              tp = "color",
+              bigInfo = "What color should the text of the even items in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.showEmpty",
+              title = "Show Empty",
+              tp = "boolean",
+              bigInfo = "Should the shop display items which are out of stock?"
+            },
+            {
+              setting = "shop.visual.itemlist.emptyOddBG",
+              title = "0 Odd BG",
+              tp = "color",
+              bigInfo = "What color should the background of the odd items (with 0 count) in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.emptyOddFG",
+              title = "0 Odd FG",
+              tp = "color",
+              bigInfo = "What color should the text of the odd items (with 0 count) in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.emptyEvenBG",
+              title = "0 Even BG",
+              tp = "color",
+              bigInfo = "What color should the background of the even items (with 0 count) in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.emptyEvenFG",
+              title = "0 Even FG",
+              tp = "color",
+              bigInfo = "What color should the text of the even items (with 0 count) in the list be?"
+            }
+          },
+          final = "Go back.",
+        }
+      },
       final = "Go back."
+    },
+    {
+      name = "Logger",
+      info = "Change Logger Settings",
+      bigInfo = "Change how the logger logs data.",
+      settings = {
+        {
+          setting = "shop.logger.level",
+          title = "Log Level",
+          tp = "number",
+          bigInfo = "1: Info/Warn/Error\n2: Warn/Error\n3: Error only",
+          min = 1,
+          max = 3
+        }
+      }
     }
   },
   final = "Go back."

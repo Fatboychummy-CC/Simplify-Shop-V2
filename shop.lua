@@ -373,7 +373,8 @@ local function collapse(tTable)
   end
 end
 
---
+-- Check for duplicates and remove them if they exist.
+-- Allows the user to choose which duplicate to keep (hence configure)
 local function configureDuplicates(tNewItems)
   local tRemovals = {}
   -- determine duplicates
@@ -589,13 +590,39 @@ end
 
 -- define some default settings
 local function defineSettings()
-  settings.define("shop.autorun", {type = "number", default = 15})
-  settings.define("shop.monitor", {type = "string", default = peripheral.findFirstName("monitor")})
+  local function defineDefault(sSetting, val)
+    settings.define(sSetting, {type = type(val), default = val})
+  end
+  -- base settings
+  defineDefault("shop.autorun", 15)
+  defineDefault("shop.monitor", peripheral.findFirstName("monitor") or error("Cannot find monitor.", 0))
+
+  -- -- -- Visuals -- -- --
+
+  -- itemlist
+    -- legend
+  defineDefault("shop.visual.itemlist.showLegend", true)
+  defineDefault("shop.visual.itemlist.legendBG",   colors.purple)
+  defineDefault("shop.visual.itemlist.legendFG",   colors.white)
+    -- odd entries
+  defineDefault("shop.visual.itemlist.oddBG", colors.gray)
+  defineDefault("shop.visual.itemlist.oddFG", colors.white)
+  defineDefault("shop.visual.itemlist.emptyOddBG", colors.gray)
+  defineDefault("shop.visual.itemlist.emptyOddFG", colors.red)
+    -- even entries
+  defineDefault("shop.visual.itemlist.evenBG", colors.lightGray)
+  defineDefault("shop.visual.itemlist.evenFG", colors.white)
+  defineDefault("shop.visual.itemlist.emptyEvenBG", colors.lightGray)
+  defineDefault("shop.visual.itemlist.emptyEvenFG", colors.red)
+    -- etc
+  defineDefault("shop.visual.itemlist.showEmpty", true)
+
+  -- -- -- Logger -- -- --
+  defineDefault("shop.logger.level", 1) -- TODO: Set this to 3 once prod
 end
 
 -- run the options page
 local function options()
-  defineSettings()
   local function settingHandler(sFileName, sSetting, NewVal, tPage)
     --TODO: This should display the shop when any visual change is made
   end
@@ -703,6 +730,20 @@ local function mainMenu()
   end
 end
 
-mainMenu()
+local function main()
+  defineSettings()
+  Logger.setMasterLevel(settings.get("shop.logger.level"))
+  mainMenu()
+end
+
+local bOk, sErr = pcall(main)
+if not bOk then
+  log.err(sErr)
+  term.setTextColor(colors.white)
+  term.setBackgroundColor(colors.black)
+  term.clear()
+  term.setCursorPos(1, 1)
+  printError(sErr)
+end
 
 Logger.close()
