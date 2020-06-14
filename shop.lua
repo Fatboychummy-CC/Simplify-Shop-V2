@@ -253,11 +253,8 @@ local function edit(tItem)
 
   settings.set("tempdata.displayName", tItem.displayName)
   settings.set("tempdata.price", tItem.price)
-  local bShow = tItem.show
-  if type(bShow) ~= "boolean" then
-    bShow = true
-  end
-  settings.set("tempdata.show", bShow)
+  settings.set("tempdata.show", tItem.show)
+  settings.set("tempdata.localname", tItem.localname)
 
   tTampCurrent.settings = {
     location = "data/.temp",
@@ -283,6 +280,12 @@ local function edit(tItem)
       title = "Show",
       tp = "boolean",
       bigInfo = "Show this item in the shop?"
+    },
+    {
+      setting = "tempdata.localname",
+      title = "Sub-domain",
+      tp = "string",
+      bigInfo = "Set this only if you are using a Krist Domain (<this part>@domain.kst)."
     }
   }
 
@@ -290,6 +293,7 @@ local function edit(tItem)
   tItem.displayName = settings.get("tempdata.displayName")
   tItem.price = settings.get("tempdata.price")
   tItem.show = settings.get("tempdata.show")
+  tItem.localname = settings.get("tempdata.localname")
   settings.clear()
   settings.save(tTampCurrent.settings.location)
 end
@@ -518,7 +522,9 @@ local function addItems()
               damage = iDamage,
               displayName = tMeta.displayName,
               nbtHash = tMeta.nbtHash, -- TODO: Filter by nbthash?
-              price = 1
+              price = 1,
+              localname = "",
+              show = true
             }
           else
             print(string.format("Failed to get metadata for item %s (%d)", sName, iDamage))
