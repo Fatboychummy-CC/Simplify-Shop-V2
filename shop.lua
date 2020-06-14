@@ -719,6 +719,7 @@ local function mainMenu()
       flg = false
       if iSelection == 1 then
         -- run the shop
+        return true
       elseif iSelection == 2 then
         -- updater
         -- presented as a seperate page to allow a "save and exit" sort of functionality.
@@ -733,7 +734,7 @@ local function mainMenu()
         items()
       elseif iSelection == 5 then
         -- exit
-        break
+        return false
       end
     end
   else
@@ -742,10 +743,16 @@ local function mainMenu()
   end
 end
 
+local function shop()
+
+end
+
 local function main()
   defineSettings()
   Logger.setMasterLevel(settings.get("shop.logger.level"))
-  mainMenu()
+  if mainMenu() then
+    shop()
+  end
 end
 
 local bOk, sErr = pcall(main)
