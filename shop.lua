@@ -610,6 +610,11 @@ local function defineSettings()
   defineDefault("shop.visual.itemlist.showLegend", true)
   defineDefault("shop.visual.itemlist.legendBG",   colors.purple)
   defineDefault("shop.visual.itemlist.legendFG",   colors.white)
+    -- positioning
+  defineDefault("shop.visual.itemlist.x", 1)
+  defineDefault("shop.visual.itemlist.y", 1)
+  defineDefault("shop.visual.itemlist.w", 19)
+  defineDefault("shop.visual.itemlist.h", 5)
     -- odd entries
   defineDefault("shop.visual.itemlist.oddBG", colors.gray)
   defineDefault("shop.visual.itemlist.oddFG", colors.white)
@@ -622,6 +627,7 @@ local function defineSettings()
   defineDefault("shop.visual.itemlist.emptyEvenFG", colors.red)
     -- etc
   defineDefault("shop.visual.itemlist.showEmpty", true)
+  defineDefault("shop.visual.itemlist.decimal", 2)
 
   -- -- -- Logger -- -- --
   defineDefault("shop.logger.level", 1) -- TODO: Set this to 3 once prod

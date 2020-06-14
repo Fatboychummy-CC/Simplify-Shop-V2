@@ -69,6 +69,39 @@
           bigInfo = "Change how the item list looks!",
           settings = {
             {
+              setting = "shop.visual.itemlist.x",
+              title = "List X",
+              tp = "number",
+              bigInfo = "What should the starting (leftmost) x position of the item list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.y",
+              title = "List Y",
+              tp = "number",
+              bigInfo = "What should the starting (uppermost) y position of the iteml ist be?"
+            },
+            {
+              setting = "shop.visual.itemlist.w",
+              title = "List Width",
+              tp = "number",
+              bigInfo = "How wide should the item list be?  Take into account the length of your item names!",
+              min = 19
+            },
+            {
+              setting = "shop.visual.itemlist.h",
+              title = "Items/Page",
+              tp = "number",
+              bigInfo = "How many items should be displayed per page?",
+              min = 1
+            },
+            {
+              setting = "shop.visual.itemlist.decimal",
+              title = "Float",
+              tp = "number",
+              bigInfo = "How many numbers behind the decimal point should be displayed?",
+              min = 0,
+            },
+            {
               setting = "shop.visual.itemlist.showLegend",
               title = "Show Legend",
               tp = "boolean",
