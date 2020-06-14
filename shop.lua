@@ -5,7 +5,7 @@ local expect = require("cc.expect").expect
 --##############################################################
 -- Initial setup stuff, so we can download dependencies we need
 --##############################################################
-local sAbsoluteDir = "/" .. shell.dir() .. "/"
+local sAbsoluteDir = shell.dir()
 local tFiles = {
   self = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/shop.lua",
@@ -13,35 +13,35 @@ local tFiles = {
   },
   md5 = {
     location = "https://raw.githubusercontent.com/kikito/md5.lua/master/md5.lua",
-    name = sAbsoluteDir .. "modules/md5.lua"
+    name = fs.combine(sAbsoluteDir, "modules/md5.lua")
   },
   Tamperer = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Tamperer/master/minified.lua",
-    name = sAbsoluteDir .. "modules/Tamperer.lua"
+    name = fs.combine(sAbsoluteDir, "modules/Tamperer.lua")
   },
   Frame = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Frame/master/Frame.lua",
-    name = sAbsoluteDir .. "modules/Frame.lua"
+    name = fs.combine(sAbsoluteDir, "modules/Frame.lua")
   },
   Logger = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Compendium/master/modules/core/logger.lua",
-    name = sAbsoluteDir .. "modules/Logger.lua"
+    name = fs.combine(sAbsoluteDir, "modules/Logger.lua")
   },
   MainMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.tamp",
-    name = sAbsoluteDir .. "data/main.tamp"
+    name = fs.combine(sAbsoluteDir, "data/main.tamp")
   },
   OptionsMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/options.tamp",
-    name = sAbsoluteDir .. "data/options.tamp"
+    name = fs.combine(sAbsoluteDir, "data/options.tamp")
   },
   UpdaterMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/updates.tamp",
-    name = sAbsoluteDir .. "data/updates.tamp"
+    name = fs.combine(sAbsoluteDir, "data/updates.tamp")
   },
   ItemsMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/items.tamp",
-    name = sAbsoluteDir .. "data/items.tamp"
+    name = fs.combine(sAbsoluteDir, "data/items.tamp")
   }
 }
 
