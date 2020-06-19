@@ -124,6 +124,8 @@ settings.load(fs.combine(sAbsoluteDir, sCacheLocation))
 settings.define("cache", {default = {}})
 local tCache = settings.get("cache")
 tCache.n = #tCache
+local bFrameInitialized = false
+local tFrame
 
 local tTampBase = {
   bigInfo = "",
@@ -597,6 +599,25 @@ local function items()
   end
 end
 
+local function redrawError(sError)
+  error(string.format("Failed to redraw: %s", sError))
+end
+
+-- check if a setting exists, if not: error.  If so, return setting value
+local function does(sSetting, sDescriptiveName)
+  local valExists = settings.get(sSetting)
+  if valExists == nil then
+    redrawError(
+      string.format(
+        "Setting %s (%s) not set.",
+        sSetting,
+        sDescriptiveName
+      )
+    )
+  end
+  return valExists
+end
+
 -- define some default settings
 local function defineSettings()
   local function defineDefault(sSetting, val)
@@ -607,7 +628,7 @@ local function defineSettings()
   defineDefault("shop.monitor", peripheral.findFirstName("monitor") or error("Cannot find monitor.", 0))
 
   -- -- -- Visuals -- -- --
-
+  defineDefault("shop.visual.monitorScale", 1)
   -- itemlist
     -- legend
   defineDefault("shop.visual.itemlist.showLegend", true)
@@ -616,30 +637,162 @@ local function defineSettings()
     -- positioning
   defineDefault("shop.visual.itemlist.x", 1)
   defineDefault("shop.visual.itemlist.y", 1)
-  defineDefault("shop.visual.itemlist.w", 19)
+  defineDefault("shop.visual.itemlist.w", 21)
   defineDefault("shop.visual.itemlist.h", 5)
     -- odd entries
-  defineDefault("shop.visual.itemlist.oddBG", colors.gray)
-  defineDefault("shop.visual.itemlist.oddFG", colors.white)
+  defineDefault("shop.visual.itemlist.oddBG",      colors.gray)
+  defineDefault("shop.visual.itemlist.oddFG",      colors.white)
   defineDefault("shop.visual.itemlist.emptyOddBG", colors.gray)
   defineDefault("shop.visual.itemlist.emptyOddFG", colors.red)
     -- even entries
-  defineDefault("shop.visual.itemlist.evenBG", colors.lightGray)
-  defineDefault("shop.visual.itemlist.evenFG", colors.white)
+  defineDefault("shop.visual.itemlist.evenBG",      colors.lightGray)
+  defineDefault("shop.visual.itemlist.evenFG",      colors.white)
   defineDefault("shop.visual.itemlist.emptyEvenBG", colors.lightGray)
   defineDefault("shop.visual.itemlist.emptyEvenFG", colors.red)
     -- etc
   defineDefault("shop.visual.itemlist.showEmpty", true)
-  defineDefault("shop.visual.itemlist.decimal", 2)
+  defineDefault("shop.visual.itemlist.decimal",   2)
 
   -- -- -- Logger -- -- --
   defineDefault("shop.logger.level", 1) -- TODO: Set this to 3 once prod
 end
 
+local function initMonitor()
+  if not bFrameInitialized then
+    settings.clear()
+    settings.load(".shopSettings")
+    local sMonName = does("shop.monitor", "Monitor Peripheral Name")
+    if not peripheral.isPresent(sMonName) then
+      redrawError(string.format("Peripheral '%s' does not exist.", sMonName))
+    end
+    if peripheral.getType(sMonName) ~= "monitor" then
+      redrawError(string.format("Peripheral '%s' is not a monitor.", sMonName))
+    end
+    local tMon = peripheral.wrap(sMonName)
+    if not tMon then
+      redrawError("Failed to wrap peripheral '%s'.")
+    end
+    local fMonScale = does("shop.visual.monitorScale", "Monitor Scale")
+    tMon.setTextScale(fMonScale)
+
+    tFrame = Frame.new(tMon)
+    tFrame.Initialize()
+    bFrameInitialized = true
+  end
+end
+
+local function rAlign(iX, iY, sText)
+  iX = math.floor(iX)
+  iY = math.floor(iY)
+  sText = tostring(sText)
+  tFrame.setCursorPos(iX - #sText, iY)
+  tFrame.write(sText)
+end
+
+local function cutRound(fValue, iDecimal)
+  local iMult = 10^iDecimal
+  return math.floor(fValue * iMult + 0.5) / iMult
+end
+
+local function redraw(tItems, iPage, tSelections, bOverride)
+  initMonitor()
+  -- legend data
+  local iXList = does("shop.visual.itemlist.x", "Item List X")
+  local iYList = does("shop.visual.itemlist.y", "Item List Y")
+  local iWList = does("shop.visual.itemlist.w", "Item List Width")
+  local iHList = does("shop.visual.itemlist.h", "Item List Max-Per-Page")
+  local bLegend = does("shop.visual.itemlist.showLegend", "Item List Show-Legend")
+  -- item list data
+  local iFloat = does("shop.visual.itemlist.decimal", "Item List Float")
+  local iOddBG = does("shop.visual.itemlist.oddBG", "Item List Shop BG (odd)")
+  local iOddFG = does("shop.visual.itemlist.oddFG", "Item List Shop Text (odd)")
+  local iEvenBG = does("shop.visual.itemlist.evenBG", "Item List Shop BG (even)")
+  local iEvenFG = does("shop.visual.itemlist.evenFG", "Item List Shop Text (even)")
+
+  local iEOddBG = does("shop.visual.itemlist.emptyOddBG", "Item List Shop BG (odd, empty)")
+  local iEOddFG = does("shop.visual.itemlist.emptyOddFG", "Item List Shop Text (odd, empty)")
+  local iEEvenBG = does("shop.visual.itemlist.emptyEvenBG", "Item List Shop BG (even, empty)")
+  local iEEvenFG = does("shop.visual.itemlist.emptyEvenFG", "Item List Shop Text (even, empty)")
+
+  tFrame.setCursorPos(iXList, iYList)
+  if bLegend then
+    local cLegendBG = does("shop.visual.itemlist.legendBG", "Item List Legend-BG")
+    local cLegendFG = does("shop.visual.itemlist.legendFG", "Item List Legend-Text")
+    tFrame.setBackgroundColor(cLegendBG)
+    tFrame.setTextColor(cLegendFG)
+    tFrame.write(string.rep(' ', iWList))
+    tFrame.setCursorPos(iXList + 1, iYList)
+    tFrame.write("Item")
+    rAlign(iXList + iWList * (2/3), iYList, "Quantity")
+    rAlign(iXList + iWList - 1, iYList, "Price")
+  end
+
+  for i = 1, bOverride and 6 or iHList do
+    local tCItem = tItems[i]
+    if i % 2 == 0 then
+      -- even
+      if tCItem.count == 0 then
+        tFrame.setBackgroundColor(iEEvenBG)
+        tFrame.setTextColor(iEEvenFG)
+      else
+        tFrame.setBackgroundColor(iEvenBG)
+        tFrame.setTextColor(iEvenFG)
+      end
+    else
+      -- odd
+      if tCItem.count == 0 then
+        tFrame.setBackgroundColor(iEOddBG)
+        tFrame.setTextColor(iEOddFG)
+      else
+        tFrame.setBackgroundColor(iOddBG)
+        tFrame.setTextColor(iOddFG)
+      end
+    end
+
+    local iYPos = iYList - (bLegend and 0 or 1) + i
+    tFrame.setCursorPos(iXList, iYPos)
+    tFrame.write(string.rep(' ', iWList))
+    tFrame.setCursorPos(iXList + 1, iYPos)
+    tFrame.write(tCItem.displayName)
+    rAlign(iXList + iWList * (2/3), iYPos, bOverride and tCItem.count or 0) -- TODO: count items for real
+    rAlign(iXList + iWList - 1, iYPos, cutRound(tCItem.price, iFloat))
+  end
+
+  tFrame.PushBuffer()
+end
+
 -- run the options page
 local function options()
   local function settingHandler(sFileName, sSetting, NewVal, tPage)
+    if sSetting == "shop.monitor" or sSetting == "shop.visual.monitorScale" then
+      bFrameInitialized = false
+      tFrame = nil
+    end
     --TODO: This should display the shop when any visual change is made
+    local ok, err = pcall(
+      redraw,
+      {
+        {count = 1, displayName = "Odd", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 1, displayName = "Even", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 0, displayName = "Odd Empty", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 0, displayName = "Even Empty", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 1, displayName = "Odd Selected", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 1, displayName = "Even Selected", price = 1.2345678901234567890, damage = 0, show = true},
+      },
+      1,
+      {5, 6},
+      true
+    )
+    if not ok then
+      if tFrame then
+        tFrame.clear()
+        tFrame.setCursorPos(1, 1)
+        tFrame.setTextColor(colors.red)
+        tFrame.setBackgroundColor(colors.black)
+        tFrame.write(err)
+        tFrame.PushBuffer()
+      end
+    end
   end
   Tamperer.displayFile(tFiles.OptionsMenu.name, settingHandler)
 end
