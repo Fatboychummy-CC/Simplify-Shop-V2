@@ -70,40 +70,172 @@
           name = "Item list",
           info = "Item List Visuals",
           bigInfo = "Change how the item list looks!",
+          subPages = {
+            name = "Positions",
+            info = "Set positions of the list.",
+            bigInfo = "Change things like x, y, width, and items per page (and more)",
+            settings = {
+              {
+                setting = "shop.visual.itemlist.x",
+                title = "List X",
+                tp = "number",
+                bigInfo = "What should the starting (leftmost) x position of the item list be?"
+              },
+              {
+                setting = "shop.visual.itemlist.y",
+                title = "List Y",
+                tp = "number",
+                bigInfo = "What should the starting (uppermost) y position of the iteml ist be?"
+              },
+              {
+                setting = "shop.visual.itemlist.w",
+                title = "List Width",
+                tp = "number",
+                bigInfo = "How wide should the item list be?  Take into account the length of your item names!",
+                min = 28
+              },
+              {
+                setting = "shop.visual.itemlist.h",
+                title = "Items/Page",
+                tp = "number",
+                bigInfo = "How many items should be displayed per page?",
+                min = 1
+              },
+              {
+                setting = "shop.visual.itemlist.s",
+                title = "Spacing",
+                tp = "number",
+                bigInfo = "How many spaces between each column (going by length of column name)?",
+                min = 1
+              },
+              final = "Go back."
+            },
+            {
+              name = "Legend",
+              info = "Change Legend Visuals",
+              bigInfo = "Change things like the bg and text color of the legend.",
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.showLegend",
+                  title = "Show Legend",
+                  tp = "boolean",
+                  bigInfo = "Should the legend above the items be displayed?"
+                },
+                {
+                  setting = "shop.visual.itemlist.legendBG",
+                  title = "BG Color",
+                  tp = "color",
+                  bigInfo = "What color should the background of the legend be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.legendFG",
+                  title = "Text Color",
+                  tp = "color",
+                  bigInfo = "What color should the text of the legend be?"
+                },
+              }
+            },
+            {
+              name = "Normal",
+              info = "Change Normal Colors",
+              bigInfo = "Change colors of the 'normal' list items (items that are not selected or empty)."
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.oddBG",
+                  title = "Odd Item BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the odd items in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.oddFG",
+                  title = "Odd Item FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the odd items in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.evenBG",
+                  title = "Even Item BG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the even items in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.evenFG",
+                  title = "Even Item FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the even items in the list be?"
+                },
+              }
+            },
+            {
+              name = "Empty",
+              info = "Change Empty Colors",
+              bigInfo = "Change colors of items which are out of stock.",
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.emptyOddBG",
+                  title = "0 Odd BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the odd items (with 0 count) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.emptyOddFG",
+                  title = "0 Odd FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the odd items (with 0 count) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.emptyEvenBG",
+                  title = "0 Even BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the even items (with 0 count) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.emptyEvenFG",
+                  title = "0 Even FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the even items (with 0 count) in the list be?"
+                },
+              }
+            },
+            {
+              name = "Selected",
+              info = "Change Selected Colors",
+              bigInfo = "Change colors of items which are selected.",
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.selectOddBG",
+                  title = "Sel Odd BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the odd items (selected) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.selectOddFG",
+                  title = "Sel Odd FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the odd items (selected) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.selectEvenBG",
+                  title = "Sel Even BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the even items (selected) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.selectEvenFG",
+                  title = "Sel Even FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the even items (selected) in the list be?"
+                },
+              }
+            }
+          },
           settings = {
             {
-              setting = "shop.visual.itemlist.x",
-              title = "List X",
-              tp = "number",
-              bigInfo = "What should the starting (leftmost) x position of the item list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.y",
-              title = "List Y",
-              tp = "number",
-              bigInfo = "What should the starting (uppermost) y position of the iteml ist be?"
-            },
-            {
-              setting = "shop.visual.itemlist.w",
-              title = "List Width",
-              tp = "number",
-              bigInfo = "How wide should the item list be?  Take into account the length of your item names!",
-              min = 28
-            },
-            {
-              setting = "shop.visual.itemlist.h",
-              title = "Items/Page",
-              tp = "number",
-              bigInfo = "How many items should be displayed per page?",
-              min = 1
-            },
-            {
-              setting = "shop.visual.itemlist.s",
-              title = "Spacing",
-              tp = "number",
-              bigInfo = "How many spaces between each column (going by length of column name)?",
-              min = 1
-            },
+              setting = "shop.visual.itemlist.showEmpty",
+              title = "Show Empty",
+              tp = "boolean",
+              bigInfo = "Should items which are out of stock be displayed?"
+            }
             {
               setting = "shop.visual.itemlist.decimal",
               title = "Float",
@@ -122,102 +254,6 @@
               title = "Short Domain",
               tp = "boolean",
               bigInfo = "If true, show only <this part>@domain.kst, then the domain in the legend.  Else, show full domain for each item."
-            },
-            {
-              setting = "shop.visual.itemlist.showLegend",
-              title = "Show Legend",
-              tp = "boolean",
-              bigInfo = "Should the legend above the items be displayed?"
-            },
-            {
-              setting = "shop.visual.itemlist.legendBG",
-              title = "Legend BG",
-              tp = "color",
-              bigInfo = "What color should the background of the legend be?"
-            },
-            {
-              setting = "shop.visual.itemlist.legendFG",
-              title = "Legend Text",
-              tp = "color",
-              bigInfo = "What color should the text of the legend be?"
-            },
-            {
-              setting = "shop.visual.itemlist.oddBG",
-              title = "Odd Item BG",
-              tp = "color",
-              bigInfo = "What color should the background of the odd items in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.oddFG",
-              title = "Odd Item FG",
-              tp = "color",
-              bigInfo = "What color should the text of the odd items in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.evenBG",
-              title = "Even Item BG",
-              tp = "color",
-              bigInfo = "What color should the text of the even items in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.evenFG",
-              title = "Even Item FG",
-              tp = "color",
-              bigInfo = "What color should the text of the even items in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.showEmpty",
-              title = "Show Empty",
-              tp = "boolean",
-              bigInfo = "Should the shop display items which are out of stock?"
-            },
-            {
-              setting = "shop.visual.itemlist.emptyOddBG",
-              title = "0 Odd BG",
-              tp = "color",
-              bigInfo = "What color should the background of the odd items (with 0 count) in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.emptyOddFG",
-              title = "0 Odd FG",
-              tp = "color",
-              bigInfo = "What color should the text of the odd items (with 0 count) in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.emptyEvenBG",
-              title = "0 Even BG",
-              tp = "color",
-              bigInfo = "What color should the background of the even items (with 0 count) in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.emptyEvenFG",
-              title = "0 Even FG",
-              tp = "color",
-              bigInfo = "What color should the text of the even items (with 0 count) in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.selectOddBG",
-              title = "Sel Odd BG",
-              tp = "color",
-              bigInfo = "What color should the background of the odd items (selected) in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.selectOddFG",
-              title = "Sel Odd FG",
-              tp = "color",
-              bigInfo = "What color should the text of the odd items (selected) in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.selectEvenBG",
-              title = "Sel Even BG",
-              tp = "color",
-              bigInfo = "What color should the background of the even items (selected) in the list be?"
-            },
-            {
-              setting = "shop.visual.itemlist.selectEvenFG",
-              title = "Sel Even FG",
-              tp = "color",
-              bigInfo = "What color should the text of the even items (selected) in the list be?"
             },
           },
           final = "Go back.",
