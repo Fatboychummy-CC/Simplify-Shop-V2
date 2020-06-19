@@ -310,18 +310,21 @@ local function editItems(tItems)
     tTampCurrent.selections = {}
     for i = 1, #tItems do
       local tCurrent = tItems[i]
+      local sInfo = string.format(
+        "Edit '%s'",
+        tCurrent.displayName
+      )
+      if #sInfo > 25 then
+        sInfo = sInfo:sub(1, 22) .. "..."
+      end
       tTampCurrent.selections[#tTampCurrent.selections + 1] = {
         title = tCurrent.displayName:sub(1, 12),
-        info = string.format(
-          "Edit item %s (%d)",
-          tCurrent.displayName,
-          tCurrent.damage
-        ):sub(1, 25),
+        info = sInfo,
         bigInfo = string.format(
-          "Edit the item '%s' (with damage %d%s).  Currently priced at %.2f.",
-          tCurrent.displayName,
+          "Item: %s\nDamage: %d | NBT? %s\nPrice: %.5f",
+          tCurrent.name,
           tCurrent.damage,
-          tCurrent.nbtHash and " and with a nbtHash" or "",
+          tCurrent.nbtHash and true or false,
           tCurrent.price
         )
       }
@@ -387,7 +390,7 @@ local function configureDuplicates(tNewItems)
     local tNItem = tNewItems[i]
     for j = 1, tCache.n do
       local tCItem = tCache[j]
-      if tNItem.name == tCItem.name and tNItem.nbthash == tCItem.nbthash then
+      if tNItem.name == tCItem.name and tNItem.nbtHash == tCItem.nbtHash then
         tDupes[#tDupes + 1] = {i, j}
       end
     end
