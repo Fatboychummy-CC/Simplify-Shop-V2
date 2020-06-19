@@ -708,14 +708,16 @@ local function cutRound(fValue, iDecimal)
   return math.floor(fValue * iMult + 0.5) / iMult
 end
 
-local function redraw(tItems, iPage, tSelections, bOverride)
-  initMonitor()
+local function drawItemList(tItems, iPage, tSelections, bOverride)
   -- legend data
   local iXList = does("shop.visual.itemlist.x", "Item List X")
   local iYList = does("shop.visual.itemlist.y", "Item List Y")
   local iWList = does("shop.visual.itemlist.w", "Item List Width")
   local iHList = does("shop.visual.itemlist.h", "Item List Max-Per-Page")
   local bLegend = does("shop.visual.itemlist.showLegend", "Item List Show-Legend")
+  local bShowDomain = does("shop.visual.itemlist.showDomain", "Item List Show Domain")
+  local bShortDomain = does("shop.visual.itemlist.shortDomain", "Item List Short Domain")
+  local iLegendSpacing = does("shop.visual.itemlist.s", "Item List Spacing")
   -- item list data
   local iFloat = does("shop.visual.itemlist.decimal", "Item List Float")
   local iOddBG = does("shop.visual.itemlist.oddBG", "Item List Shop BG (odd)")
@@ -728,6 +730,18 @@ local function redraw(tItems, iPage, tSelections, bOverride)
   local iEEvenBG = does("shop.visual.itemlist.emptyEvenBG", "Item List Shop BG (even, empty)")
   local iEEvenFG = does("shop.visual.itemlist.emptyEvenFG", "Item List Shop Text (even, empty)")
 
+  local iSOddBG = does("shop.visual.itemlist.selectOddBG", "Item List Shop BG (odd, select)")
+  local iSOddFG = does("shop.visual.itemlist.selectOddFG", "Item List Shop Text (odd, select)")
+  local iSEvenBG = does("shop.visual.itemlist.selectEvenBG", "Item List Shop BG (even, select)")
+  local iSEvenFG = does("shop.visual.itemlist.selectEvenFG", "Item List Shop Text (even, select)")
+
+  local sDomain = does("shop.krist.domain", "Krist Domain")
+
+  local fPriceX = iXList + iWList - 1
+  local fQuantityX = fPriceX - 5 - iLegendSpacing
+  local fDomainX = fQuantityX - 8 - iLegendSpacing
+
+  -- Draw legend (if wanted)
   tFrame.setCursorPos(iXList, iYList)
   if bLegend then
     local cLegendBG = does("shop.visual.itemlist.legendBG", "Item List Legend-BG")
@@ -737,15 +751,45 @@ local function redraw(tItems, iPage, tSelections, bOverride)
     tFrame.write(string.rep(' ', iWList))
     tFrame.setCursorPos(iXList + 1, iYList)
     tFrame.write("Item")
-    rAlign(iXList + iWList * (2/3), iYList, "Quantity")
-    rAlign(iXList + iWList - 1, iYList, "Price")
+    rAlign(fQuantityX, iYList, "Quantity")
+    rAlign(fPriceX, iYList, "Price")
+    if bShowDomain then
+      rAlign(fDomainX, iYList, bShortDomain and string.format("@%s.kst", sDomain) or "Domain")
+    end
   end
 
+  -- determine the item to grab
+  local iCurrent = (iPage - 1) * iHList + 1
+  local function getNext(i)
+    for j = 1, #tItems do
+      if tItems[j].show then
+        i = i - 1
+      end
+      if i == 0 then
+        return j
+      end
+    end
+  end
+
+  -- draw item list
   for i = 1, bOverride and 6 or iHList do
-    local tCItem = tItems[i]
+    local iPos = getNext(i)
+    local tCItem = tItems[iPos]
+
+    -- check if selected
+    local bIsSelected = false
+    for j = 1, #tSelections do
+      if i == tSelections[j] then
+        bIsSelected = true
+        break
+      end
+    end
     if i % 2 == 0 then
       -- even
-      if tCItem.count == 0 then
+      if bIsSelected then
+        tFrame.setBackgroundColor(iSEvenBG)
+        tFrame.setTextColor(iSEvenFG)
+      elseif tCItem.count == 0 then
         tFrame.setBackgroundColor(iEEvenBG)
         tFrame.setTextColor(iEEvenFG)
       else
@@ -754,7 +798,10 @@ local function redraw(tItems, iPage, tSelections, bOverride)
       end
     else
       -- odd
-      if tCItem.count == 0 then
+      if bIsSelected then
+        tFrame.setBackgroundColor(iSOddBG)
+        tFrame.setTextColor(iSOddFG)
+      elseif tCItem.count == 0 then
         tFrame.setBackgroundColor(iEOddBG)
         tFrame.setTextColor(iEOddFG)
       else
@@ -763,14 +810,37 @@ local function redraw(tItems, iPage, tSelections, bOverride)
       end
     end
 
+    -- write info
     local iYPos = iYList - (bLegend and 0 or 1) + i
+    -- color the line
     tFrame.setCursorPos(iXList, iYPos)
     tFrame.write(string.rep(' ', iWList))
+    -- write the name
     tFrame.setCursorPos(iXList + 1, iYPos)
     tFrame.write(tCItem.displayName)
-    rAlign(iXList + iWList * (2/3), iYPos, bOverride and tCItem.count or 0) -- TODO: count items for real
-    rAlign(iXList + iWList - 1, iYPos, cutRound(tCItem.price, iFloat))
+    -- write the quantity available
+    rAlign(fQuantityX, iYPos, bOverride and tCItem.count or 0) -- TODO: count items for real
+    -- write the price
+    rAlign(fPriceX, iYPos, cutRound(tCItem.price, iFloat))
+
+    if bShowDomain then
+      if bShortDomain then
+        rAlign(fDomainX, iYPos, tCItem.localname)
+      else
+        rAlign(fDomainX, iYPos, string.format("%s@%s.kst", tCItem.localname, sDomain))
+      end
+    end
   end
+end
+
+local function redraw(tItems, iPage, tSelections, bOverride)
+  initMonitor()
+
+  local cBGColor = does("shop.visual.mainBG", "Main Background Color")
+  tFrame.setBackgroundColor(cBGColor)
+  tFrame.clear()
+
+  drawItemList(tItems, iPage, tSelections, bOverride)
 
   tFrame.PushBuffer()
 end
@@ -786,12 +856,12 @@ local function options()
     local ok, err = pcall(
       redraw,
       {
-        {count = 1, displayName = "Odd", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 1, displayName = "Even", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 0, displayName = "Odd Empty", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 0, displayName = "Even Empty", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 1, displayName = "Odd Selected", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 1, displayName = "Even Selected", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 1, localname = "odd", displayName = "Odd", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 1, localname = "even", displayName = "Even", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 0, localname = "odde", displayName = "Odd Empty", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 0, localname = "evne", displayName = "Even Empty", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 1, localname = "odds", displayName = "Odd Selected", price = 1.2345678901234567890, damage = 0, show = true},
+        {count = 1, localname = "evns", displayName = "Even Selected", price = 1.2345678901234567890, damage = 0, show = true},
       },
       1,
       {5, 6},
