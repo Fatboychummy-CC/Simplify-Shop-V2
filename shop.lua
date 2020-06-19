@@ -629,29 +629,43 @@ local function defineSettings()
 
   -- -- -- Visuals -- -- --
   defineDefault("shop.visual.monitorScale", 1)
+  defineDefault("shop.visual.mainBG",       colors.black)
   -- itemlist
     -- legend
   defineDefault("shop.visual.itemlist.showLegend", true)
   defineDefault("shop.visual.itemlist.legendBG",   colors.purple)
   defineDefault("shop.visual.itemlist.legendFG",   colors.white)
+  defineDefault("shop.visual.itemlist.s",          5)
     -- positioning
   defineDefault("shop.visual.itemlist.x", 1)
   defineDefault("shop.visual.itemlist.y", 1)
-  defineDefault("shop.visual.itemlist.w", 21)
+  defineDefault("shop.visual.itemlist.w", 28)
   defineDefault("shop.visual.itemlist.h", 5)
     -- odd entries
-  defineDefault("shop.visual.itemlist.oddBG",      colors.gray)
-  defineDefault("shop.visual.itemlist.oddFG",      colors.white)
-  defineDefault("shop.visual.itemlist.emptyOddBG", colors.gray)
-  defineDefault("shop.visual.itemlist.emptyOddFG", colors.red)
+  defineDefault("shop.visual.itemlist.oddBG",       colors.gray)
+  defineDefault("shop.visual.itemlist.oddFG",       colors.white)
+  defineDefault("shop.visual.itemlist.emptyOddBG",  colors.gray)
+  defineDefault("shop.visual.itemlist.emptyOddFG",  colors.red)
+  defineDefault("shop.visual.itemlist.selectOddBG", colors.white)
+  defineDefault("shop.visual.itemlist.selectOddFG", colors.black)
     -- even entries
-  defineDefault("shop.visual.itemlist.evenBG",      colors.lightGray)
-  defineDefault("shop.visual.itemlist.evenFG",      colors.white)
-  defineDefault("shop.visual.itemlist.emptyEvenBG", colors.lightGray)
-  defineDefault("shop.visual.itemlist.emptyEvenFG", colors.red)
+  defineDefault("shop.visual.itemlist.evenBG",       colors.lightGray)
+  defineDefault("shop.visual.itemlist.evenFG",       colors.white)
+  defineDefault("shop.visual.itemlist.emptyEvenBG",  colors.lightGray)
+  defineDefault("shop.visual.itemlist.emptyEvenFG",  colors.red)
+  defineDefault("shop.visual.itemlist.selectEvenBG", colors.white)
+  defineDefault("shop.visual.itemlist.selectEvenFG", colors.black)
     -- etc
-  defineDefault("shop.visual.itemlist.showEmpty", true)
-  defineDefault("shop.visual.itemlist.decimal",   2)
+  defineDefault("shop.visual.itemlist.showEmpty",   true)
+  defineDefault("shop.visual.itemlist.decimal",     2)
+  defineDefault("shop.visual.itemlist.showDomain",  false)
+  defineDefault("shop.visual.itemlist.shortDomain", false)
+
+  -- -- -- Krist -- -- --
+  defineDefault("shop.krist.address",                   "kxxxxxxxx")
+  defineDefault("shop.krist.domain",                    "")
+  defineDefault("shop.krist.doPurchaseForwarding",      false)
+  defineDefault("shop.krist.purchaseForwardingAddress", "")
 
   -- -- -- Logger -- -- --
   defineDefault("shop.logger.level", 1) -- TODO: Set this to 3 once prod

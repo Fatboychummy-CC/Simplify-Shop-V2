@@ -32,19 +32,6 @@
       bigInfo = "Who is the owner of this shop?"
     },
     {
-      setting = "shop.KristAddress",
-      title = "Krist Addr",
-      tp = "string",
-      bigInfo = "What is the krist address of this shop?"
-    },
-    {
-      setting = "shop.KristWallet",
-      title = "pkey",
-      tp = "password",
-      store = "kristwallet",
-      bigInfo = "What is the pkey of your wallet?  This will be transformed into and stored as a Kristwallet hash."
-    },
-    {
       setting = "shop.autorun",
       title = "Autorun",
       tp = "number",
@@ -70,6 +57,12 @@
           bigInfo = "Set monitor scale (0.5 - 5)",
           min = 0.5,
           max = 5
+        },
+        {
+          setting = "shop.visual.mainBG",
+          title = "Main BG",
+          tp = "color",
+          bigInfo = "Set the color of the main background",
         }
       },
       subPages = {
@@ -95,7 +88,7 @@
               title = "List Width",
               tp = "number",
               bigInfo = "How wide should the item list be?  Take into account the length of your item names!",
-              min = 21
+              min = 28
             },
             {
               setting = "shop.visual.itemlist.h",
@@ -105,11 +98,30 @@
               min = 1
             },
             {
+              setting = "shop.visual.itemlist.s",
+              title = "Spacing",
+              tp = "number",
+              bigInfo = "How many spaces between each column (going by length of column name)?",
+              min = 1
+            },
+            {
               setting = "shop.visual.itemlist.decimal",
               title = "Float",
               tp = "number",
               bigInfo = "How many numbers behind the decimal point should be displayed?",
               min = 0,
+            },
+            {
+              setting = "shop.visual.itemlist.showDomain",
+              title = "Show Domain",
+              tp = "boolean",
+              bigInfo = "Show the item@domain.kst information?"
+            },
+            {
+              setting = "shop.visual.itemlist.shortDomain",
+              title = "Short Domain",
+              tp = "boolean",
+              bigInfo = "If true, show only <this part>@domain.kst, then the domain in the legend.  Else, show full domain for each item."
             },
             {
               setting = "shop.visual.itemlist.showLegend",
@@ -182,9 +194,72 @@
               title = "0 Even FG",
               tp = "color",
               bigInfo = "What color should the text of the even items (with 0 count) in the list be?"
-            }
+            },
+            {
+              setting = "shop.visual.itemlist.selectOddBG",
+              title = "Sel Odd BG",
+              tp = "color",
+              bigInfo = "What color should the background of the odd items (selected) in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.selectOddFG",
+              title = "Sel Odd FG",
+              tp = "color",
+              bigInfo = "What color should the text of the odd items (selected) in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.selectEvenBG",
+              title = "Sel Even BG",
+              tp = "color",
+              bigInfo = "What color should the background of the even items (selected) in the list be?"
+            },
+            {
+              setting = "shop.visual.itemlist.selectEvenFG",
+              title = "Sel Even FG",
+              tp = "color",
+              bigInfo = "What color should the text of the even items (selected) in the list be?"
+            },
           },
           final = "Go back.",
+        },
+      },
+      final = "Go back."
+    },
+    {
+      name = "Krist",
+      info = "Change Krist Info",
+      bigInfo = "Change things like your krist address, domain, and more.",
+      settings = {
+        {
+          setting = "shop.krist.address",
+          title = "Address",
+          tp = "string",
+          bigInfo = "What is the krist address of this shop (Will autoset when setting wallet key)?"
+        },
+        {
+          setting = "shop.krist.hash",
+          title = "Wallet Key",
+          tp = "password",
+          store = "kristwallet",
+          bigInfo = "What is the pkey of your wallet?  This will be transformed into and stored as a Kristwallet hash."
+        },
+        {
+          setting = "shop.krist.domain",
+          title = "Domain",
+          tp = "string",
+          bigInfo = "What is the domain of your wallet (x@<this part>.kst), excluding the '.kst'? (Not required)"
+        },
+        {
+          setting = "shop.krist.doPurchaseForwarding",
+          title = "Do Forwards",
+          tp = "boolean",
+          bigInfo = "Should the shop forward krist from purchases to another address?"
+        },
+        {
+          setting = "shop.krist.purchaseForwardingAddress",
+          title = "Forward Addr",
+          tp = "string",
+          bigInfo = "Address to forward purchases to, if Do Forwards is enabled."
         }
       },
       final = "Go back."
