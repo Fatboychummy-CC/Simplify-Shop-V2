@@ -138,7 +138,7 @@
             {
               name = "Normal",
               info = "Change Normal Colors",
-              bigInfo = "Change colors of the 'normal' list items (items that are not selected or empty)."
+              bigInfo = "Change colors of the 'normal' list items (items that are not selected or empty).",
               settings = {
                 {
                   setting = "shop.visual.itemlist.oddBG",
@@ -173,25 +173,25 @@
               settings = {
                 {
                   setting = "shop.visual.itemlist.emptyOddBG",
-                  title = "0 Odd BG",
+                  title = "Odd Item BG",
                   tp = "color",
                   bigInfo = "What color should the background of the odd items (with 0 count) in the list be?"
                 },
                 {
                   setting = "shop.visual.itemlist.emptyOddFG",
-                  title = "0 Odd FG",
+                  title = "Odd Item FG",
                   tp = "color",
                   bigInfo = "What color should the text of the odd items (with 0 count) in the list be?"
                 },
                 {
                   setting = "shop.visual.itemlist.emptyEvenBG",
-                  title = "0 Even BG",
+                  title = "Even Item BG",
                   tp = "color",
                   bigInfo = "What color should the background of the even items (with 0 count) in the list be?"
                 },
                 {
                   setting = "shop.visual.itemlist.emptyEvenFG",
-                  title = "0 Even FG",
+                  title = "Even Item FG",
                   tp = "color",
                   bigInfo = "What color should the text of the even items (with 0 count) in the list be?"
                 },
@@ -204,25 +204,25 @@
               settings = {
                 {
                   setting = "shop.visual.itemlist.selectOddBG",
-                  title = "Sel Odd BG",
+                  title = "Odd Item BG",
                   tp = "color",
                   bigInfo = "What color should the background of the odd items (selected) in the list be?"
                 },
                 {
                   setting = "shop.visual.itemlist.selectOddFG",
-                  title = "Sel Odd FG",
+                  title = "Odd Item FG",
                   tp = "color",
                   bigInfo = "What color should the text of the odd items (selected) in the list be?"
                 },
                 {
                   setting = "shop.visual.itemlist.selectEvenBG",
-                  title = "Sel Even BG",
+                  title = "Even Item BG",
                   tp = "color",
                   bigInfo = "What color should the background of the even items (selected) in the list be?"
                 },
                 {
                   setting = "shop.visual.itemlist.selectEvenFG",
-                  title = "Sel Even FG",
+                  title = "Even Item FG",
                   tp = "color",
                   bigInfo = "What color should the text of the even items (selected) in the list be?"
                 },
@@ -235,7 +235,7 @@
               title = "Show Empty",
               tp = "boolean",
               bigInfo = "Should items which are out of stock be displayed?"
-            }
+            },
             {
               setting = "shop.visual.itemlist.decimal",
               title = "Float",
@@ -258,6 +258,52 @@
           },
           final = "Go back.",
         },
+        {
+          name = "Palette",
+          info = "Set Palette Colors",
+          bigInfo = "Set the palette colors (rgb) for each color.",
+          subPages = {
+            {
+              name = "COLOR",
+              info = "Set COLOR RGB",
+              bigInfo = "Set COLOR's Red / Green / Blue values.",
+              settings = {
+                {
+                  setting = "shop.visual.palette.COLOR.hex",
+                  title = "Hex",
+                  tp = "number",
+                  bigInfo = "Set the hex value of COLOR in the shop.",
+                  min = 0,
+                  max = 0xffffff
+                },
+                {
+                  setting = "shop.visual.palette.COLOR.r",
+                  title = "Red",
+                  tp = "number",
+                  bigInfo = "Set COLOR's red value (0-255).",
+                  min = 0,
+                  max = 255
+                },
+                {
+                  setting = "shop.visual.palette.COLOR.g",
+                  title = "Green",
+                  tp = "number",
+                  bigInfo = "Set COLOR's green value (0-255).",
+                  min = 0,
+                  max = 255
+                },
+                {
+                  setting = "shop.visual.palette.COLOR.b",
+                  title = "Blue",
+                  tp = "number",
+                  bigInfo = "Set COLOR's blue value (0-255).",
+                  min = 0,
+                  max = 255
+                }
+              }
+            }
+          }
+        }
       },
       final = "Go back."
     },
