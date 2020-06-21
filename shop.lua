@@ -851,8 +851,29 @@ local function options()
     if sSetting == "shop.monitor" or sSetting == "shop.visual.monitorScale" then
       bFrameInitialized = false
       tFrame = nil
+    elseif sSetting:match("^shop%.visual%.palette") then
+      local sColor = sSetting:match("^shop%.visual%.palette%.(.-)%.")
+      local sFormat = string.format("shop.visual.palette.%s.%%s", sColor)
+      if sSetting:match("palette%..-%.hex") then
+        -- hex value updated, update RGBs
+        local iR, iG, iB = colors.unpackRGB(settings.get(sSetting))
+        settings.set(string.format(sFormat, 'r'), iR * 255)
+        settings.set(string.format(sFormat, 'g'), iG * 255)
+        settings.set(string.format(sFormat, 'b'), iB * 255)
+      else
+        -- r/g/b value updated, update hex
+        settings.set(
+          string.format(sFormat, 'hex'),
+          colors.rgb8(
+            settings.get(string.format(sFormat, 'r')) / 255,
+            settings.get(string.format(sFormat, 'g')) / 255,
+            settings.get(string.format(sFormat, 'b')) / 255
+          )
+        )
+      end
+      settings.save(sFileName)
     end
-    --TODO: This should display the shop when any visual change is made
+
     local ok, err = pcall(
       redraw,
       {
@@ -878,7 +899,33 @@ local function options()
       end
     end
   end
-  Tamperer.displayFile(tFiles.OptionsMenu.name, settingHandler)
+
+  local tTamp = Tamperer.loadFile(tFiles.OptionsMenu.name)()
+
+  local tPalette = Tamperer.getSubPage(tTamp, "Palette")
+  local tInit = dCopy(tPalette.subPages[1])
+
+  local function replace(t, sWith)
+    for k, v in pairs(t) do
+      if type(v) == "string" then
+        t[k] = v:gsub("COLOR", sWith)
+      elseif type(v) == "table" then
+        replace(t[k], sWith)
+      end
+    end
+  end
+  for k, v in pairs(colors) do
+    if type(v) == "number" then
+      colors[v] = k
+    end
+  end
+  for i = 0, 15 do
+    local tTemp = dCopy(tInit)
+    replace(tTemp, colors[2^i])
+    tPalette.subPages[i + 1] = tTemp
+  end
+
+  Tamperer.display(tTamp, settingHandler)
 end
 
 -- run the updater page
