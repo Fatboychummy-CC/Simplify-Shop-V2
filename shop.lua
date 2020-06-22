@@ -151,6 +151,12 @@ local tTampBase = {
   final = "Confirm"
 }
 
+for k, v in pairs(colors) do
+  if type(v) == "number" then
+    colors[v] = k
+  end
+end
+
 local function saveCache()
   settings.clear()
   settings.set("cache", tCache)
@@ -630,6 +636,18 @@ local function defineSettings()
   -- -- -- Visuals -- -- --
   defineDefault("shop.visual.monitorScale", 1)
   defineDefault("shop.visual.mainBG",       colors.black)
+
+  -- palette
+  local sFormat = "shop.visual.palette.%s.%%s"
+  for i = 0, 15 do
+    local sColor = string.format(sFormat, colors[2^i])
+    local iHex = colors.rgb8(term.nativePaletteColor(2^i))
+    local iR, iG, iB = colors.unpackRGB(iHex)
+    defineDefault(string.format(sColor, 'hex'), iHex)
+    defineDefault(string.format(sColor, 'r'), iR * 255)
+    defineDefault(string.format(sColor, 'g'), iG * 255)
+    defineDefault(string.format(sColor, 'b'), iB * 255)
+  end
   -- itemlist
     -- legend
   defineDefault("shop.visual.itemlist.showLegend", true)
@@ -671,6 +689,52 @@ local function defineSettings()
   defineDefault("shop.logger.level", 1) -- TODO: Set this to 3 once prod
 end
 
+-- split a string into a table of lines
+-- s: string, iMax: max x value
+local function line(s, iMax)
+  expect(1, s, "string")
+
+  -- seperate string into words
+  local tSep = {n = 0}
+  for word in s:gmatch("%S+") do
+    tSep.n = tSep.n + 1
+    tSep[tSep.n] = word
+  end
+
+  local tMeta = {__index = {
+    push = function(t, v) t.n = t.n + 1 t[t.n] = v return t end,
+    pop = function(t, v) t[t.n] = nil t.n = t.n - 1 return t end
+  }}
+  local tNew = setmetatable({n = 0}, tMeta)
+  local tTemp = setmetatable({n = 0}, tMeta)
+  local i = 1
+
+  -- split
+  while true do
+    local function pushLine(bFlag)
+      tNew:push(table.concat(tTemp, ' ', 1, bFlag and #tTemp or #tTemp - 1))
+      i = i - 1
+      tTemp = setmetatable({n = 0}, tMeta)
+    end
+    -- push the next word to the line
+    tTemp:push(tSep[i])
+
+    -- check if the current line is too long
+    if #table.concat(tTemp, ' ') > iMax then
+      -- if it is, move it to the lines table and clear
+      pushLine()
+    end
+
+    -- increase word position
+    i = i + 1
+    -- check if we have iterated past the last word
+    if i > tSep.n then
+      pushLine(true)
+      return tNew
+    end
+  end
+end
+
 local function initMonitor()
   if not bFrameInitialized then
     settings.clear()
@@ -692,6 +756,14 @@ local function initMonitor()
     tFrame = Frame.new(tMon)
     tFrame.Initialize()
     bFrameInitialized = true
+
+    -- set palette
+    local sFormat = "shop.visual.palette.%s.%%s"
+    for i = 0, 15 do
+      local sColor = string.format(sFormat, colors[2^i])
+      local iHex = does(string.format(sColor, 'hex'), "A color's hex value")
+      tMon.setPaletteColor(2^i, iHex)
+    end
   end
 end
 
@@ -852,6 +924,8 @@ local function options()
       bFrameInitialized = false
       tFrame = nil
     elseif sSetting:match("^shop%.visual%.palette") then
+      bFrameInitialized = false
+      tFrame = nil
       local sColor = sSetting:match("^shop%.visual%.palette%.(.-)%.")
       local sFormat = string.format("shop.visual.palette.%s.%%s", sColor)
       if sSetting:match("palette%..-%.hex") then
@@ -891,10 +965,13 @@ local function options()
     if not ok then
       if tFrame then
         tFrame.clear()
-        tFrame.setCursorPos(1, 1)
         tFrame.setTextColor(colors.red)
         tFrame.setBackgroundColor(colors.black)
-        tFrame.write(err)
+        local tLines = line(err, tFrame.getSize())
+        for i = 1, tLines.n do
+          tFrame.setCursorPos(1, i)
+          tFrame.write(tLines[i])
+        end
         tFrame.PushBuffer()
       end
     end
@@ -912,11 +989,6 @@ local function options()
       elseif type(v) == "table" then
         replace(t[k], sWith)
       end
-    end
-  end
-  for k, v in pairs(colors) do
-    if type(v) == "number" then
-      colors[v] = k
     end
   end
   for i = 0, 15 do
