@@ -923,67 +923,70 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
 
   -- draw item list
   for i = 1, bOverride and 6 or iHList do
-    local iPos = getNext(i)
-    local tCItem = tItems[iPos]
+    local iPos = getNext(iCurrent + i)
+    if iPos then
+      local tCItem = tItems[iPos]
 
-    -- check if selected
-    local bIsSelected = false
-    for j = 1, #tSelections do
-      if i == tSelections[j] then
-        bIsSelected = true
-        break
+      -- check if selected
+      local bIsSelected = false
+      for j = 1, #tSelections do
+        if i == tSelections[j] then
+          bIsSelected = true
+          break
+        end
       end
-    end
-    if i % 2 == 0 then
-      -- even
-      if bIsSelected then
-        tFrame.setBackgroundColor(iSEvenBG)
-        tFrame.setTextColor(iSEvenFG)
-      elseif tCItem.count == 0 then
-        tFrame.setBackgroundColor(iEEvenBG)
-        tFrame.setTextColor(iEEvenFG)
+      if i % 2 == 0 then
+        -- even
+        if bIsSelected then
+          tFrame.setBackgroundColor(iSEvenBG)
+          tFrame.setTextColor(iSEvenFG)
+        elseif tCItem.count == 0 then
+          tFrame.setBackgroundColor(iEEvenBG)
+          tFrame.setTextColor(iEEvenFG)
+        else
+          tFrame.setBackgroundColor(iEvenBG)
+          tFrame.setTextColor(iEvenFG)
+        end
       else
-        tFrame.setBackgroundColor(iEvenBG)
-        tFrame.setTextColor(iEvenFG)
+        -- odd
+        if bIsSelected then
+          tFrame.setBackgroundColor(iSOddBG)
+          tFrame.setTextColor(iSOddFG)
+        elseif tCItem.count == 0 then
+          tFrame.setBackgroundColor(iEOddBG)
+          tFrame.setTextColor(iEOddFG)
+        else
+          tFrame.setBackgroundColor(iOddBG)
+          tFrame.setTextColor(iOddFG)
+        end
       end
-    else
-      -- odd
-      if bIsSelected then
-        tFrame.setBackgroundColor(iSOddBG)
-        tFrame.setTextColor(iSOddFG)
-      elseif tCItem.count == 0 then
-        tFrame.setBackgroundColor(iEOddBG)
-        tFrame.setTextColor(iEOddFG)
-      else
-        tFrame.setBackgroundColor(iOddBG)
-        tFrame.setTextColor(iOddFG)
-      end
-    end
 
-    -- write info
-    local iYPos = iYList - (bLegend and 0 or 1) + i
-    -- color the line
-    tFrame.setCursorPos(iXList, iYPos)
-    tFrame.write(string.rep(' ', iWList))
-    -- write the name
-    tFrame.setCursorPos(iXList + 1, iYPos)
-    tFrame.write(tCItem.displayName)
-    -- write the quantity available
-    rAlign(fQuantityX, iYPos, bOverride and tCItem.count or 0) -- TODO: count items for real
-    -- write the price
-    rAlign(fPriceX, iYPos, cutRound(tCItem.price, iFloat))
+      -- write info
+      local iYPos = iYList - (bLegend and 0 or 1) + i
+      -- color the line
+      tFrame.setCursorPos(iXList, iYPos)
+      tFrame.write(string.rep(' ', iWList))
+      -- write the name
+      tFrame.setCursorPos(iXList + 1, iYPos)
+      tFrame.write(tCItem.displayName)
+      -- write the quantity available
+      rAlign(fQuantityX, iYPos, bOverride and tCItem.count or 0) -- TODO: count items for real
+      -- write the price
+      rAlign(fPriceX, iYPos, cutRound(tCItem.price, iFloat))
 
-    if bShowDomain then
-      if bShortDomain then
-        rAlign(fDomainX, iYPos, tCItem.localname)
-      else
-        rAlign(fDomainX, iYPos, string.format("%s@%s.kst", tCItem.localname, sDomain))
+      if bShowDomain then
+        if bShortDomain then
+          rAlign(fDomainX, iYPos, tCItem.localname)
+        else
+          rAlign(fDomainX, iYPos, string.format("%s@%s.kst", tCItem.localname, sDomain))
+        end
       end
     end
   end
 end
 
 local function redraw(tItems, iPage, tSelections, bOverride)
+  os.queueEvent("redraw")
   initMonitor()
 
   local cBGColor = does("shop.visual.mainBG", "Main Background Color")
