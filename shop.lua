@@ -883,6 +883,8 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
   local iSEvenBG = does("shop.visual.itemlist.selectEvenBG", "Item List Shop BG (even, select)")
   local iSEvenFG = does("shop.visual.itemlist.selectEvenFG", "Item List Shop Text (even, select)")
 
+  local iShowEmpty = does("shop.visual.itemlist.showEmpty", "Item List Show Empty")
+
   local sDomain = does("shop.krist.domain", "Krist Domain")
 
   local fPriceX = iXList + iWList - 1
@@ -907,10 +909,10 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
   end
 
   -- determine the item to grab
-  local iCurrent = (iPage - 1) * iHList + 1
+  local iCurrent = (iPage - 1) * iHList
   local function getNext(i)
     for j = 1, #tItems do
-      if tItems[j].show then
+      if tItems[j].show and not (iShowEmpty and tItems[j].count == 0) then
         i = i - 1
       end
       if i == 0 then
