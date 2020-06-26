@@ -709,6 +709,7 @@ local function defineSettings()
 
   -- -- -- Logger -- -- --
   defineDefault("shop.logger.level", 1) -- TODO: Set this to 3 once prod
+  defineDefault("shop.logger.saveold", false)
 end
 
 -- split a string into a table of lines
@@ -1130,7 +1131,13 @@ end
 
 local function main()
   defineSettings()
-  Logger.setMasterLevel(settings.get("shop.logger.level"))
+
+  if does("shop.logger.saveold", "Logger Enabled") then
+    Logger.setMasterLevel(does("shop.logger.level", "Logger Level"))
+  else
+    Logger.close()
+    fs.delete(fs.combine(sAbsoluteDir, "logs"))
+  end
   if mainMenu() then
     shop()
   end
@@ -1146,4 +1153,4 @@ if not bOk then
   printError(sErr)
 end
 
-Logger.close()
+pcall(Logger.close)
