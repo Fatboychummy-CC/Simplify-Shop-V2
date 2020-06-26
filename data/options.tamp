@@ -486,7 +486,7 @@
           title = "Save Old",
           tp = "boolean",
           bigInfo = "Should the shop save old logs? Keep this disabled unless debugging."
-        }
+        },
         {
           setting = "shop.logger.level",
           title = "Log Level",

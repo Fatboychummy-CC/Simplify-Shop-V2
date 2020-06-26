@@ -1,4 +1,3 @@
-local debug = true
 local expect = require("cc.expect").expect
 
 
@@ -1130,27 +1129,44 @@ local function shop()
 end
 
 local function main()
-  defineSettings()
-
-  if does("shop.logger.saveold", "Logger Enabled") then
-    Logger.setMasterLevel(does("shop.logger.level", "Logger Level"))
-  else
-    Logger.close()
-    fs.delete(fs.combine(sAbsoluteDir, "logs"))
-  end
   if mainMenu() then
     shop()
   end
 end
 
-local bOk, sErr = pcall(main)
-if not bOk then
-  log.err(sErr)
-  term.setTextColor(colors.white)
-  term.setBackgroundColor(colors.black)
-  term.clear()
-  term.setCursorPos(1, 1)
-  printError(sErr)
+defineSettings()
+
+Logger.setMasterLevel(does("shop.logger.level", "Logger Level"))
+
+while true do
+  local bOk, sErr = pcall(main)
+  if bOk then
+    break
+  else
+    log.err(sErr)
+
+    term.setTextColor(colors.white)
+    term.setBackgroundColor(colors.black)
+    term.clear()
+    term.setCursorPos(1, 1)
+    printError(sErr)
+    --TODO: Bluescreen
+    if sErr ~= "Terminated" then
+      local sTraceback = debug.traceback()
+      for sLine in sTraceback:gmatch("[^\n]+") do
+        log("Traceback", sLine)
+      end
+      break
+    end
+  end
 end
 
-pcall(Logger.close)
+Logger.close()
+if not does("shop.logger.saveold", "Logger Enabled") then
+  fs.delete(fs.combine(sAbsoluteDir, "data/.templog"))
+  fs.copy(fs.combine(sAbsoluteDir, "logs/LATEST.log"), fs.combine(sAbsoluteDir, "data/.templog"))
+  fs.delete(fs.combine(sAbsoluteDir, "logs"))
+  fs.makeDir(fs.combine(sAbsoluteDir, "logs"))
+  fs.move(fs.combine(sAbsoluteDir, "data/.templog"), fs.combine(sAbsoluteDir, "logs/LATEST.log"))
+  fs.delete(fs.combine(sAbsoluteDir, "data/.templog"))
+end
