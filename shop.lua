@@ -803,7 +803,6 @@ local function initDots()
         tFrame.setCursorPos(t.x, t.y)
         tFrame.setBackgroundColor(b and t.color or t.offColor)
         tFrame.write(' ')
-        tFrame.PushBuffer()
       end
     }
 
@@ -1199,28 +1198,38 @@ local function shop()
   local function dotHandler()
     log.info("Info Dot coroutine started.")
     local iPurchaseTimer
+    local bPurchaseOn = false
     local iRedrawTimer
+    local bRedrawOn = false
     local iUserTimer
+    local bUserOn = false
     while true do
       local tEvent = table.pack(os.pullEvent())
       if tEvent[1] == "timer" then
         local iTimer = tEvent[2]
         if iTimer == iUserTimer then
-          dots.userInput(false)
+          bUserOn = false
         elseif iTimer == iRedrawTimer then
-          dots.redraw(false)
+          bRedrawOn = false
         elseif iTimer == iPurchaseTimer then
-          dots.purchase(false)
+          bPurchaseOn = false
         end
       elseif tEvent[1] == "monitor_touch" then
         iUserTimer = os.startTimer(dots.userInput.time)
-        dots.userInput(true)
+        bUserOn = true
       elseif tEvent[1] == "redraw" then
         iRedrawTimer = os.startTimer(dots.redraw.time)
-        dots.redraw(true)
+        bRedrawOn = true
       elseif tEvent[1] == "purchase" then
         iPurchaseTimer = os.startTimer(dots.purchase.time)
-        dots.purchase(true)
+        bPurchaseOn = true
+      end
+      if tEvent[1] == "timer" or tEvent[1] == "monitor_touch"
+        or tEvent[1] == "redraw" or tEvent[1] == "purchase" then
+        dots.purchase(bPurchaseOn)
+        dots.userInput(bUserOn)
+        dots.redraw(bRedrawOn)
+        tFrame.PushBuffer()
       end
     end
   end
