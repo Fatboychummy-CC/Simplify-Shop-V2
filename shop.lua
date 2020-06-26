@@ -1194,7 +1194,46 @@ local function mainMenu()
 end
 
 local function shop()
+  initDots()
 
+  local function dotHandler()
+    log.info("Info Dot coroutine started.")
+    local iPurchaseTimer
+    local iRedrawTimer
+    local iUserTimer
+    while true do
+      local tEvent = table.pack(os.pullEvent())
+      if tEvent[1] == "timer" then
+        local iTimer = tEvent[2]
+        if iTimer == iUserTimer then
+          dots.userInput(false)
+        elseif iTimer == iRedrawTimer then
+          dots.redraw(false)
+        elseif iTimer == iPurchaseTimer then
+          dots.purchase(false)
+        end
+      elseif tEvent[1] == "monitor_touch" then
+        iUserTimer = os.startTimer(dots.userInput.time)
+        dots.userInput(true)
+      elseif tEvent[1] == "redraw" then
+        iRedrawTimer = os.startTimer(dots.redraw.time)
+        dots.redraw(true)
+      elseif tEvent[1] == "purchase" then
+        iPurchaseTimer = os.startTimer(dots.purchase.time)
+        dots.purchase(true)
+      end
+    end
+  end
+
+  local function _shop()
+    log.info("Shop coroutine started.")
+    while true do
+      redraw({}, 1, {})
+      os.sleep(5)
+    end
+  end
+
+  parallel.waitForAny(dotHandler, _shop)
 end
 
 local function main()
