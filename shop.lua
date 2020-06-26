@@ -125,6 +125,7 @@ local tCache = settings.get("cache")
 tCache.n = #tCache
 local bFrameInitialized = false
 local tFrame
+local dots = {}
 
 local tTampBase = {
   bigInfo = "",
@@ -680,25 +681,31 @@ local function defineSettings()
 
   -- dots
     -- Redraw dot
-  defineDefault("shop.visual.dots.redraw.enabled",     true)
-  defineDefault("shop.visual.dots.redraw.displayTime", 2)
-  defineDefault("shop.visual.dots.redraw.x",           1)
-  defineDefault("shop.visual.dots.redraw.y",           1)
-  defineDefault("shop.visual.dots.redraw.color",       colors.blue)
+  defineDefault("shop.visual.dots.redraw.enabled",           true)
+  defineDefault("shop.visual.dots.redraw.displayTime",       2)
+  defineDefault("shop.visual.dots.redraw.x",                 1)
+  defineDefault("shop.visual.dots.redraw.y",                 1)
+  defineDefault("shop.visual.dots.redraw.color",             colors.blue)
+  defineDefault("shop.visual.dots.redraw.useCustomOffColor", false)
+  defineDefault("shop.visual.dots.redraw.offColor",          colors.black)
 
     -- Purchase dot
-  defineDefault("shop.visual.dots.purchase.enabled",     true)
-  defineDefault("shop.visual.dots.purchase.displayTime", 2)
-  defineDefault("shop.visual.dots.purchase.x",           1)
-  defineDefault("shop.visual.dots.purchase.y",           2)
-  defineDefault("shop.visual.dots.purchase.color",       colors.green)
+  defineDefault("shop.visual.dots.purchase.enabled",           true)
+  defineDefault("shop.visual.dots.purchase.displayTime",       2)
+  defineDefault("shop.visual.dots.purchase.x",                 1)
+  defineDefault("shop.visual.dots.purchase.y",                 2)
+  defineDefault("shop.visual.dots.purchase.color",             colors.green)
+  defineDefault("shop.visual.dots.purchase.useCustomOffColor", false)
+  defineDefault("shop.visual.dots.purchase.offColor",          colors.black)
 
     -- Redraw dot
-  defineDefault("shop.visual.dots.userInput.enabled",     true)
-  defineDefault("shop.visual.dots.userInput.displayTime", 2)
-  defineDefault("shop.visual.dots.userInput.x",           1)
-  defineDefault("shop.visual.dots.userInput.y",           3)
-  defineDefault("shop.visual.dots.userInput.color",       colors.red)
+  defineDefault("shop.visual.dots.userInput.enabled",           true)
+  defineDefault("shop.visual.dots.userInput.displayTime",       2)
+  defineDefault("shop.visual.dots.userInput.x",                 1)
+  defineDefault("shop.visual.dots.userInput.y",                 3)
+  defineDefault("shop.visual.dots.userInput.color",             colors.red)
+  defineDefault("shop.visual.dots.userInput.useCustomOffColor", false)
+  defineDefault("shop.visual.dots.userInput.offColor",          colors.black)
 
   -- -- -- Krist -- -- --
   defineDefault("shop.krist.address",                   "kxxxxxxxx")
@@ -787,6 +794,53 @@ local function initMonitor()
       tMon.setPaletteColor(2^i, iHex)
     end
   end
+end
+
+local function initDots()
+  dots = {}
+  local tMeta = {
+      __call = function(t, b)
+        tFrame.setCursorPos(t.x, t.y)
+        tFrame.setBackgroundColor(b and t.color or t.offColor)
+        tFrame.write(' ')
+        tFrame.PushBuffer()
+      end
+    }
+
+  -- redraw dot
+  dots.redraw = setmetatable({
+    color    = does("shop.visual.dots.redraw.color"),
+    offColor = does("shop.visual.dots.redraw.useCustomOffColor")
+               and does("shop.visual.dots.redraw.offColor")
+               or does("shop.visual.mainBG"),
+    x        = does("shop.visual.dots.redraw.x"),
+    y        = does("shop.visual.dots.redraw.y"),
+    enabled  = does("shop.visual.dots.redraw.enabled"),
+    time     = does("shop.visual.dots.redraw.displayTime")
+  }, tMeta)
+
+  -- purchase dot
+  dots.purchase = setmetatable({
+    color    = does("shop.visual.dots.purchase.color"),
+    offColor = does("shop.visual.dots.purchase.useCustomOffColor")
+               and does("shop.visual.dots.purchase.offColor")
+               or does("shop.visual.mainBG"),
+    x        = does("shop.visual.dots.purchase.x"),
+    y        = does("shop.visual.dots.purchase.y"),
+    enabled  = does("shop.visual.dots.purchase.enabled"),
+    time     = does("shop.visual.dots.purchase.displayTime")
+  }, tMeta)
+  -- user input dot
+  dots.userInput = setmetatable({
+    color    = does("shop.visual.dots.userInput.color"),
+    offColor = does("shop.visual.dots.userInput.useCustomOffColor")
+               and does("shop.visual.dots.userInput.offColor")
+               or does("shop.visual.mainBG"),
+    x        = does("shop.visual.dots.userInput.x"),
+    y        = does("shop.visual.dots.userInput.y"),
+    enabled  = does("shop.visual.dots.userInput.enabled"),
+    time     = does("shop.visual.dots.userInput.displayTime")
+  }, tMeta)
 end
 
 local function rAlign(iX, iY, sText)
@@ -984,6 +1038,16 @@ local function options()
       {5, 6},
       true
     )
+    if tFrame then
+      initDots()
+      for k, v in pairs(dots) do
+        if v.enabled then
+          v(true)
+        end
+      end
+      tFrame.PushBuffer()
+    end
+
     if not ok then
       if tFrame then
         tFrame.clear()

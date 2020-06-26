@@ -301,6 +301,18 @@
                   title = "Color",
                   tp = "color",
                   bigInfo = "What color should this dot be?",
+                },
+                {
+                  setting = "shop.visual.dots.redraw.useCustomOffColor",
+                  title = "Custom?",
+                  tp = "boolean",
+                  bigInfo = "Use a custom 'off' color for this dot (Defaults to the main shop background if off)?"
+                },
+                {
+                  setting = "shop.visual.dots.redraw.offColor",
+                  title = "Off Color",
+                  tp = "color",
+                  bigInfo = "Choose a custom off color (Custom Off Color must be enabled)."
                 }
               }
             },
@@ -342,6 +354,18 @@
                   title = "Color",
                   tp = "color",
                   bigInfo = "What color should this dot be?",
+                },
+                {
+                  setting = "shop.visual.dots.purchase.useCustomOffColor",
+                  title = "Custom?",
+                  tp = "boolean",
+                  bigInfo = "Use a custom 'off' color for this dot (Defaults to the main shop background if off)?"
+                },
+                {
+                  setting = "shop.visual.dots.purchase.offColor",
+                  title = "Off Color",
+                  tp = "color",
+                  bigInfo = "Choose a custom off color (Custom Off Color must be enabled)."
                 }
               }
             },
@@ -383,6 +407,18 @@
                   title = "Color",
                   tp = "color",
                   bigInfo = "What color should this dot be?",
+                },
+                {
+                  setting = "shop.visual.dots.userInput.useCustomOffColor",
+                  title = "Custom?",
+                  tp = "boolean",
+                  bigInfo = "Use a custom 'off' color for this dot (Defaults to the main shop background if off)?"
+                },
+                {
+                  setting = "shop.visual.dots.userInput.offColor",
+                  title = "Off Color",
+                  tp = "color",
+                  bigInfo = "Choose a custom off color (Custom Off Color must be enabled)."
                 }
               }
             },
