@@ -679,6 +679,28 @@ local function defineSettings()
   defineDefault("shop.visual.itemlist.showDomain",  false)
   defineDefault("shop.visual.itemlist.shortDomain", false)
 
+  -- dots
+    -- Redraw dot
+  defineDefault("shop.visual.dots.redraw.enabled",     true)
+  defineDefault("shop.visual.dots.redraw.displayTime", 2)
+  defineDefault("shop.visual.dots.redraw.x",           1)
+  defineDefault("shop.visual.dots.redraw.y",           1)
+  defineDefault("shop.visual.dots.redraw.color",       colors.blue)
+
+    -- Purchase dot
+  defineDefault("shop.visual.dots.purchase.enabled",     true)
+  defineDefault("shop.visual.dots.purchase.displayTime", 2)
+  defineDefault("shop.visual.dots.purchase.x",           1)
+  defineDefault("shop.visual.dots.purchase.y",           2)
+  defineDefault("shop.visual.dots.purchase.color",       colors.green)
+
+    -- Redraw dot
+  defineDefault("shop.visual.dots.userInput.enabled",     true)
+  defineDefault("shop.visual.dots.userInput.displayTime", 2)
+  defineDefault("shop.visual.dots.userInput.x",           1)
+  defineDefault("shop.visual.dots.userInput.y",           3)
+  defineDefault("shop.visual.dots.userInput.color",       colors.red)
+
   -- -- -- Krist -- -- --
   defineDefault("shop.krist.address",                   "kxxxxxxxx")
   defineDefault("shop.krist.domain",                    "")

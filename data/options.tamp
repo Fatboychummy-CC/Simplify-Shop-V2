@@ -259,6 +259,136 @@
           final = "Go back.",
         },
         {
+          name = "Info Dots",
+          info = "Change Info Dots",
+          bigInfo = "Change positions and colors of the information dots (dots which blink when certain events occur).",
+          subPages = {
+            {
+              name = "Redraw",
+              info = "Change redraw dot info.",
+              bigInfo = "The redraw dot is a dot that appears on the monitor whenever the screen redraws.",
+              settings = {
+                --{
+                --  setting = "shop.visual.dots.redraw.enabled",
+                --  title = "Enabled",
+                --  tp = "boolean",
+                --  bigInfo = "Should this dot be enabled?"
+                --},
+                {
+                  setting = "shop.visual.dots.redraw.displayTime",
+                  title = "Display Time",
+                  tp = "number",
+                  bigInfo = "How long (in seconds) should this dot be displayed?",
+                  min = 0.5,
+                  max = 5
+                },
+                {
+                  setting = "shop.visual.dots.redraw.x",
+                  title = "X Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the X axis? (left = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.redraw.y",
+                  title = "Y Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the Y axis? (top = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.redraw.color",
+                  title = "Color",
+                  tp = "color",
+                  bigInfo = "What color should this dot be?",
+                }
+              }
+            },
+            {
+              name = "Purchase",
+              info = "Change purchase dot info.",
+              bigInfo = "The purchase dot is a dot that appears on the monitor whenever somebody makes a purchase.",
+              settings = {
+                {
+                  setting = "shop.visual.dots.purchase.enabled",
+                  title = "Enabled",
+                  tp = "boolean",
+                  bigInfo = "Should this dot be enabled?"
+                },
+                {
+                  setting = "shop.visual.dots.purchase.displayTime",
+                  title = "Display Time",
+                  tp = "number",
+                  bigInfo = "How long (in seconds) should this dot be displayed?",
+                  min = 0.1,
+                  max = 5
+                },
+                {
+                  setting = "shop.visual.dots.purchase.x",
+                  title = "X Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the X axis? (left = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.purchase.y",
+                  title = "Y Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the Y axis? (top = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.purchase.color",
+                  title = "Color",
+                  tp = "color",
+                  bigInfo = "What color should this dot be?",
+                }
+              }
+            },
+            {
+              name = "User Input",
+              info = "Change user input dot info.",
+              bigInfo = "The user input dot is a dot that appears on the monitor whenever a player touches the monitor.",
+              settings = {
+                {
+                  setting = "shop.visual.dots.userInput.enabled",
+                  title = "Enabled",
+                  tp = "boolean",
+                  bigInfo = "Should this dot be enabled?"
+                },
+                {
+                  setting = "shop.visual.dots.userInput.displayTime",
+                  title = "Display Time",
+                  tp = "number",
+                  bigInfo = "How long (in seconds) should this dot be displayed?",
+                  min = 0.1,
+                  max = 5
+                },
+                {
+                  setting = "shop.visual.dots.userInput.x",
+                  title = "X Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the X axis? (left = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.userInput.y",
+                  title = "Y Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the Y axis? (top = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.userInput.color",
+                  title = "Color",
+                  tp = "color",
+                  bigInfo = "What color should this dot be?",
+                }
+              }
+            },
+          }
+        },
+        {
           name = "Palette",
           info = "Set Palette Colors",
           bigInfo = "Set the palette colors (rgb) for each color.",
