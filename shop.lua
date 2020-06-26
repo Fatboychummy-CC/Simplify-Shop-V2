@@ -227,7 +227,7 @@ local function checkUpdates()
   log.info(string.format("Found %d update(s).", tCheck.n))
   if tCheck.n > 0 then
     for k, v in pairs(tCheck) do
-      if k ~= "n" then
+      if k ~= "n" and v then
         log.info(string.format("  %s", k))
       end
     end
