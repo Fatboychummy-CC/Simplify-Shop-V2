@@ -911,7 +911,7 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
   local iCurrent = (iPage - 1) * iHList
   local function getNext(i)
     for j = 1, #tItems do
-      if tItems[j].show and not (iShowEmpty and tItems[j].count == 0) then
+      if tItems[j].show and (tItems[j].count > 0 or (iShowEmpty and tItems[j].count == 0)) then
         i = i - 1
       end
       if i == 0 then
