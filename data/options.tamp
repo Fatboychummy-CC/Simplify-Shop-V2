@@ -71,44 +71,45 @@
           info = "Item List Visuals",
           bigInfo = "Change how the item list looks!",
           subPages = {
-            name = "Positions",
-            info = "Set positions of the list.",
-            bigInfo = "Change things like x, y, width, and items per page (and more)",
-            settings = {
-              {
-                setting = "shop.visual.itemlist.x",
-                title = "List X",
-                tp = "number",
-                bigInfo = "What should the starting (leftmost) x position of the item list be?"
-              },
-              {
-                setting = "shop.visual.itemlist.y",
-                title = "List Y",
-                tp = "number",
-                bigInfo = "What should the starting (uppermost) y position of the iteml ist be?"
-              },
-              {
-                setting = "shop.visual.itemlist.w",
-                title = "List Width",
-                tp = "number",
-                bigInfo = "How wide should the item list be?  Take into account the length of your item names!",
-                min = 28
-              },
-              {
-                setting = "shop.visual.itemlist.h",
-                title = "Items/Page",
-                tp = "number",
-                bigInfo = "How many items should be displayed per page?",
-                min = 1
-              },
-              {
-                setting = "shop.visual.itemlist.s",
-                title = "Spacing",
-                tp = "number",
-                bigInfo = "How many spaces between each column (going by length of column name)?",
-                min = 1
-              },
-              final = "Go back."
+            {
+              name = "Positions",
+              info = "Set positions of the list.",
+              bigInfo = "Change things like x, y, width, and items per page (and more)",
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.x",
+                  title = "List X",
+                  tp = "number",
+                  bigInfo = "What should the starting (leftmost) x position of the item list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.y",
+                  title = "List Y",
+                  tp = "number",
+                  bigInfo = "What should the starting (uppermost) y position of the iteml ist be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.w",
+                  title = "List Width",
+                  tp = "number",
+                  bigInfo = "How wide should the item list be?  Take into account the length of your item names!",
+                  min = 27
+                },
+                {
+                  setting = "shop.visual.itemlist.h",
+                  title = "Items/Page",
+                  tp = "number",
+                  bigInfo = "How many items should be displayed per page?",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.itemlist.s",
+                  title = "Spacing",
+                  tp = "number",
+                  bigInfo = "How many spaces between each column (going by length of column name)?",
+                  min = 1
+                }
+              }
             },
             {
               name = "Legend",
@@ -133,6 +134,147 @@
                   tp = "color",
                   bigInfo = "What color should the text of the legend be?"
                 },
+              }
+            },
+            {
+              name = "Buttons",
+              info = "Change Button Visuals",
+              bigInfo = "Change how the buttons look.",
+              subPages = {
+                {
+                  name = "Prev. Page",
+                  info = "Change Previous Visuals",
+                  bigInfo = "Change how the previous page button looks.",
+                  settings = {
+                    {
+                      setting = "shop.visual.buttons.prev.enabled",
+                      title = "Enabled",
+                      tp = "boolean",
+                      bigInfo = "Should this button be displayed?  Set this to false if you don't plan on using more than one page."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.x",
+                      title = "X Pos",
+                      tp = "number",
+                      bigInfo = "Set the position along the X axis the button is located."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.y",
+                      title = "Y Pos",
+                      tp = "number",
+                      bigInfo = "Set the position along the Y axis the button is located."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.w",
+                      title = "Width",
+                      tp = "number",
+                      bigInfo = "Set how wide the button is."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.h",
+                      title = "Height",
+                      tp = "number",
+                      bigInfo = "Set how tall the button is."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.color.bgOn",
+                      title = "BG On Color",
+                      tp = "color",
+                      bigInfo = "Set the background color of the button when it is on."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.color.bgOff",
+                      title = "BG Off Color",
+                      tp = "color",
+                      bigInfo = "Set the background color of the button when it is off."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.color.fgOn",
+                      title = "FG On Color",
+                      tp = "color",
+                      bigInfo = "Set the text color of the button when it is on."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.color.fgOff",
+                      title = "FG Off Color",
+                      tp = "color",
+                      bigInfo = "Set the text color of the button when it is off."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.text",
+                      title = "Text",
+                      tp = "string",
+                      bigInfo = "Set the text of this button."
+                    }
+                  }
+                },
+                {
+                  name = "Next Page",
+                  info = "Change Next Visuals",
+                  bigInfo = "Change how the next page button looks.",
+                  settings = {
+                    {
+                      setting = "shop.visual.buttons.next.enabled",
+                      title = "Enabled",
+                      tp = "boolean",
+                      bigInfo = "Should this button be displayed?  Set this to false if you don't plan on using more than one page."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.x",
+                      title = "X Pos",
+                      tp = "number",
+                      bigInfo = "Set the position along the X axis the button is located."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.y",
+                      title = "Y Pos",
+                      tp = "number",
+                      bigInfo = "Set the position along the Y axis the button is located."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.w",
+                      title = "Width",
+                      tp = "number",
+                      bigInfo = "Set how wide the button is."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.h",
+                      title = "Height",
+                      tp = "number",
+                      bigInfo = "Set how tall the button is."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.color.bgOn",
+                      title = "BG On Color",
+                      tp = "color",
+                      bigInfo = "Set the background color of the button when it is on."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.color.bgOff",
+                      title = "BG Off Color",
+                      tp = "color",
+                      bigInfo = "Set the background color of the button when it is off."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.color.fgOn",
+                      title = "FG On Color",
+                      tp = "color",
+                      bigInfo = "Set the text color of the button when it is on."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.color.fgOff",
+                      title = "FG Off Color",
+                      tp = "color",
+                      bigInfo = "Set the text color of the button when it is off."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.text",
+                      title = "Text",
+                      tp = "string",
+                      bigInfo = "Set the text of this button."
+                    }
+                  }
+                }
               }
             },
             {
@@ -255,8 +397,129 @@
               tp = "boolean",
               bigInfo = "If true, show only <this part>@domain.kst, then the domain in the legend.  Else, show full domain for each item."
             },
+          }
+        },
+        {
+          name = "Info Box",
+          info = "Change the info box",
+          bigInfo = "Change information displayed in the info box, along with it's position and size.",
+          settings = {
+            {
+              setting = "shop.visual.infobox.enabled",
+              title = "Enabled",
+              tp = "boolean",
+              bigInfo = "Should the infobox be displayed?"
+            },
+            {
+              setting = "shop.visual.infobox.x",
+              title = "X Position",
+              tp = "number",
+              bigInfo = "Where should the info box be positioned on the X axis?",
+              min = 1
+            },
+            {
+              setting = "shop.visual.infobox.y",
+              title = "Y Position",
+              tp = "number",
+              bigInfo = "Where should the info box be positioned on the Y axis?",
+              min = 1
+            },
+            {
+              setting = "shop.visual.infobox.w",
+              title = "Width",
+              tp = "number",
+              bigInfo = "How wide should the infobox be?",
+              min = 1
+            },
+            {
+              setting = "shop.visual.infobox.h",
+              title = "Height",
+              tp = "number",
+              bigInfo = "How tall should the infobox be?",
+              min = 1
+            },
+            {
+              setting = "shop.visual.infobox.bg",
+              title = "BG Color",
+              tp = "color",
+              bigInfo = "What should the background color of the info box be?"
+            },
+            {
+              setting = "shop.visual.infobox.fg",
+              title = "Text Color",
+              tp = "color",
+              bigInfo = "What should the text color of the info box be?"
+            },
+            {
+              setting = "shop.visual.infobox.centered",
+              title = "Center Text",
+              tp = "boolean",
+              bigInfo = "Should the text be centered in the box?"
+            }
           },
-          final = "Go back.",
+          subPages = {
+            {
+              name = "Text",
+              info = "Change text lines",
+              bigInfo = "Change the info box's text lines (Up to 9 lines permitted)",
+              settings = {
+                {
+                  setting = "shop.visual.infobox.text.1",
+                  title = "Line 1",
+                  tp = "string",
+                  bigInfo = "Change line 1"
+                },
+                {
+                  setting = "shop.visual.infobox.text.2",
+                  title = "Line 2",
+                  tp = "string",
+                  bigInfo = "Change line 2"
+                },
+                {
+                  setting = "shop.visual.infobox.text.3",
+                  title = "Line 3",
+                  tp = "string",
+                  bigInfo = "Change line 3"
+                },
+                {
+                  setting = "shop.visual.infobox.text.4",
+                  title = "Line 4",
+                  tp = "string",
+                  bigInfo = "Change line 4"
+                },
+                {
+                  setting = "shop.visual.infobox.text.5",
+                  title = "Line 5",
+                  tp = "string",
+                  bigInfo = "Change line 5"
+                },
+                {
+                  setting = "shop.visual.infobox.text.6",
+                  title = "Line 6",
+                  tp = "string",
+                  bigInfo = "Change line 6"
+                },
+                {
+                  setting = "shop.visual.infobox.text.7",
+                  title = "Line 7",
+                  tp = "string",
+                  bigInfo = "Change line 7"
+                },
+                {
+                  setting = "shop.visual.infobox.text.8",
+                  title = "Line 8",
+                  tp = "string",
+                  bigInfo = "Change line 8"
+                },
+                {
+                  setting = "shop.visual.infobox.text.9",
+                  title = "Line 9",
+                  tp = "string",
+                  bigInfo = "Change line 9"
+                }
+              }
+            }
+          }
         },
         {
           name = "Info Dots",
@@ -422,6 +685,59 @@
                 }
               }
             },
+            {
+              name = "Update",
+              info = "Change the update dot info",
+              bigInfo = "The update dot is a dot that flashes when an update is available.",
+              settings = {
+                {
+                  setting = "shop.visual.dots.update.enabled",
+                  title = "Enabled",
+                  tp = "boolean",
+                  bigInfo = "Should this dot be enabled?"
+                },
+                {
+                  setting = "shop.visual.dots.update.displayTime",
+                  title = "Display Time",
+                  tp = "number",
+                  bigInfo = "How long (in seconds) should this dot be displayed?",
+                  min = 0.1,
+                  max = 5
+                },
+                {
+                  setting = "shop.visual.dots.update.x",
+                  title = "X Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the X axis? (left = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.update.y",
+                  title = "Y Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the Y axis? (top = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.update.color",
+                  title = "Color",
+                  tp = "color",
+                  bigInfo = "What color should this dot be?",
+                },
+                {
+                  setting = "shop.visual.dots.update.useCustomOffColor",
+                  title = "Custom?",
+                  tp = "boolean",
+                  bigInfo = "Use a custom 'off' color for this dot (Defaults to the main shop background if off)?"
+                },
+                {
+                  setting = "shop.visual.dots.update.offColor",
+                  title = "Off Color",
+                  tp = "color",
+                  bigInfo = "Choose a custom off color (Custom Off Color must be enabled)."
+                }
+              }
+            }
           }
         },
         {
@@ -470,8 +786,7 @@
             }
           }
         }
-      },
-      final = "Go back."
+      }
     },
     {
       name = "Krist",
@@ -509,8 +824,7 @@
           tp = "string",
           bigInfo = "Address to forward purchases to, if Do Forwards is enabled."
         }
-      },
-      final = "Go back."
+      }
     },
     {
       name = "Logger",
@@ -533,6 +847,5 @@
         }
       }
     }
-  },
-  final = "Go back."
+  }
 }
