@@ -713,7 +713,7 @@ local function defineSettings()
   defineDefault("shop.visual.buttons.prev.text",        "Prev")
     -- next page
   defineDefault("shop.visual.buttons.next.enabled",     true)
-  defineDefault("shop.visual.buttons.next.x",           22)
+  defineDefault("shop.visual.buttons.next.x",           23)
   defineDefault("shop.visual.buttons.next.y",           17)
   defineDefault("shop.visual.buttons.next.w",           6)
   defineDefault("shop.visual.buttons.next.h",           2)
@@ -915,13 +915,14 @@ local function initButtons()
   local tMeta = {
     __call = function(t, b)
       if t.enabled then
+        tFrame.setBackgroundColor(b and t.bgcolor or t.bgoffcolor)
+        tFrame.setTextColor(b and t.fgcolor or t.fgoffcolor)
         for y = 0, t.h - 1 do
           tFrame.setCursorPos(t.x, t.y + y)
-          tFrame.setBackgroundColor(b and t.color or t.offColor)
           tFrame.write(string.rep(' ', t.w))
-          tFrame.setCursorPos(t.x + math.floor(t.w / 2 + 0.5) - math.floor(#t.text / 2 + 0.5))
-          tFrame.write(t.text)
         end
+        tFrame.setCursorPos(t.x + math.floor(t.w / 2 + 0.5) - math.floor(#t.text / 2 + 0.5), t.y + math.ceil(t.h / 2))
+        tFrame.write(t.text)
       end
     end
   }
@@ -933,27 +934,27 @@ local function initButtons()
     hit        = hit,
     enabled    = does("shop.visual.buttons.prev.enabled",     "Previous button Enabled"),
     x          = does("shop.visual.buttons.prev.x",           "Previous button X"),
-    y          = does("shop.visual.buttons.prev.x",           "Previous button Y"),
+    y          = does("shop.visual.buttons.prev.y",           "Previous button Y"),
     w          = does("shop.visual.buttons.prev.w",           "Previous button Width"),
     h          = does("shop.visual.buttons.prev.h",           "Previous button Height"),
     bgcolor    = does("shop.visual.buttons.prev.color.bgOn",  "Previous button background color on"),
     fgcolor    = does("shop.visual.buttons.prev.color.fgOn",  "Previous button text color on"),
-    bgoffColor = does("shop.visual.buttons.prev.color.bgOff", "Previous button background color off"),
-    fgOffColor = does("shop.visual.buttons.prev.color.fgOff", "Previous button text color off"),
+    bgoffcolor = does("shop.visual.buttons.prev.color.bgOff", "Previous button background color off"),
+    fgoffcolor = does("shop.visual.buttons.prev.color.fgOff", "Previous button text color off"),
     text       = does("shop.visual.buttons.prev.text",        "Previous button Text"),
   }, tMeta)
 
-  buttons.prev = setmetatable({
+  buttons.next = setmetatable({
     hit        = hit,
     enabled    = does("shop.visual.buttons.next.enabled",     "Next button Enabled"),
     x          = does("shop.visual.buttons.next.x",           "Next button X"),
-    y          = does("shop.visual.buttons.next.x",           "Next button Y"),
+    y          = does("shop.visual.buttons.next.y",           "Next button Y"),
     w          = does("shop.visual.buttons.next.w",           "Next button Width"),
     h          = does("shop.visual.buttons.next.h",           "Next button Height"),
     bgcolor    = does("shop.visual.buttons.next.color.bgOn",  "Next button background color on"),
     fgcolor    = does("shop.visual.buttons.next.color.fgOn",  "Next button text color on"),
-    bgoffColor = does("shop.visual.buttons.next.color.bgOff", "Next button background color off"),
-    fgOffColor = does("shop.visual.buttons.next.color.fgOff", "Next button text color off"),
+    bgoffcolor = does("shop.visual.buttons.next.color.bgOff", "Next button background color off"),
+    fgoffcolor = does("shop.visual.buttons.next.color.fgOff", "Next button text color off"),
     text       = does("shop.visual.buttons.next.text",        "Next button Text"),
   }, tMeta)
 end
@@ -1040,7 +1041,7 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
   -- draw item list
   for i = 1, bOverride and 6 or iHList do
     local iPos = getNext(tItems, iCurrent + i, bShowEmpty)
-    if iPos then
+    if iPos <= #tItems then
       local tCItem = tItems[iPos]
 
       -- check if selected
@@ -1162,6 +1163,7 @@ end
 
 local function drawButtons(tItems, iPage)
   local bShowEmpty = does("shop.visual.itemlist.showEmpty", "Item List Show Empty")
+  local iHList     = does("shop.visual.itemlist.h", "Item List Height")
   local iCurrent = (iPage - 1) * iHList
   local bPrev = iPage > 1
   local bNext = true
@@ -1171,6 +1173,8 @@ local function drawButtons(tItems, iPage)
       bNext = false
     end
   end
+
+  buttons.prev(bPrev)
   buttons.next(bNext)
 end
 
@@ -1222,6 +1226,8 @@ local function options()
     if tFrame then
       defineDefault("shop.visual.dots.update.y", ({tFrame.getSize()})[2])
     end
+    initDots()
+    initButtons()
 
     local ok, err = pcall(
       redraw,
@@ -1238,8 +1244,6 @@ local function options()
       true
     )
     if tFrame then
-      initDots()
-      initButtons()
       for k, v in pairs(dots) do
         v(true)
       end
