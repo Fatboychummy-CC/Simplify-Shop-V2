@@ -126,6 +126,7 @@ tCache.n = #tCache
 local bFrameInitialized = false
 local tFrame
 local dots = {}
+local buttons = {}
 
 local tTampBase = {
   bigInfo = "",
@@ -698,6 +699,30 @@ local function defineSettings()
   defineDefault("shop.visual.infobox.bg",       colors.lightGray)
   defineDefault("shop.visual.infobox.fg",       colors.white)
 
+  -- buttons
+    -- previous page
+  defineDefault("shop.visual.buttons.prev.enabled",     true)
+  defineDefault("shop.visual.buttons.prev.x",           2)
+  defineDefault("shop.visual.buttons.prev.y",           17)
+  defineDefault("shop.visual.buttons.prev.w",           6)
+  defineDefault("shop.visual.buttons.prev.h",           2)
+  defineDefault("shop.visual.buttons.prev.color.bgOn",  colors.blue)
+  defineDefault("shop.visual.buttons.prev.color.fgOn",  colors.white)
+  defineDefault("shop.visual.buttons.prev.color.bgOff", colors.lightGray)
+  defineDefault("shop.visual.buttons.prev.color.fgOff", colors.white)
+  defineDefault("shop.visual.buttons.prev.text",        "Prev")
+    -- next page
+  defineDefault("shop.visual.buttons.next.enabled",     true)
+  defineDefault("shop.visual.buttons.next.x",           22)
+  defineDefault("shop.visual.buttons.next.y",           17)
+  defineDefault("shop.visual.buttons.next.w",           6)
+  defineDefault("shop.visual.buttons.next.h",           2)
+  defineDefault("shop.visual.buttons.next.color.bgOn",  colors.blue)
+  defineDefault("shop.visual.buttons.next.color.fgOn",  colors.white)
+  defineDefault("shop.visual.buttons.next.color.bgOff", colors.lightGray)
+  defineDefault("shop.visual.buttons.next.color.fgOff", colors.white)
+  defineDefault("shop.visual.buttons.next.text",        "Next")
+
   -- dots
     -- Redraw dot
   defineDefault("shop.visual.dots.redraw.enabled",           true)
@@ -884,6 +909,52 @@ local function initDots()
     time     = does("shop.visual.dots.update.displayTime", "Update dot display time")
   }, tMeta)
 end
+
+local function initButtons()
+  buttons = {}
+  local tMeta = {
+    __call = function(t, b)
+      if t.enabled then
+        for y = 0, t.h - 1 do
+          tFrame.setCursorPos(t.x, t.y + y)
+          tFrame.setBackgroundColor(b and t.color or t.offColor)
+          tFrame.write(string.rep(' ', t.w))
+          tFrame.setCursorPos(t.x + math.floor(t.w / 2 + 0.5) - math.floor(#t.text / 2 + 0.5))
+          tFrame.write(t.text)
+        end
+      end
+    end
+  }
+  local function hit(self, iX, iY)
+    return self.x >= iX and self.x <= iX + iW - 1 and self.y >= iY and self.y <= iY + iH - 1
+  end
+
+  buttons.prev = setmetatable({
+    hit        = hit,
+    enabled    = does("shop.visual.buttons.prev.enabled",     "Previous button Enabled"),
+    x          = does("shop.visual.buttons.prev.x",           "Previous button X"),
+    y          = does("shop.visual.buttons.prev.x",           "Previous button Y"),
+    w          = does("shop.visual.buttons.prev.w",           "Previous button Width"),
+    h          = does("shop.visual.buttons.prev.h",           "Previous button Height"),
+    bgcolor    = does("shop.visual.buttons.prev.color.bgOn",  "Previous button background color on"),
+    fgcolor    = does("shop.visual.buttons.prev.color.fgOn",  "Previous button text color on"),
+    bgoffColor = does("shop.visual.buttons.prev.color.bgOff", "Previous button background color off"),
+    fgOffColor = does("shop.visual.buttons.prev.color.fgOff", "Previous button text color off"),
+    text       = does("shop.visual.buttons.prev.text",        "Previous button Text"),
+  }, tMeta)
+
+  buttons.prev = setmetatable({
+    hit        = hit,
+    enabled    = does("shop.visual.buttons.next.enabled",     "Next button Enabled"),
+    x          = does("shop.visual.buttons.next.x",           "Next button X"),
+    y          = does("shop.visual.buttons.next.x",           "Next button Y"),
+    w          = does("shop.visual.buttons.next.w",           "Next button Width"),
+    h          = does("shop.visual.buttons.next.h",           "Next button Height"),
+    bgcolor    = does("shop.visual.buttons.next.color.bgOn",  "Next button background color on"),
+    fgcolor    = does("shop.visual.buttons.next.color.fgOn",  "Next button text color on"),
+    bgoffColor = does("shop.visual.buttons.next.color.bgOff", "Next button background color off"),
+    fgOffColor = does("shop.visual.buttons.next.color.fgOff", "Next button text color off"),
+    text       = does("shop.visual.buttons.next.text",        "Next button Text"),
   }, tMeta)
 end
 
@@ -1100,6 +1171,7 @@ local function drawButtons(tItems, iPage)
       bNext = false
     end
   end
+  buttons.next(bNext)
 end
 
 local function redraw(tItems, iPage, tSelections, bOverride)
@@ -1112,6 +1184,7 @@ local function redraw(tItems, iPage, tSelections, bOverride)
 
   drawItemList(tItems, iPage, tSelections, bOverride)
   drawInfoBox(tItems[tSelections[1]])
+  drawButtons(tItems, iPage)
 
   tFrame.PushBuffer()
 end
@@ -1166,7 +1239,11 @@ local function options()
     )
     if tFrame then
       initDots()
+      initButtons()
       for k, v in pairs(dots) do
+        v(true)
+      end
+      for k, v in pairs(buttons) do
         v(true)
       end
       tFrame.PushBuffer()
@@ -1315,6 +1392,7 @@ end
 
 local function shop(bUpdates)
   initDots()
+  initButtons()
 
   local function dotHandler()
     log.info("Dot Handler coroutine started.")
