@@ -625,10 +625,10 @@ local function does(sSetting, sDescriptiveName)
 end
 
 -- define some default settings
+local function defineDefault(sSetting, val)
+  settings.define(sSetting, {type = type(val), default = val})
+end
 local function defineSettings()
-  local function defineDefault(sSetting, val)
-    settings.define(sSetting, {type = type(val), default = val})
-  end
   -- base settings
   defineDefault("shop.autorun", 15)
   defineDefault("shop.monitor", peripheral.findFirstName("monitor") or error("Cannot find monitor.", 0))
@@ -653,12 +653,12 @@ local function defineSettings()
   defineDefault("shop.visual.itemlist.showLegend", true)
   defineDefault("shop.visual.itemlist.legendBG",   colors.purple)
   defineDefault("shop.visual.itemlist.legendFG",   colors.white)
-  defineDefault("shop.visual.itemlist.s",          5)
     -- positioning
-  defineDefault("shop.visual.itemlist.x", 1)
-  defineDefault("shop.visual.itemlist.y", 1)
-  defineDefault("shop.visual.itemlist.w", 28)
+  defineDefault("shop.visual.itemlist.x", 2)
+  defineDefault("shop.visual.itemlist.y", 10)
+  defineDefault("shop.visual.itemlist.w", 27)
   defineDefault("shop.visual.itemlist.h", 5)
+  defineDefault("shop.visual.itemlist.s", 1)
     -- odd entries
   defineDefault("shop.visual.itemlist.oddBG",       colors.gray)
   defineDefault("shop.visual.itemlist.oddFG",       colors.white)
@@ -678,6 +678,25 @@ local function defineSettings()
   defineDefault("shop.visual.itemlist.decimal",     2)
   defineDefault("shop.visual.itemlist.showDomain",  false)
   defineDefault("shop.visual.itemlist.shortDomain", false)
+
+  -- info box
+  defineDefault("shop.visual.infobox.enabled",  true)
+  defineDefault("shop.visual.infobox.x",        2)
+  defineDefault("shop.visual.infobox.y",        2)
+  defineDefault("shop.visual.infobox.w",        27)
+  defineDefault("shop.visual.infobox.h",        7)
+  defineDefault("shop.visual.infobox.centered", false)
+  defineDefault("shop.visual.infobox.text.1",   "")
+  defineDefault("shop.visual.infobox.text.2",   "return string.format(\"Krist address: %s\", krist.address)")
+  defineDefault("shop.visual.infobox.text.3",   "if item then return string.format(\"Item: %s\", item.displayName) end")
+  defineDefault("shop.visual.infobox.text.4",   "if item then return string.format(\"Price: %.2f\", item.price) end")
+  defineDefault("shop.visual.infobox.text.5",   "if item then if item.price < 1 then return string.format(\"1 KST: %d items.\", math.min(math.floor(1 / item.price), item.count)) end return string.format(\"1 stack (%d): %.2f KST\", math.min(item.stackSize, item.count), math.ceil(item.price * math.min(item.count, item.stackSize))) end")
+  defineDefault("shop.visual.infobox.text.6",   "if item then return string.format(\"/pay %s %d\", krist.address, math.ceil(item.price * math.min(item.stackSize, item.count))) end")
+  defineDefault("shop.visual.infobox.text.7",   "")
+  defineDefault("shop.visual.infobox.text.8",   "")
+  defineDefault("shop.visual.infobox.text.9",   "")
+  defineDefault("shop.visual.infobox.bg",       colors.lightGray)
+  defineDefault("shop.visual.infobox.fg",       colors.white)
 
   -- dots
     -- Redraw dot
@@ -706,6 +725,15 @@ local function defineSettings()
   defineDefault("shop.visual.dots.userInput.color",             colors.red)
   defineDefault("shop.visual.dots.userInput.useCustomOffColor", false)
   defineDefault("shop.visual.dots.userInput.offColor",          colors.black)
+
+    -- Redraw dot
+  defineDefault("shop.visual.dots.update.enabled",           true)
+  defineDefault("shop.visual.dots.update.displayTime",       1)
+  defineDefault("shop.visual.dots.update.x",                 1)
+  defineDefault("shop.visual.dots.update.y",                 ({peripheral.call(settings.get("shop.monitor"), "getSize")})[2])
+  defineDefault("shop.visual.dots.update.color",             colors.green)
+  defineDefault("shop.visual.dots.update.useCustomOffColor", true)
+  defineDefault("shop.visual.dots.update.offColor",          colors.blue)
 
   -- -- -- Krist -- -- --
   defineDefault("shop.krist.address",                   "kxxxxxxxx")
@@ -799,46 +827,63 @@ end
 local function initDots()
   dots = {}
   local tMeta = {
-      __call = function(t, b)
+    __call = function(t, b)
+      if t.enabled then
         tFrame.setCursorPos(t.x, t.y)
         tFrame.setBackgroundColor(b and t.color or t.offColor)
         tFrame.write(' ')
       end
-    }
+    end
+  }
 
   -- redraw dot
   dots.redraw = setmetatable({
-    color    = does("shop.visual.dots.redraw.color"),
-    offColor = does("shop.visual.dots.redraw.useCustomOffColor")
-               and does("shop.visual.dots.redraw.offColor")
-               or does("shop.visual.mainBG"),
-    x        = does("shop.visual.dots.redraw.x"),
-    y        = does("shop.visual.dots.redraw.y"),
-    enabled  = does("shop.visual.dots.redraw.enabled"),
-    time     = does("shop.visual.dots.redraw.displayTime")
+    color    = does("shop.visual.dots.redraw.color", "Redraw dot color"),
+    offColor = does("shop.visual.dots.redraw.useCustomOffColor", "Redraw dot use custom off color")
+               and does("shop.visual.dots.redraw.offColor", "Redraw dot off color")
+               or does("shop.visual.mainBG", "Main background"),
+    x        = does("shop.visual.dots.redraw.x", "Redraw dot X pos"),
+    y        = does("shop.visual.dots.redraw.y", "Redraw dot Y pos"),
+    enabled  = does("shop.visual.dots.redraw.enabled", "Redraw dot enabled"),
+    time     = does("shop.visual.dots.redraw.displayTime", "Redraw dot display time")
   }, tMeta)
 
   -- purchase dot
   dots.purchase = setmetatable({
-    color    = does("shop.visual.dots.purchase.color"),
-    offColor = does("shop.visual.dots.purchase.useCustomOffColor")
-               and does("shop.visual.dots.purchase.offColor")
-               or does("shop.visual.mainBG"),
-    x        = does("shop.visual.dots.purchase.x"),
-    y        = does("shop.visual.dots.purchase.y"),
-    enabled  = does("shop.visual.dots.purchase.enabled"),
-    time     = does("shop.visual.dots.purchase.displayTime")
+    color    = does("shop.visual.dots.purchase.color", "Purchase dot color"),
+    offColor = does("shop.visual.dots.purchase.useCustomOffColor", "Purchase dot use custom off color")
+               and does("shop.visual.dots.purchase.offColor", "Purchase dot off color")
+               or does("shop.visual.mainBG", "Main background"),
+    x        = does("shop.visual.dots.purchase.x", "Purchase dot X pos"),
+    y        = does("shop.visual.dots.purchase.y", "Purchase dot Y pos"),
+    enabled  = does("shop.visual.dots.purchase.enabled", "Purchase dot enabled"),
+    time     = does("shop.visual.dots.purchase.displayTime", "Purchase dot display time")
   }, tMeta)
+
   -- user input dot
   dots.userInput = setmetatable({
-    color    = does("shop.visual.dots.userInput.color"),
-    offColor = does("shop.visual.dots.userInput.useCustomOffColor")
-               and does("shop.visual.dots.userInput.offColor")
-               or does("shop.visual.mainBG"),
-    x        = does("shop.visual.dots.userInput.x"),
-    y        = does("shop.visual.dots.userInput.y"),
-    enabled  = does("shop.visual.dots.userInput.enabled"),
-    time     = does("shop.visual.dots.userInput.displayTime")
+    color    = does("shop.visual.dots.userInput.color", "User Input dot color"),
+    offColor = does("shop.visual.dots.userInput.useCustomOffColor", "User Input dot use custom off color")
+               and does("shop.visual.dots.userInput.offColor", "User Input dot off color")
+               or does("shop.visual.mainBG", "Main background"),
+    x        = does("shop.visual.dots.userInput.x", "User Input dot X pos"),
+    y        = does("shop.visual.dots.userInput.y", "User Input dot Y pos"),
+    enabled  = does("shop.visual.dots.userInput.enabled", "User Input dot enabled"),
+    time     = does("shop.visual.dots.userInput.displayTime", "User Input dot display time")
+  }, tMeta)
+
+  -- update available dot
+  dots.update = setmetatable({
+    color    = does("shop.visual.dots.update.color", "Update dot color"),
+    offColor = does("shop.visual.dots.update.useCustomOffColor", "Update dot use custom off color")
+               and does("shop.visual.dots.update.offColor", "Update dot off color")
+               or does("shop.visual.mainBG", "Main background"),
+    x        = does("shop.visual.dots.update.x", "Update dot X pos"),
+    y        = does("shop.visual.dots.update.y", "Update dot Y pos"),
+    enabled  = does("shop.visual.dots.update.enabled", "Update dot enabled"),
+    time     = does("shop.visual.dots.update.displayTime", "Update dot display time")
+  }, tMeta)
+end
   }, tMeta)
 end
 
@@ -853,6 +898,17 @@ end
 local function cutRound(fValue, iDecimal)
   local iMult = 10^iDecimal
   return math.floor(fValue * iMult + 0.5) / iMult
+end
+
+local function getNext(tItems, i, bShowEmpty)
+  for j = 1, #tItems do
+    if tItems[j].show and (tItems[j].count > 0 or (bShowEmpty and tItems[j].count == 0)) then
+      i = i - 1
+    end
+    if i == 0 then
+      return j
+    end
+  end
 end
 
 local function drawItemList(tItems, iPage, tSelections, bOverride)
@@ -882,7 +938,7 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
   local iSEvenBG = does("shop.visual.itemlist.selectEvenBG", "Item List Shop BG (even, select)")
   local iSEvenFG = does("shop.visual.itemlist.selectEvenFG", "Item List Shop Text (even, select)")
 
-  local iShowEmpty = does("shop.visual.itemlist.showEmpty", "Item List Show Empty")
+  local bShowEmpty = does("shop.visual.itemlist.showEmpty", "Item List Show Empty")
 
   local sDomain = does("shop.krist.domain", "Krist Domain")
 
@@ -909,20 +965,10 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
 
   -- determine the item to grab
   local iCurrent = (iPage - 1) * iHList
-  local function getNext(i)
-    for j = 1, #tItems do
-      if tItems[j].show and (tItems[j].count > 0 or (iShowEmpty and tItems[j].count == 0)) then
-        i = i - 1
-      end
-      if i == 0 then
-        return j
-      end
-    end
-  end
 
   -- draw item list
   for i = 1, bOverride and 6 or iHList do
-    local iPos = getNext(iCurrent + i)
+    local iPos = getNext(tItems, iCurrent + i, bShowEmpty)
     if iPos then
       local tCItem = tItems[iPos]
 
@@ -984,6 +1030,78 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
   end
 end
 
+local function parse(sText, iLine, tSelectedItem)
+  local tEnv = {
+    _G = nil,
+    math = math,
+    string = string,
+    table = table,
+    item = tSelectedItem and dCopy(tSelectedItem),
+    krist = {
+      address = does("shop.krist.address", "Krist Address"),
+      domain = does("shop.krist.domain", "Krist Domain")
+    }
+  }
+  if sText:sub(1, 1) == "!" then
+    return sText:sub(2)
+  elseif sText == "" then
+    return ""
+  end
+  local fFunc, sErr = load(sText, "User Code Line " .. tostring(iLine), "t", tEnv)
+  if not fFunc then
+    redrawError("Failed to parse user code due to: " .. sErr)
+  end
+  local bOk, sRet = pcall(fFunc)
+  if not bOk then
+    redrawError("Failed to run user code due to: " .. sRet)
+  end
+  return sRet
+end
+
+local function drawInfoBox(tSelectedItem)
+  if does("shop.visual.infobox.enabled", "Info Box Enabled") then
+    local iX        = does("shop.visual.infobox.x", "Info Box X Pos")
+    local iY        = does("shop.visual.infobox.y", "Info Box Y Pos")
+    local iW        = does("shop.visual.infobox.w", "Info Box Width")
+    local iH        = does("shop.visual.infobox.h", "Info Box Height")
+    local bCentered = does("shop.visual.infobox.centered", "Info Box Centered")
+    local tText     = {}
+    for i = 1, 9 do
+      tText[i]      = does(string.format("shop.visual.infobox.text.%d", i), string.format("Info Box Line %d", i))
+    end
+    local cBG       = does("shop.visual.infobox.bg", "Info Box BG Color")
+    local cFG       = does("shop.visual.infobox.fg", "Info Box Text Color")
+
+    -- draw background
+    local sBG = string.rep(' ', iW)
+    tFrame.setBackgroundColor(cBG)
+    tFrame.setTextColor(cFG)
+    for i = 0, iH - 1 do
+      tFrame.setCursorPos(iX, iY + i)
+      tFrame.write(sBG)
+    end
+    -- write text
+    for i = 0, 8 do
+      local sParsed = parse(tText[i + 1], i + 1, tSelectedItem) or ""
+      tFrame.setCursorPos(bCentered and iX + math.floor(iW / 2 + 0.5) - math.floor(#sParsed / 2 + 0.5) or iX + 1, iY + i)
+      tFrame.write(sParsed)
+    end
+  end
+end
+
+local function drawButtons(tItems, iPage)
+  local bShowEmpty = does("shop.visual.itemlist.showEmpty", "Item List Show Empty")
+  local iCurrent = (iPage - 1) * iHList
+  local bPrev = iPage > 1
+  local bNext = true
+
+  for i = 1, iHList do
+    if getNext(tItems, iCurrent + i, bShowEmpty) >= #tItems then
+      bNext = false
+    end
+  end
+end
+
 local function redraw(tItems, iPage, tSelections, bOverride)
   os.queueEvent("redraw")
   initMonitor()
@@ -993,6 +1111,7 @@ local function redraw(tItems, iPage, tSelections, bOverride)
   tFrame.clear()
 
   drawItemList(tItems, iPage, tSelections, bOverride)
+  drawInfoBox(tItems[tSelections[1]])
 
   tFrame.PushBuffer()
 end
@@ -1027,16 +1146,19 @@ local function options()
       end
       settings.save(sFileName)
     end
+    if tFrame then
+      defineDefault("shop.visual.dots.update.y", ({tFrame.getSize()})[2])
+    end
 
     local ok, err = pcall(
       redraw,
       {
-        {count = 1, localname = "odd", displayName = "Odd", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 1, localname = "even", displayName = "Even", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 0, localname = "odde", displayName = "Odd Empty", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 0, localname = "evne", displayName = "Even Empty", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 1, localname = "odds", displayName = "Odd Selected", price = 1.2345678901234567890, damage = 0, show = true},
-        {count = 1, localname = "evns", displayName = "Even Selected", price = 1.2345678901234567890, damage = 0, show = true},
+        {stackSize = 64, count = 1, localname = "odd", displayName = "Odd", price = 1.2345678901234567890, damage = 0, show = true},
+        {stackSize = 64, count = 1, localname = "even", displayName = "Even", price = 1.2345678901234567890, damage = 0, show = true},
+        {stackSize = 64, count = 0, localname = "odde", displayName = "Odd Empty", price = 1.2345678901234567890, damage = 0, show = true},
+        {stackSize = 64, count = 0, localname = "evne", displayName = "Even Empty", price = 1.2345678901234567890, damage = 0, show = true},
+        {stackSize = 64, count = 1, localname = "odds", displayName = "Odd Selected", price = 1.2345678901234567890, damage = 0, show = true},
+        {stackSize = 64, count = 1, localname = "evns", displayName = "Even Selected", price = 1.2345678901234567890, damage = 0, show = true},
       },
       1,
       {5, 6},
@@ -1045,9 +1167,7 @@ local function options()
     if tFrame then
       initDots()
       for k, v in pairs(dots) do
-        if v.enabled then
-          v(true)
-        end
+        v(true)
       end
       tFrame.PushBuffer()
     end
@@ -1070,6 +1190,7 @@ local function options()
   local tTamp = Tamperer.loadFile(tFiles.OptionsMenu.name)()
 
   local tPalette = Tamperer.getSubPage(tTamp, "Palette")
+
   local tInit = dCopy(tPalette.subPages[1])
 
   local function replace(t, sWith)
@@ -1168,7 +1289,7 @@ local function mainMenu()
       flg = false
       if iSelection == 1 then
         -- run the shop
-        return true
+        return true, tUpdates.n > 0 and true or false
       elseif iSelection == 2 then
         -- updater
         -- presented as a seperate page to allow a "save and exit" sort of functionality.
@@ -1188,21 +1309,28 @@ local function mainMenu()
     end
   else
     printError("Failed to load the main menu.")
-    error(err, 0)
+    error(string.format("Failed to load the main menu.\n%s", err), 0)
   end
 end
 
-local function shop()
+local function shop(bUpdates)
   initDots()
 
   local function dotHandler()
-    log.info("Info Dot coroutine started.")
+    log.info("Dot Handler coroutine started.")
     local iPurchaseTimer
     local bPurchaseOn = false
     local iRedrawTimer
     local bRedrawOn = false
     local iUserTimer
     local bUserOn = false
+    local iUpdateTimer
+    local bUpdateOn = false
+    if bUpdates then
+      iUpdateTimer = os.startTimer(dots.update.time)
+    else
+      dots.update.enabled = false
+    end
     while true do
       local tEvent = table.pack(os.pullEvent())
       if tEvent[1] == "timer" then
@@ -1213,6 +1341,9 @@ local function shop()
           bRedrawOn = false
         elseif iTimer == iPurchaseTimer then
           bPurchaseOn = false
+        elseif iTimer == iUpdateTimer then
+          bUpdateOn = not bUpdateOn
+          iUpdateTimer = os.startTimer(dots.update.time)
         end
       elseif tEvent[1] == "monitor_touch" then
         iUserTimer = os.startTimer(dots.userInput.time)
@@ -1229,8 +1360,23 @@ local function shop()
         dots.purchase(bPurchaseOn)
         dots.userInput(bUserOn)
         dots.redraw(bRedrawOn)
+        dots.update(bUpdateOn)
         tFrame.PushBuffer()
       end
+    end
+  end
+
+  local function inventoryHandler()
+    log.info("Inventory Handler coroutine started.")
+    while true do
+      os.pullEvent()
+    end
+  end
+
+  local function userHandler()
+    log.info("User Handler coroutine started.")
+    while true do
+      os.pullEvent()
     end
   end
 
@@ -1242,35 +1388,38 @@ local function shop()
     end
   end
 
-  parallel.waitForAny(dotHandler, _shop)
+  parallel.waitForAny(dotHandler, inventoryHandler, userHandler, _shop)
+  error("A main coroutine has stopped unexpectedly.")
 end
 
 local function main()
-  if mainMenu() then
-    shop()
+  local bOk, bUpdates = mainMenu()
+  if bOk then
+    shop(bUpdates)
   end
 end
 
+settings.load(".shopSettings")
 defineSettings()
 
 Logger.setMasterLevel(does("shop.logger.level", "Logger Level"))
 
 while true do
-  local bOk, sErr = pcall(main)
+  local bOk, sErr = xpcall(main, debug.traceback)
   if bOk then
     break
   else
-    log.err(sErr)
+    log.err(sErr:match("[^\n]+"))
 
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
     term.clear()
     term.setCursorPos(1, 1)
-    printError(sErr)
+    printError(sErr:match("[^\n]+"))
+    printError("A stack traceback is available in the latest logfile.")
     --TODO: Bluescreen
-    if sErr ~= "Terminated" then
-      local sTraceback = debug.traceback()
-      for sLine in sTraceback:gmatch("[^\n]+") do
+    if sErr:match("[^\n]+") ~= "Terminated" then
+      for sLine in sErr:gmatch("[^\n]+") do
         log("Traceback", sLine)
       end
       break
