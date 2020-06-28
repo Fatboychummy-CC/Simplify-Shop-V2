@@ -397,6 +397,14 @@
               tp = "boolean",
               bigInfo = "If true, show only <this part>@domain.kst, then the domain in the legend.  Else, show full domain for each item."
             },
+            {
+              setting = "shop.visual.itemlist.deselectTime",
+              title = "Timer",
+              tp = "number",
+              bigInfo = "Set how long it takes for the currently selected item to deselect.",
+              min = 30,
+              max = 300
+            }
           }
         },
         {

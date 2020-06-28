@@ -534,6 +534,7 @@ local function addItems()
               damage = iDamage,
               displayName = tMeta.displayName,
               nbtHash = tMeta.nbtHash, -- TODO: Filter by nbthash?
+              stackSize = tMeta.maxCount,
               price = 1,
               localname = "",
               show = true
@@ -675,10 +676,11 @@ local function defineSettings()
   defineDefault("shop.visual.itemlist.selectEvenBG", colors.white)
   defineDefault("shop.visual.itemlist.selectEvenFG", colors.black)
     -- etc
-  defineDefault("shop.visual.itemlist.showEmpty",   true)
-  defineDefault("shop.visual.itemlist.decimal",     2)
-  defineDefault("shop.visual.itemlist.showDomain",  false)
-  defineDefault("shop.visual.itemlist.shortDomain", false)
+  defineDefault("shop.visual.itemlist.showEmpty",    true)
+  defineDefault("shop.visual.itemlist.decimal",      2)
+  defineDefault("shop.visual.itemlist.showDomain",   false)
+  defineDefault("shop.visual.itemlist.shortDomain",  false)
+  defineDefault("shop.visual.itemlist.deselectTime", 120)
 
   -- info box
   defineDefault("shop.visual.infobox.enabled",  true)
@@ -923,11 +925,13 @@ local function initButtons()
         end
         tFrame.setCursorPos(t.x + math.floor(t.w / 2 + 0.5) - math.floor(#t.text / 2 + 0.5), t.y + math.ceil(t.h / 2))
         tFrame.write(t.text)
+        t.state = b
       end
     end
   }
   local function hit(self, iX, iY)
-    return self.x >= iX and self.x <= iX + iW - 1 and self.y >= iY and self.y <= iY + iH - 1
+    return self.state and iX >= self.x and iX <= self.x + self.w - 1
+       and iY >= self.y and iY <= self.y + self.h - 1
   end
 
   buttons.prev = setmetatable({
@@ -980,6 +984,14 @@ local function getNext(tItems, i, bShowEmpty)
     if i == 0 then
       return j
     end
+  end
+  return math.huge
+end
+
+local function getSelectedItem(tItems, iPage, iSelection)
+  if iSelection then
+    local iHList = does("shop.visual.itemlist.h", "Item List Max-Per-Page")
+    return tItems[(iPage - 1) * iHList + iSelection]
   end
 end
 
@@ -1087,7 +1099,7 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
       tFrame.setCursorPos(iXList + 1, iYPos)
       tFrame.write(tCItem.displayName)
       -- write the quantity available
-      rAlign(fQuantityX, iYPos, bOverride and tCItem.count or 0) -- TODO: count items for real
+      rAlign(fQuantityX, iYPos, tCItem.count)
       -- write the price
       rAlign(fPriceX, iYPos, cutRound(tCItem.price, iFloat))
 
@@ -1187,7 +1199,7 @@ local function redraw(tItems, iPage, tSelections, bOverride)
   tFrame.clear()
 
   drawItemList(tItems, iPage, tSelections, bOverride)
-  drawInfoBox(tItems[tSelections[1]])
+  drawInfoBox(getSelectedItem(tItems, iPage, tSelections[1]))
   drawButtons(tItems, iPage)
 
   tFrame.PushBuffer()
@@ -1394,12 +1406,96 @@ local function mainMenu()
   end
 end
 
+local function getStoragePeripherals()
+  local tPeripherals = peripheral.getNames()
+  local tReturn = {n = 0}
+  for i = 1, #tPeripherals do
+    local tCurrent = peripheral.getMethods(tPeripherals[i])
+    local bPush, bPull, bList, bSize = false, false, false, false
+    for j = 1, #tCurrent do
+      local sMethod = tCurrent[j]
+      if sMethod == "pushItems" then
+        bPush = true
+      elseif sMethod == "pullItems" then
+        bPull = true
+      elseif sMethod == "list" then
+        bList = true
+      elseif sMethod == "size" then
+        bSize = true
+      end
+      if bPush and bPull and bList and bSize then
+        tReturn.n = tReturn.n + 1
+        tReturn[tReturn.n] = tPeripherals[i]
+        break
+      end
+    end
+  end
+  return tReturn
+end
+
+local function countItems(sItemID, iDamage, nbtHash)
+  local tPeripherals = getStoragePeripherals()
+  local iCount = 0
+
+  for i = 1, tPeripherals.n do
+    local sCurrent = tPeripherals[i]
+    local tList = peripheral.call(sCurrent, "list")
+    local iSize = peripheral.call(sCurrent, "size")
+    for j = 1, iSize do
+      if tList[j] and tList[j].name == sItemID and tList[j].damage == iDamage then
+        if nbtHash then
+          if nbtHash == tList[j].nbtHash then
+            iCount = iCount + tList[j].count
+          end
+        else
+          iCount = iCount + tList[j].count
+        end
+      end
+    end
+  end
+  return iCount
+end
+
+local function getStackSize(tItems)
+  local tPeripherals = getStoragePeripherals()
+  for i = 1, tItems.n do
+    local tItem = tItems[i]
+    for j = 1, tPeripherals.n do
+      local sPeripheral = tPeripherals[j]
+      local tList = peripheral.call(sPeripheral, "list")
+      local iSize = peripheral.call(sPeripheral, "size")
+      for k = 1, iSize do
+        if tList[k] then
+          if tList[k].name == tItem.name and tList[k].damage == tItem.damage then
+            if tItem.nbtHash then
+              if tItem.nbtHash == tList[k].nbtHash then
+                tItem.stackSize = peripheral.call(sPeripheral, "getItem", k).getMetadata().maxCount
+                break
+              end
+            else
+              tItem.stackSize = peripheral.call(sPeripheral, "getItem", k).getMetadata().maxCount
+              break
+            end
+          end
+        end
+      end
+      if tItem.stackSize then
+        break
+      end
+    end
+  end
+end
+
 local function shop(bUpdates)
+  local tItems = {}
+  local iPage = 1
+  local iSelection
+  initMonitor()
   initDots()
   initButtons()
 
   local function dotHandler()
-    log.info("Dot Handler coroutine started.")
+    local dotlog = Logger("Dot")
     local iPurchaseTimer
     local bPurchaseOn = false
     local iRedrawTimer
@@ -1449,28 +1545,84 @@ local function shop(bUpdates)
   end
 
   local function inventoryHandler()
-    log.info("Inventory Handler coroutine started.")
+    local invlog = Logger("Inventory")
+    tItems = dCopy(tCache)
+    tItems.n = #tItems
+    for i = 1, tItems.n do
+      tItems[i].count = countItems(tItems[i].name, tItems[i].damage)
+    end
+    os.queueEvent("_redraw")
+
+    -- main loop
     while true do
-      os.pullEvent()
+      for i = 1, tItems.n do
+        tItems[i].count = countItems(tItems[i].name, tItems[i].damage)
+      end
+      os.sleep(10)
     end
   end
 
   local function userHandler()
-    log.info("User Handler coroutine started.")
+    local userlog    = Logger("User")
+    local sMon       = does("shop.monitor",                      "Shop monitor")
+    local iListSkip1 = does("shop.visual.itemlist.showLegend",   "Item List Show Legend")
+    local iListX     = does("shop.visual.itemlist.x",            "Item List X")
+    local iListY     = does("shop.visual.itemlist.y",            "Item List Y")
+    local iListW     = does("shop.visual.itemlist.w",            "Item List Width")
+    local iListH     = does("shop.visual.itemlist.h",            "Item List Height")
+    local iTime      = does("shop.visual.itemlist.deselectTime", "Item List Deselect Timer")
+    local iSelectionTimer
+
+    local function hitList(iX, iY)
+      if iX >= iListX and iX <= iListX + iListW - 1 and
+         iY >= iListY + (iListSkip1 and 1 or 0) and iY <= iListY + (iListSkip1 and 1 or 0) + iListH - 1 then
+        return iY - (iListY - (iListSkip1 and 0 or 1))
+      end
+    end
+
     while true do
-      os.pullEvent()
+      local sEvent, sMonitor, iX, iY = os.pullEvent()
+      if sEvent == "monitor_touch" then
+        if sMonitor == sMon then
+          iSelectionTimer = os.startTimer(iTime)
+          if buttons.prev:hit(iX, iY) then
+            iPage = iPage - 1
+            os.queueEvent("_redraw")
+          elseif buttons.next:hit(iX, iY) then
+            iPage = iPage + 1
+            os.queueEvent("_redraw")
+          else
+            iSelection = hitList(iX, iY)
+            os.queueEvent("_redraw")
+          end
+        end
+      elseif sEvent == "timer" and iSelectionTimer == sMonitor then
+        iSelection = nil
+        os.queueEvent("_redraw")
+      end
     end
   end
 
-  local function _shop()
-    log.info("Shop coroutine started.")
+  local function _redraw()
+    local shoplog = Logger("Redraw")
+    local iTimer
+    tFrame.setBackgroundColor(colors.black)
+    tFrame.setTextColor(colors.white)
+    tFrame.clear()
+    tFrame.setCursorPos(2, 1)
+    tFrame.write("Initializing...")
     while true do
-      redraw({}, 1, {})
-      os.sleep(5)
+      local tEvent = table.pack(os.pullEvent())
+      if tEvent[1] == "_redraw" then
+        redraw(tItems, iPage, {iSelection})
+        iTimer = os.startTimer(5)
+      elseif tEvent[1] == "timer" and tEvent[2] == iTimer then
+        os.queueEvent("_redraw")
+      end
     end
   end
 
-  parallel.waitForAny(dotHandler, inventoryHandler, userHandler, _shop)
+  parallel.waitForAny(_redraw, dotHandler, inventoryHandler, userHandler)
   error("A main coroutine has stopped unexpectedly.")
 end
 
