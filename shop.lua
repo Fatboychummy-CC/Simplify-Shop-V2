@@ -131,15 +131,16 @@ local Logger    = require "Logger"
 local json      = require "json"
 local KristWrap = require "KristWrap"
 local log  = Logger("Shop")
+local plog = Logger("Purchase")
 local sCacheLocation = "data/cache"
 settings.load(fs.combine(sAbsoluteDir, sCacheLocation))
 settings.define("cache", {default = {}})
 local tCache = settings.get("cache")
 tCache.n = #tCache
 local bFrameInitialized = false
-local tFrame
-local dots = {}
+local dots    = {}
 local buttons = {}
+local tFrame
 
 local tTampBase = {
   bigInfo = "",
@@ -1666,6 +1667,7 @@ local function shop(bUpdates)
     tFrame.clear()
     tFrame.setCursorPos(2, 1)
     tFrame.write("Initializing...")
+    tFrame.PushBuffer()
     while true do
       local tEvent = table.pack(os.pullEvent())
       if tEvent[1] == "_redraw" then
@@ -1677,7 +1679,17 @@ local function shop(bUpdates)
     end
   end
 
-  parallel.waitForAny(_redraw, dotHandler, inventoryHandler, userHandler)
+  local ok, err = pcall(parallel.waitForAny, _redraw, dotHandler, inventoryHandler, userHandler, kristHandler)
+  if not ok and err == "Terminated" then
+    tFrame.setBackgroundColor(colors.black)
+    tFrame.clear()
+    tFrame.setCursorPos(2, 1)
+    tFrame.write("Stopped...")
+    tFrame.PushBuffer()
+    return
+  elseif not ok then
+    printError(err)
+  end
   error("A main coroutine has stopped unexpectedly.")
 end
 
