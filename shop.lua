@@ -26,6 +26,14 @@ local tFiles = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Compendium/master/modules/core/logger.lua",
     name = fs.combine(sAbsoluteDir, "modules/Logger.lua")
   },
+  JSON = {
+    location = "https://raw.githubusercontent.com/rxi/json.lua/master/json.lua",
+    name = fs.combine(sAbsoluteDir, "modules/json.lua")
+  },
+  KristWrap = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/KristWrap/master/minified.lua",
+    name = fs.combine(sAbsoluteDir, "modules/KristWrap.lua")
+  },
   MainMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.tamp",
     name = fs.combine(sAbsoluteDir, "data/main.tamp")
@@ -113,11 +121,16 @@ end
 --##############################################################
 -- Start main program
 --##############################################################
-local md5 = require "modules.md5"
-local Frame = require "modules.Frame"
-local Tamperer = require "modules.Tamperer"
-local Logger = require "modules.Logger"
-local log = Logger("Shop")
+-- set the path
+package.path = string.format("%s;%s/modules/?;%s/modules/?.lua", package.path, sAbsoluteDir, sAbsoluteDir)
+
+local md5       = require "md5"
+local Frame     = require "Frame"
+local Tamperer  = require "Tamperer"
+local Logger    = require "Logger"
+local json      = require "json"
+local KristWrap = require "KristWrap"
+local log  = Logger("Shop")
 local sCacheLocation = "data/cache"
 settings.load(fs.combine(sAbsoluteDir, sCacheLocation))
 settings.define("cache", {default = {}})
@@ -767,6 +780,7 @@ local function defineSettings()
   defineDefault("shop.krist.domain",                    "")
   defineDefault("shop.krist.doPurchaseForwarding",      false)
   defineDefault("shop.krist.purchaseForwardingAddress", "")
+  defineDefault("shop.krist.endpoint",                  KristWrap.getDefaultEndPoint())
 
   -- -- -- Logger -- -- --
   defineDefault("shop.logger.level", 1) -- TODO: Set this to 3 once prod
@@ -1208,6 +1222,7 @@ end
 -- run the options page
 local function options()
   local function settingHandler(sFileName, sSetting, NewVal, tPage)
+    KristWrap.setEndPoint(settings.get("shop.krist.endpoint"))
     if sSetting == "shop.monitor" or sSetting == "shop.visual.monitorScale" then
       bFrameInitialized = false
       tFrame = nil
@@ -1233,8 +1248,26 @@ local function options()
           )
         )
       end
-      settings.save(sFileName)
+    elseif sSetting == "shop.krist.hash" then
+      if NewVal == "" then
+        settings.set("shop.krist.address", "kxxxxxxxx")
+      else
+        local sAddress, err = KristWrap.getV2Address(NewVal)
+        if not sAddress then
+          error(string.format("Failed to get krist address from provided password. (%s)", err), 0)
+        end
+        settings.set("shop.krist.address", sAddress)
+      end
+    elseif sSetting == "shop.krist.address" then
+      local sAddress, err = KristWrap.getV2Address(settings.get("shop.krist.hash"))
+      if not sAddress then
+        error(string.format("Failed to get krist address from provided password. (%s)", err), 0)
+      end
+      settings.set("shop.krist.address", sAddress)
     end
+    
+    settings.save(sFileName)
+
     if tFrame then
       defineDefault("shop.visual.dots.update.y", ({tFrame.getSize()})[2])
     end
@@ -1603,6 +1636,28 @@ local function shop(bUpdates)
     end
   end
 
+  local function kristHandler()
+    parallel.waitForAny(function()
+      -- connect to the endpoint
+      KristWrap.setEndPoint(does("shop.krist.endpoint", "Krist Endpoint"))
+      KristWrap.run({"transactions"}, does("shop.krist.hash", "KristWallet Password (hashed)"))
+    end,
+    function()
+      -- wait for initialization
+      KristWrap.Initialized:Wait()
+
+      local sAddress = does("shop.krist.address", "Shop krist address")
+
+      -- run the shop
+      while true do
+        local sFrom, sTo, nValue, tMeta = KristWrap.Transaction:Wait()
+        if sTo == sAddress then
+          -- handle purchase!
+        end
+      end
+    end)
+  end
+
   local function _redraw()
     local shoplog = Logger("Redraw")
     local iTimer
@@ -1627,10 +1682,12 @@ local function shop(bUpdates)
 end
 
 local function main()
-  local bOk, bUpdates = mainMenu()
-  if bOk then
-    shop(bUpdates)
-  end
+  repeat
+    local bOk, bUpdates = mainMenu()
+    if bOk then
+      shop(bUpdates)
+    end
+  until not bOk
 end
 
 settings.load(".shopSettings")

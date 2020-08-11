@@ -831,6 +831,12 @@
           title = "Forward Addr",
           tp = "string",
           bigInfo = "Address to forward purchases to, if Do Forwards is enabled."
+        },
+        {
+          setting = "shop.krist.endpoint",
+          title = "End-Point",
+          tp = "string",
+          bigInfo = "DO NOT CHANGE THIS IF YOU DON'T KNOW WHAT IT DOES! Sets the krist end-point the shop will use."
         }
       }
     },
