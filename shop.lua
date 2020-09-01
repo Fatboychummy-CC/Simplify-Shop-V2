@@ -500,7 +500,7 @@ local function removeItems()
           "Remove the item %s with damage %d%s.",
           tItem.name,
           tItem.damage,
-          tItem.nbtHash and " with nbthash" or ""
+          tItem.nbtHash and " with nbtHash" or ""
         )
       }
     end
@@ -536,7 +536,7 @@ local function addItems()
       -- get detailed information about each item
       for i = 1, iSize do
         if tItems[i] then
-          -- we want to keep the name, damage, display name, and nbthash (if exists)
+          -- we want to keep the name, damage, display name, and nbtHash (if exists)
           local tCurrent = tItems[i]
           local iDamage = tCurrent.damage
           local sName = tCurrent.name
@@ -547,7 +547,7 @@ local function addItems()
               name = sName,
               damage = iDamage,
               displayName = tMeta.displayName,
-              nbtHash = tMeta.nbtHash, -- TODO: Filter by nbthash?
+              nbtHash = tMeta.nbtHash, -- TODO: Filter by nbtHash?
               stackSize = tMeta.maxCount,
               price = 1,
               localname = "",
@@ -1255,18 +1255,26 @@ local function options()
       else
         local sAddress, err = KristWrap.getV2Address(NewVal)
         if not sAddress then
-          error(string.format("Failed to get krist address from provided password. (%s)", err), 0)
+          return true, "Krist connection failure."
         end
         settings.set("shop.krist.address", sAddress)
       end
     elseif sSetting == "shop.krist.address" then
-      local sAddress, err = KristWrap.getV2Address(settings.get("shop.krist.hash"))
-      if not sAddress then
-        error(string.format("Failed to get krist address from provided password. (%s)", err), 0)
+      local hash = settings.get("shop.krist.hash")
+      local sAddress, err
+      if hash then
+        sAddress, err = KristWrap.getV2Address(settings.get("shop.krist.hash"))
+        if not sAddress then
+          return true, "Krist connection failure."
+        end
+      else
+        sAddress = "kxxxxxxxx"
       end
       settings.set("shop.krist.address", sAddress)
+      settings.save(sFileName)
+      return true, "Set automatically."
     end
-    
+
     settings.save(sFileName)
 
     if tFrame then
