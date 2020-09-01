@@ -1598,7 +1598,7 @@ local function shop(bUpdates)
     -- main loop
     while true do
       for i = 1, tItems.n do
-        tItems[i].count = countItems(tItems[i].name, tItems[i].damage)
+        tItems[i].count = countItems(tItems[i].name, tItems[i].damage, tItems[i].nbtHash)
       end
       os.sleep(10)
     end
