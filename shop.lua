@@ -1694,18 +1694,20 @@ local function shop(bUpdates)
     tFrame.setCursorPos(2, 1)
     tFrame.write("Stopped...")
     tFrame.PushBuffer()
-    return
+    return true
   elseif not ok then
     printError(err)
   end
-  error("A main coroutine has stopped unexpectedly.")
+  error("A main coroutine has stopped unexpectedly. (" .. tostring(err) .. ")")
 end
 
 local function main()
   repeat
     local bOk, bUpdates = mainMenu()
     if bOk then
-      shop(bUpdates)
+      if shop(bUpdates) then
+        return
+      end
     end
   until not bOk
 end
