@@ -1414,7 +1414,7 @@ local function updater(tUpdates)
 end
 
 -- run the main menu
-local function mainMenu()
+local function mainMenu(bGetUpdates)
   -- load the page (the same way tamperer does)
   local fLoad, err = load("return " .. readFile(tFiles.MainMenu.name))
 
@@ -1423,7 +1423,10 @@ local function mainMenu()
     -- turn the page into a table
     local tMenu = fLoad()
     -- check for updates
-    local tUpdates = checkUpdates()
+    local tUpdates = {n = 0}
+    if bGetUpdates then
+      tUpdates = checkUpdates()
+    end
 
     -- set the value of the update selection to match update check
     tMenu.selections[2].info = tUpdates.n == 1 and "1 update available"
@@ -1772,10 +1775,46 @@ local function shop(bUpdates)
 end
 
 local function main()
+  local bNotUpdated = true
   repeat
-    local bOk, bUpdates = mainMenu()
+    local bOk, bUpdates = mainMenu(bNotUpdated)
+    bNotUpdated = false
     if bOk then
-      if shop(bUpdates) then
+      local bTerminate
+      parallel.waitForAny(
+        function()
+          bTerminate = shop(bUpdates)
+        end,
+        function()
+          Tamperer.display({
+            name = "Shop running",
+            info = "The shop is currently running.",
+            bigInfo = "",
+            colors = {
+              bg = {
+                main = "black",
+              },
+              fg = {
+                main = "white",
+                title = "yellow",
+                info = "lightGray",
+                listInfo = "gray",
+                listTitle = "white",
+                bigInfo = "lightGray",
+                selector = "yellow",
+                arrowDisabled = "gray",
+                arrowEnabled = "white",
+                input = "yellow",
+                error = "red",
+              }
+            },
+            platform = "all",
+            final = "Stop"
+          })
+        end
+      )
+
+      if bTerminate then
         return
       end
     end
