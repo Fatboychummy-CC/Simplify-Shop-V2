@@ -140,7 +140,7 @@ tCache.n = #tCache
 local bFrameInitialized = false
 local dots    = {}
 local buttons = {}
-local tFrame
+local tFrame, sAddress
 
 local tTampBase = {
   bigInfo = "",
@@ -1528,6 +1528,71 @@ local function getStackSize(tItems)
   end
 end
 
+local function parseMeta(sMeta)
+  local tMeta = {}
+
+  local first = true
+  local firstMatched = false
+  for line in sMeta:gmatch("[^;]+") do
+    if first then
+      if line:match("^.+@.+%.kst$") and not line:find("=") then
+        tMeta.domain, tMeta.localname = line:match("^(.+)@(.+)%.kst$")
+      end
+      firstMatched = true
+    end
+    if line:find("=") then
+      local key, value = line:match("^(.+)=(.+)$")
+      if value == "true" then value = true elseif value == "false" then value = false end
+      tMeta[key] = value
+    elseif not first or (first and not firstMatched) then
+      log("Parser", "Failed to parse '" .. tostring(line) .. "'", 2)
+      log("This is on transaction with full meta '" .. tostring(sMeta) .. "'.")
+      return nil, tMeta, "Unable to parse '" .. tostring(line) .. "'"
+    end
+    if first then first = false end
+  end
+
+  return tMeta
+end
+
+local refundKrist
+local function DenyPurchases(tOk)
+  while true do
+    if tOk.Value then return end
+    local sFrom, sTo, nValue, sMeta = KristWrap.Transaction:Wait()
+    if sTo == sAddress then
+      local tMeta, tFailMeta, err = parseMeta(sMeta)
+      refundKrist(
+        sFrom,
+        nValue,
+        tMeta or tFailMeta,
+        "error=Shop is busy."
+      )
+    end
+  end
+end
+
+refundKrist = function(sFrom, nAmount, tMeta, sRefundMeta)
+  sRefundMeta = sRefundMeta or "error=Unknown error occured."
+  local sTo = sFrom
+
+  if tMeta["return"] then
+    sTo = tMeta["return"]
+  end
+
+  local ReferenceTable = {Value = false}
+  parallel.waitForAll(
+    function()
+      KristWrap.makeTransaction(sTo, nAmount, sRefundMeta)
+      ReferenceTable.Value = true
+    end,
+    function()
+      DenyPurchases(ReferenceTable)
+    end
+  )
+
+end
+
 local function shop(bUpdates)
   local tItems = {}
   local iPage = 1
@@ -1646,22 +1711,91 @@ local function shop(bUpdates)
   end
 
   local function kristHandler()
+    local kristLog = Logger("Krist")
     parallel.waitForAny(function()
       -- connect to the endpoint
       KristWrap.setEndPoint(does("shop.krist.endpoint", "Krist Endpoint"))
+      kristLog("KristWrap", "Starting main coroutine.", 1)
       KristWrap.run({"transactions"}, does("shop.krist.hash", "KristWallet Password (hashed)"))
     end,
     function()
       -- wait for initialization
       KristWrap.Initialized:Wait()
+      kristLog("KristWrap", "Initialized.")
 
-      local sAddress = does("shop.krist.address", "Shop krist address")
+      sAddress = does("shop.krist.address", "Shop krist address")
 
       -- run the shop
       while true do
-        local sFrom, sTo, nValue, tMeta = KristWrap.Transaction:Wait()
+        local sFrom, sTo, nValue, sMeta = KristWrap.Transaction:Wait()
         if sTo == sAddress then
-          -- handle purchase!
+          -- The transaction was sent to us
+          local tMeta, tMetaError, err = parseMeta(sMeta)
+          if tMetaError then
+            -- There was an error parsing metadata, return krist as well as we can.
+            refundKrist(sFrom, nValue, tMetaError, "error=" .. err)
+          else
+            -- Metadata OK.
+            if tMeta.donate then
+              -- Donation, do nothing.
+              plog.info(string.format("Received donation of %d kst.", nValue))
+            else
+              -- Not a donation, must be a purchase.
+              if iSelection then
+                -- Item *is* selected, try to retrieve as many as was wanted.
+                local tItem = getSelectedItem(tItems, iPage, iSelection)
+
+                local nItemsToGrab = math.floor(nValue / tItem.price)
+
+                if nItemsToGrab < 1 then
+                  -- Not enough krist for one item!
+                  refundKrist(
+                    sFrom,
+                    nValue,
+                    tMeta,
+                    string.format("error=You need to send at least %d krist to buy that.", tItem.price)
+                  )
+                else
+                  -- Enough krist for one item!
+                  local nOver = nValue % tItem.price
+                  local sOverageReason = "You overpaid a little"
+                  if nItemsToGrab > tItem.count then
+                    nOver = nOver + (nItemsToGrab - tItem.count) * tItem.price
+                    nItemsToGrab = tItem.count
+                    sOverageReason = "We didn't have enough items to complete your purchase and/or you overpaid a little"
+                  end
+
+                  -- Refund if overpay.
+                  if nOver > 0 then
+                    refundKrist(
+                      sFrom,
+                      nOver,
+                      tMeta,
+                      string.format("message=%s, here's your change!", sOverageReason)
+                    )
+                  end
+
+
+                  local ReferenceTable = {Value = false}
+                  parallel.waitForAll(
+                    function()
+                      print("begin")
+                      os.sleep(2)
+                      print("end")
+                      --getItems(nItemsToGrab)
+                      ReferenceTable.Value = true
+                    end,
+                    function()
+                      DenyPurchases(ReferenceTable)
+                    end
+                  )
+                end
+              else
+                -- No item selected! Return krist to the user.
+                refundKrist(sFrom, nValue, tMeta, "error=No item is selected!")
+              end
+            end
+          end
         end
       end
     end)
