@@ -10,6 +10,10 @@ local tFiles = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/shop.lua",
     name = shell.getRunningProgram()
   },
+  Storage = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/modules/Storage.lua",
+    name = fs.combine(sAbsoluteDir, "modules/Storage.lua")
+  },
   md5 = {
     location = "https://raw.githubusercontent.com/kikito/md5.lua/master/md5.lua",
     name = fs.combine(sAbsoluteDir, "modules/md5.lua")
@@ -130,6 +134,7 @@ local Tamperer  = require "Tamperer"
 local Logger    = require "Logger"
 local json      = require "json"
 local KristWrap = require "KristWrap"
+local Storage   = require "Storage"
 local log  = Logger("Shop")
 local plog = Logger("Purchase")
 local sCacheLocation = "data/cache"
@@ -1459,85 +1464,7 @@ local function mainMenu()
   end
 end
 
-local function getStoragePeripherals()
-  local tPeripherals = peripheral.getNames()
-  local tReturn = {n = 0}
-  for i = 1, #tPeripherals do
-    local tCurrent = peripheral.getMethods(tPeripherals[i])
-    local bPush, bPull, bList, bSize = false, false, false, false
-    for j = 1, #tCurrent do
-      local sMethod = tCurrent[j]
-      if sMethod == "pushItems" then
-        bPush = true
-      elseif sMethod == "pullItems" then
-        bPull = true
-      elseif sMethod == "list" then
-        bList = true
-      elseif sMethod == "size" then
-        bSize = true
-      end
-      if bPush and bPull and bList and bSize then
-        tReturn.n = tReturn.n + 1
-        tReturn[tReturn.n] = tPeripherals[i]
-        break
-      end
-    end
-  end
-  return tReturn
-end
 
-local function countItems(sItemID, iDamage, nbtHash)
-  local tPeripherals = getStoragePeripherals()
-  local iCount = 0
-
-  for i = 1, tPeripherals.n do
-    local sCurrent = tPeripherals[i]
-    local tList = peripheral.call(sCurrent, "list")
-    local iSize = peripheral.call(sCurrent, "size")
-    for j = 1, iSize do
-      if tList[j] and tList[j].name == sItemID and tList[j].damage == iDamage then
-        if nbtHash then
-          if nbtHash == tList[j].nbtHash then
-            iCount = iCount + tList[j].count
-          end
-        else
-          iCount = iCount + tList[j].count
-        end
-      end
-    end
-  end
-  return iCount
-end
-
-local function getStackSize(tItems)
-  local tPeripherals = getStoragePeripherals()
-  for i = 1, tItems.n do
-    local tItem = tItems[i]
-    for j = 1, tPeripherals.n do
-      local sPeripheral = tPeripherals[j]
-      local tList = peripheral.call(sPeripheral, "list")
-      local iSize = peripheral.call(sPeripheral, "size")
-      for k = 1, iSize do
-        if tList[k] then
-          if tList[k].name == tItem.name and tList[k].damage == tItem.damage then
-            if tItem.nbtHash then
-              if tItem.nbtHash == tList[k].nbtHash then
-                tItem.stackSize = peripheral.call(sPeripheral, "getItem", k).getMetadata().maxCount
-                break
-              end
-            else
-              tItem.stackSize = peripheral.call(sPeripheral, "getItem", k).getMetadata().maxCount
-              break
-            end
-          end
-        end
-      end
-      if tItem.stackSize then
-        break
-      end
-    end
-  end
-end
 
 local function parseMeta(sMeta)
   local tMeta = {}
@@ -1670,15 +1597,13 @@ local function shop(bUpdates)
     tItems = dCopy(tCache)
     tItems.n = #tItems
     for i = 1, tItems.n do
-      tItems[i].count = countItems(tItems[i].name, tItems[i].damage)
+      Storage.CountItems(tItems)
     end
     os.queueEvent("_redraw")
 
     -- main loop
     while true do
-      for i = 1, tItems.n do
-        tItems[i].count = countItems(tItems[i].name, tItems[i].damage, tItems[i].nbtHash)
-      end
+      Storage.CountItems(tItems)
       os.sleep(10)
     end
   end
@@ -1789,14 +1714,11 @@ local function shop(bUpdates)
                     )
                   end
 
-
+                  -- Grab the items, also deny purchases while we are doing so.
                   local ReferenceTable = {Value = false}
                   parallel.waitForAll(
                     function()
-                      print("begin")
-                      os.sleep(2)
-                      print("end")
-                      --getItems(nItemsToGrab)
+                      Storage.GrabItems(tItem, nItemsToGrab)
                       ReferenceTable.Value = true
                     end,
                     function()
