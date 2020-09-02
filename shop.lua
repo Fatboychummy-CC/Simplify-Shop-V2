@@ -1559,7 +1559,7 @@ local refundKrist
 local function DenyPurchases(tOk)
   while true do
     if tOk.Value then return end
-    local sFrom, sTo, nValue, sMeta = KristWrap.Transaction:Wait()
+    local sFrom, sTo, nValue, sMeta = KristWrap.Transaction:Wait(1)
     if sTo == sAddress then
       local tMeta, tFailMeta, err = parseMeta(sMeta)
       refundKrist(
@@ -1573,6 +1573,9 @@ local function DenyPurchases(tOk)
 end
 
 refundKrist = function(sFrom, nAmount, tMeta, sRefundMeta)
+  if nAmount < 1 then
+    return
+  end
   sRefundMeta = sRefundMeta or "error=Unknown error occured."
   local sTo = sFrom
 
