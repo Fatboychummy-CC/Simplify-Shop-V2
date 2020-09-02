@@ -286,7 +286,7 @@ local function edit(tItem)
       title = "Name",
       tp = "string",
       bigInfo = string.format(
-        "Set the name of the item %s (with damage %d).",
+        "Set the name of the item %.30s (with damage %d).",
         tItem.name,
         tItem.damage
       )
@@ -344,7 +344,7 @@ local function editItems(tItems)
         title = tCurrent.displayName:sub(1, 12),
         info = sInfo,
         bigInfo = string.format(
-          "Item: %s\nDamage: %d | NBT? %s\nPrice: %.5f",
+          "Item: %.32s\nDamage: %d | NBT? %s\nPrice: %.5f",
           tCurrent.name,
           tCurrent.damage,
           tCurrent.nbtHash and true or false,
@@ -430,7 +430,7 @@ local function configureDuplicates(tNewItems)
         title = "Old",
         info = tCache[tCurrent[2]].displayName,
         bigInfo = string.format(
-          "Item: %s | Damage: %d | Price: %s",
+          "Item: %.32s | Damage: %d | Price: %s",
           tCache[tCurrent[2]].name,
           tCache[tCurrent[2]].damage,
           tCache[tCurrent[2]].price
@@ -440,7 +440,7 @@ local function configureDuplicates(tNewItems)
         title = "New",
         info = tNewItems[tCurrent[1]].displayName,
         bigInfo = string.format(
-          "Item: %s | Damage: %d | Price: %s",
+          "Item: %.32s | Damage: %d | Price: %s",
           tNewItems[tCurrent[1]].name,
           tNewItems[tCurrent[1]].damage,
           tNewItems[tCurrent[1]].price
@@ -497,7 +497,7 @@ local function removeItems()
         title = tItem.displayName:sub(1, 12),
         info = "Remove this item.",
         bigInfo = string.format(
-          "Remove the item %s with damage %d%s.",
+          "Remove the item %.20s with damage %d%s.",
           tItem.name,
           tItem.damage,
           tItem.nbtHash and " with nbtHash" or ""
