@@ -312,11 +312,21 @@ local function edit(tItem)
     }
   }
 
+  if tItem.nbtHash then
+    tTampCurrent.settings[#tTampCurrent.settings + 1] = {
+      setting = "tempdata.sortByNbt",
+      title = "Sort NBT",
+      tp = "boolean",
+      bigInfo = "This item has an NBT hash. Include this information while sorting?"
+    }
+  end
+
   Tamperer.display(tTampCurrent)
   tItem.displayName = settings.get("tempdata.displayName")
   tItem.price = settings.get("tempdata.price")
   tItem.show = settings.get("tempdata.show")
   tItem.localname = settings.get("tempdata.localname")
+  tItem.sortByNbt = settings.get("tempdata.sortByNbt")
   settings.clear()
   settings.save(tTampCurrent.settings.location)
 end
@@ -548,6 +558,7 @@ local function addItems()
               damage = iDamage,
               displayName = tMeta.displayName,
               nbtHash = tMeta.nbtHash, -- TODO: Filter by nbtHash?
+              sortByNbt = tMeta.nbtHash and true or false,
               stackSize = tMeta.maxCount,
               price = 1,
               localname = "",
