@@ -797,6 +797,31 @@
       }
     },
     {
+      name = "Items",
+      info = "Change item settings.",
+      bigInfo = "Change the way items are collected, stored, and displayed.",
+      settings = {
+        {
+          setting = "shop.items.dispenseFromTurtle",
+          title = "Self?",
+          tp = "boolean",
+          bigInfo = "Should we drop items from the ourself (requires turtle)?"
+        },
+        {
+          setting = "shop.items.dispenseDir",
+          title = "Drop Dir",
+          tp = "string",
+          bigInfo = "What direction should we drop items?"
+        },
+        {
+          setting = "shop.items.dispenseFrom",
+          title = "Drop From",
+          tp = "string",
+          bigInfo = "What peripheral should we drop items from (Only effective if Turtle? is false)?"
+        },
+      }
+    },
+    {
       name = "Krist",
       info = "Change Krist Info",
       bigInfo = "Change things like your krist address, domain, and more.",

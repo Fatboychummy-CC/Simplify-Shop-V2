@@ -171,6 +171,14 @@ local tTampBase = {
   final = "Confirm"
 }
 
+local modemSide
+for _, sSide in ipairs(rs.getSides()) do
+  if peripheral.getType(sSide) == "modem" then
+    if modemSide then error("Too many modems attached to controller! Please only connect one modem to the controller.") end
+    modemSide = sSide
+  end
+end
+
 for k, v in pairs(colors) do
   if type(v) == "number" then
     colors[v] = k
@@ -658,12 +666,17 @@ end
 
 -- define some default settings
 local function defineDefault(sSetting, val)
+  expect(1, sSetting, "string")
+  expect(2, val, "string", "number", "table", "boolean")
   settings.define(sSetting, {type = type(val), default = val})
 end
 local function defineSettings()
   -- base settings
   defineDefault("shop.autorun", 15)
   defineDefault("shop.monitor", peripheral.findFirstName("monitor") or error("Cannot find monitor.", 0))
+  if not peripheral.isPresent(settings.get("shop.monitor")) then
+    settings.unset("shop.monitor")
+  end
 
   -- -- -- Visuals -- -- --
   defineDefault("shop.visual.monitorScale", 1)
@@ -711,6 +724,11 @@ local function defineSettings()
   defineDefault("shop.visual.itemlist.showDomain",   false)
   defineDefault("shop.visual.itemlist.shortDomain",  false)
   defineDefault("shop.visual.itemlist.deselectTime", 120)
+
+  -- items
+  defineDefault("shop.items.dispenseFromTurtle", true)
+  defineDefault("shop.items.dispenseDir", "up")
+  -- shop.items.dispenseFrom is not set, as it is not used by default.
 
   -- info box
   defineDefault("shop.visual.infobox.enabled",  true)
@@ -1665,6 +1683,76 @@ local function shop(bUpdates)
       KristWrap.Initialized:Wait()
       kristLog("KristWrap", "Initialized.")
 
+      local doTurtleDispensing = does("shop.items.dispenseFromTurtle", "Item dispensed from turtle?")
+      local dispenseDir = does("shop.items.dispenseDir", "Item dispense direction")
+
+      local drop
+
+      if doTurtleDispensing then
+        if not turtle then
+          error("Cannot drop from self if we are not a turtle!")
+        end
+        local dropFunc
+        if dispenseDir == "up" then
+          dropFunc = turtle.dropUp
+        elseif dispenseDir == "forward" then
+          dropFunc = turtle.drop
+        elseif dispenseDir == "down" then
+          dropFunc = turtle.dropDown
+        else
+          error("Turtles cannot dispense in direction '" .. tostring(dispenser) .. "'.")
+        end
+        drop = function()
+          for i = 1, 16 do
+            if turtle.getItemCount(i) > 0 then
+              turtle.select(i)
+              dropFunc()
+            end
+          end
+        end
+      else
+        local dispenser = does("shop.items.dispenseFrom", "Item dispense peripheral")
+        if peripheral.isPresent(dispenser) then
+          local sides = {"north", "east", "south", "west", "up", "down"}
+          local ok = false
+          for i = 1, #sides do
+            if dispenseDir == sides[i] then
+              local size = peripheral.call(dispenser, "size")
+              if not size then error("Dispenser peripheral has unidentifiable size.") end
+              drop = function()
+                for i = 1, size do
+                  peripheral.call(dispenser, "drop", i, nil, dispenseDir)
+                end
+              end
+              ok = true
+              break
+            end
+          end
+          if not ok then
+            error("Unknown dispenser direction '" .. tostring(dispenseDir) .. "'.")
+          end
+        else
+          error("Dispenser peripheral does not exist!")
+        end
+      end
+
+      -- Grab the items, also deny purchases while we are doing so.
+      local function dispense(tItem, nCount)
+        local ReferenceTable = {Value = false}
+        parallel.waitForAll(
+          function()
+            local nDispensed = Storage.GrabItems(doTurtleDispensing and peripheral.call(modemSide, "getNameLocal") or dispenser, tItem.name, tItem.damage, tItem.nbtHash, nCount, tItem.sortByNbt)
+            drop()
+
+            log("Dispenser", string.format("Dispensed %d, Requested %d", nDispensed, nCount), nDispensed == nCount and 1 or 3)
+            ReferenceTable.Value = true
+          end,
+          function()
+            DenyPurchases(ReferenceTable)
+          end
+        )
+      end
+
       sAddress = does("shop.krist.address", "Shop krist address")
 
       -- run the shop
@@ -1686,48 +1774,42 @@ local function shop(bUpdates)
               if iSelection then
                 -- Item *is* selected, try to retrieve as many as was wanted.
                 local tItem = getSelectedItem(tItems, iPage, iSelection)
+                if tItem then
+                  local nItemsToGrab = math.floor(nValue / tItem.price)
 
-                local nItemsToGrab = math.floor(nValue / tItem.price)
-
-                if nItemsToGrab < 1 then
-                  -- Not enough krist for one item!
-                  refundKrist(
-                    sFrom,
-                    nValue,
-                    tMeta,
-                    string.format("error=You need to send at least %d krist to buy that.", tItem.price)
-                  )
-                else
-                  -- Enough krist for one item!
-                  local nOver = nValue % tItem.price
-                  local sOverageReason = "You overpaid a little"
-                  if nItemsToGrab > tItem.count then
-                    nOver = nOver + (nItemsToGrab - tItem.count) * tItem.price
-                    nItemsToGrab = tItem.count
-                    sOverageReason = "We didn't have enough items to complete your purchase and/or you overpaid a little"
-                  end
-
-                  -- Refund if overpay.
-                  if nOver > 0 then
+                  if nItemsToGrab < 1 then
+                    -- Not enough krist for one item!
                     refundKrist(
                       sFrom,
-                      nOver,
+                      nValue,
                       tMeta,
-                      string.format("message=%s, here's your change!", sOverageReason)
+                      string.format("error=You need to send at least %d krist to buy that.", tItem.price)
                     )
-                  end
-
-                  -- Grab the items, also deny purchases while we are doing so.
-                  local ReferenceTable = {Value = false}
-                  parallel.waitForAll(
-                    function()
-                      Storage.GrabItems(tItem, nItemsToGrab)
-                      ReferenceTable.Value = true
-                    end,
-                    function()
-                      DenyPurchases(ReferenceTable)
+                  else
+                    -- Enough krist for one item!
+                    local nOver = nValue % tItem.price
+                    local sOverageReason = "You overpaid a little"
+                    if nItemsToGrab > tItem.count then
+                      nOver = nOver + (nItemsToGrab - tItem.count) * tItem.price
+                      nItemsToGrab = tItem.count
+                      sOverageReason = "We didn't have enough items to complete your purchase and/or you overpaid a little"
                     end
-                  )
+                    nOver = math.floor(nOver)
+
+                    -- Refund if overpay.
+                    if nOver > 0 then
+                      refundKrist(
+                        sFrom,
+                        nOver,
+                        tMeta,
+                        string.format("message=%s, here's your change!", sOverageReason)
+                      )
+                    end
+
+                    dispense(tItem, nItemsToGrab)
+                  end
+                else
+                  refundKrist(sFrom, nValue, tMeta, "error=No item is selected!")
                 end
               else
                 -- No item selected! Return krist to the user.
@@ -1753,6 +1835,12 @@ local function shop(bUpdates)
       local tEvent = table.pack(os.pullEvent())
       if tEvent[1] == "_redraw" then
         redraw(tItems, iPage, {iSelection})
+        local x, y = tFrame.getSize()
+        tFrame.setCursorPos(x - 3, y)
+        tFrame.setBackgroundColor(colors.black)
+        tFrame.setTextColor(colors.red)
+        tFrame.write("BETA")
+        tFrame.PushBuffer()
         iTimer = os.startTimer(5)
       elseif tEvent[1] == "timer" and tEvent[2] == iTimer then
         os.queueEvent("_redraw")
@@ -1788,7 +1876,7 @@ local function main()
         function()
           Tamperer.display({
             name = "Shop running",
-            info = "The shop is currently running.",
+            info = "",
             bigInfo = "",
             colors = {
               bg = {
