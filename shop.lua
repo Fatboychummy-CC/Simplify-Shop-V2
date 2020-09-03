@@ -14,6 +14,10 @@ local tFiles = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/modules/Storage.lua",
     name = fs.combine(sAbsoluteDir, "modules/Storage.lua")
   },
+  sha256 = {
+    location = "https://pastebin.com/raw/6UV4qfNF",
+    name = fs.combine(sAbsoluteDir, "modules/sha256.lua")
+  },
   md5 = {
     location = "https://raw.githubusercontent.com/kikito/md5.lua/master/md5.lua",
     name = fs.combine(sAbsoluteDir, "modules/md5.lua")
@@ -246,6 +250,7 @@ local function checkUpdates()
     tCheck[sModule] = bVal
     if bVal then
       tCheck.n = tCheck.n + 1
+    end
     i = i + 1
     term.setCursorPos(iX, iY)
     io.write(string.rep(' ', mX - iX))
