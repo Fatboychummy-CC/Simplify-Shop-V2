@@ -251,6 +251,7 @@ local function checkUpdates()
     io.write(string.rep(' ', mX - iX))
     term.setCursorPos(iX, iY)
     io.write(string.format("%d / %d)", i, iCount))
+  end
 
   log.info(string.format("Found %d update(s).", tCheck.n))
   if tCheck.n > 0 then
