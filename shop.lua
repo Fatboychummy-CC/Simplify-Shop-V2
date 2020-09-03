@@ -7,11 +7,11 @@ local expect = require("cc.expect").expect
 local sAbsoluteDir = shell.dir()
 local tFiles = {
   self = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/shop.lua",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/shop.lua",
     name = shell.getRunningProgram()
   },
   Storage = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/modules/Storage.lua",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/modules/Storage.lua",
     name = fs.combine(sAbsoluteDir, "modules/Storage.lua")
   },
   md5 = {
@@ -39,19 +39,19 @@ local tFiles = {
     name = fs.combine(sAbsoluteDir, "modules/KristWrap.lua")
   },
   MainMenu = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/main.tamp",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/data/main.tamp",
     name = fs.combine(sAbsoluteDir, "data/main.tamp")
   },
   OptionsMenu = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/options.tamp",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/data/options.tamp",
     name = fs.combine(sAbsoluteDir, "data/options.tamp")
   },
   UpdaterMenu = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/updates.tamp",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/data/updates.tamp",
     name = fs.combine(sAbsoluteDir, "data/updates.tamp")
   },
   ItemsMenu = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/master/data/items.tamp",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/data/items.tamp",
     name = fs.combine(sAbsoluteDir, "data/items.tamp")
   }
 }
