@@ -14,6 +14,10 @@ local tFiles = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/modules/Storage.lua",
     name = fs.combine(sAbsoluteDir, "modules/Storage.lua")
   },
+  argparse = {
+    location = "https://raw.githubusercontent.com/mpeterv/argparse/master/src/argparse.lua",
+    name = fs.combine(sAbsoluteDir, "modules/argparse.lua")
+  },
   sha256 = {
     location = "https://pastebin.com/raw/6UV4qfNF",
     name = fs.combine(sAbsoluteDir, "modules/sha256.lua")
@@ -131,6 +135,34 @@ end
 --##############################################################
 -- set the path
 package.path = string.format("%s;%s/modules/?;%s/modules/?.lua", package.path, sAbsoluteDir, sAbsoluteDir)
+
+-- Parse command line arguments, if any.
+local args
+do
+  local argparse  = require "argparse"
+
+  local parser = argparse()
+    :name(shell.getRunningProgram())
+    :description("A computercraft shop system running on Krist")
+    :epilog("See https://github.com/Fatboychummy-CC/Simplify-Shop-V2/wiki for documentation.")
+  parser:flag "-n" "--no-update-check" :description "Start the shop without checking for updates."
+  parser:flag "-i" "--immediate" :description "Immediately launch the shop after getting to the menu (ignoring the auto-wait, if set)."
+
+  function os.exit()
+    error("", 0)
+  end
+  local mx = ({term.getSize()})[1]
+  parser:help_max_width(mx)
+    :help_description_margin(#("Usage: " .. shell.getRunningProgram()))
+    :help_vertical_space(1)
+  parser:usage_max_width(mx)
+    :usage_margin(#("Usage: " .. shell.getRunningProgram()))
+  parser:add_help {
+     action = function() textutils.pagedPrint(parser:get_help()) error("", 0) end
+  }
+  args = parser:parse({...})
+end
+
 
 local md5       = require "md5"
 local Frame     = require "Frame"
@@ -1448,8 +1480,12 @@ local function mainMenu(bGetUpdates)
     local tMenu = fLoad()
     -- check for updates
     local tUpdates = {n = 0}
-    if bGetUpdates then
+    if bGetUpdates and not args.no_update_check then
       tUpdates = checkUpdates()
+    end
+    if args.immediate then
+      args.immediate = false
+      return true, tUpdates.n > 0
     end
 
     -- set the value of the update selection to match update check
@@ -1467,7 +1503,8 @@ local function mainMenu(bGetUpdates)
       flg = false
       if iSelection == 1 then
         -- run the shop
-        return true, tUpdates.n > 0 and true or false
+        return true,
+               tUpdates.n > 0
       elseif iSelection == 2 then
         -- updater
         -- presented as a seperate page to allow a "save and exit" sort of functionality.
