@@ -1735,8 +1735,26 @@ local function shop(bUpdates)
       KristWrap.Initialized:Wait()
       kristLog("KristWrap", "Initialized.")
 
+      sAddress = does("shop.krist.address", "Shop krist address")
       local doTurtleDispensing = does("shop.items.dispenseFromTurtle", "Item dispensed from turtle?")
       local dispenseDir = does("shop.items.dispenseDir", "Item dispense direction")
+      local sDomain = does("shop.krist.domain", "Krist domain")
+
+      if sDomain ~= "" then
+        local tDomainInfo, sErr = KristWrap.getName(sDomain)
+        if tDomainInfo and tDomainInfo.ok then
+          if tDomainInfo.name and tDomainInfo.name.owner ~= sAddress then
+            error(string.format("Krist domain '%s' is not registered to address '%s'.", sDomain, sAddress), 0)
+          end
+        else
+          if tDomainInfo then
+            if tDomainInfo.error == "domain_not_found" then
+              error(string.format("Krist domain '%s' is not registered on the endpoint.", sDomain), 0)
+            end
+          end
+          error(tDomainInfo and tDomainInfo.error or sErr, 0)
+        end
+      end
 
       local drop
 
@@ -1804,8 +1822,6 @@ local function shop(bUpdates)
           end
         )
       end
-
-      sAddress = does("shop.krist.address", "Shop krist address")
 
       -- run the shop
       while true do
