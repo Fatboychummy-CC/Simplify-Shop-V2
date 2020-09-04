@@ -139,28 +139,37 @@ package.path = string.format("%s;%s/modules/?;%s/modules/?.lua", package.path, s
 -- Parse command line arguments, if any.
 local args
 do
+  function os.exit()
+    error("", 0)
+  end
+
   local argparse  = require "argparse"
 
   local parser = argparse()
     :name(shell.getRunningProgram())
     :description("A computercraft shop system running on Krist")
     :epilog("See https://github.com/Fatboychummy-CC/Simplify-Shop-V2/wiki for documentation.")
+
   parser:flag "-n" "--no-update-check" :description "Start the shop without checking for updates."
+
   parser:flag "-i" "--immediate" :description "Immediately launch the shop after getting to the menu (ignoring the auto-wait, if set)."
 
-  function os.exit()
-    error("", 0)
-  end
   local mx = ({term.getSize()})[1]
+
   parser:help_max_width(mx)
     :help_description_margin(#("Usage: " .. shell.getRunningProgram()))
     :help_vertical_space(1)
+
   parser:usage_max_width(mx)
     :usage_margin(#("Usage: " .. shell.getRunningProgram()))
+
   parser:add_help {
      action = function() textutils.pagedPrint(parser:get_help()) error("", 0) end
   }
+
   args = parser:parse({...})
+
+  os.exit = nil
 end
 
 
