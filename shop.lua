@@ -1399,7 +1399,7 @@ local function updater(tUpdates)
           setting = "UPDATE." .. sModule,
           title = #sModule < 10 and sModule or sModule:sub(1, 7) .. "...",
           tp = "boolean",
-          bigInfo = string.format("Set to true to update the module %s.", sModule)
+          bigInfo = string.format("Set to true to update the module %15s.", sModule)
         }
         settings.set("UPDATE." .. sModule, false)
         tResolver["UPDATE." .. sModule] = sModule

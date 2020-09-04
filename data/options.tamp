@@ -73,7 +73,7 @@
           subPages = {
             {
               name = "Positions",
-              info = "Set positions of the list.",
+              info = "Set positions of the list",
               bigInfo = "Change things like x, y, width, and items per page (and more)",
               settings = {
                 {
@@ -395,7 +395,7 @@
               setting = "shop.visual.itemlist.shortDomain",
               title = "Short Domain",
               tp = "boolean",
-              bigInfo = "If true, show only <this part>@domain.kst, then the domain in the legend.  Else, show full domain for each item."
+              bigInfo = "If true, show only <this part>@domain.kst, then the domain in the legend."
             },
             {
               setting = "shop.visual.itemlist.deselectTime",
@@ -536,7 +536,7 @@
           subPages = {
             {
               name = "Redraw",
-              info = "Change redraw dot info.",
+              info = "Change dot info.",
               bigInfo = "The redraw dot is a dot that appears on the monitor whenever the screen redraws.",
               settings = {
                 --{
@@ -589,7 +589,7 @@
             },
             {
               name = "Purchase",
-              info = "Change purchase dot info.",
+              info = "Change dot info.",
               bigInfo = "The purchase dot is a dot that appears on the monitor whenever somebody makes a purchase.",
               settings = {
                 {
@@ -642,7 +642,7 @@
             },
             {
               name = "User Input",
-              info = "Change user input dot info.",
+              info = "Change dot info.",
               bigInfo = "The user input dot is a dot that appears on the monitor whenever a player touches the monitor.",
               settings = {
                 {
@@ -695,7 +695,7 @@
             },
             {
               name = "Update",
-              info = "Change the update dot info",
+              info = "Change dot info",
               bigInfo = "The update dot is a dot that flashes when an update is available.",
               settings = {
                 {
