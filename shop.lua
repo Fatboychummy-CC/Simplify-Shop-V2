@@ -784,15 +784,76 @@ local function defineSettings()
   defineDefault("shop.visual.infobox.w",        27)
   defineDefault("shop.visual.infobox.h",        7)
   defineDefault("shop.visual.infobox.centered", false)
-  defineDefault("shop.visual.infobox.text.1",   "")
-  defineDefault("shop.visual.infobox.text.2",   "return string.format(\"Krist address: %s\", krist.address)")
-  defineDefault("shop.visual.infobox.text.3",   "if item then return string.format(\"Item: %s\", item.displayName) end")
-  defineDefault("shop.visual.infobox.text.4",   "if item then return string.format(\"Price: %.2f\", item.price) end")
-  defineDefault("shop.visual.infobox.text.5",   "if item then if item.price < 1 then return string.format(\"1 KST: %d items.\", math.min(math.floor(1 / item.price), item.count)) end return string.format(\"1 stack (%d): %.2f KST\", math.min(item.stackSize, item.count), math.ceil(item.price * math.min(item.count, item.stackSize))) end")
-  defineDefault("shop.visual.infobox.text.6",   "if item then return string.format(\"/pay %s %d\", krist.address, math.ceil(item.price * math.min(item.stackSize, item.count))) end")
-  defineDefault("shop.visual.infobox.text.7",   "")
-  defineDefault("shop.visual.infobox.text.8",   "")
-  defineDefault("shop.visual.infobox.text.9",   "")
+  defineDefault("shop.visual.infobox.text", "infoboxtext.lua")
+
+  -- initialize the file with "basic" datas
+  do
+    local sDir = fs.combine(fs.getDir(shell.getRunningProgram()), ".TampererLongData")
+
+    if not fs.exists(sDir) then
+      fs.makeDir(sDir)
+    end
+    if not fs.exists(fs.combine(sDir, "infoboxtext.lua")) then
+      local sFileContents = ([[--%open%%open%
+  Available in the environment:
+    math [table],
+    string [table],
+    table [table],
+    item {
+      name [string] (the internally cached name of the item),
+      displayName [string] (the name of the item displayed to the user),
+      damage [int],
+      nbtHash [string or nil],
+      sortByNbt [bool] (if the shop sorts this item by its nbt data),
+      stackSize [int] (maximum amount of items in a single stack),
+      price [float] (price per item),
+      localname [string] (localname@domain.kst),
+      show [bool] (is this item displayed?)
+    },
+    krist {
+      address [string],
+      domain [string] (localname@domain.kst)
+    }
+%close%%close%
+
+local tLines = {}
+tLines[1] = ""
+tLines[2] = string.format("Krist address: %s", krist.address)
+if item then
+  tLines[3] = string.format("Item: %s", item.displayName)
+  tLines[4] = string.format("Price %.2f", item.price)
+  if item.price < 1 then
+    tLines[5] = string.format(
+      "1 KST: %d items.",
+      math.min(
+        math.floor(1 / item.price),
+        item.count
+      )
+    )
+  else
+    tLines[5] = string.format(
+      "1 stack (%d): %.2f KST",
+      math.min(item.stackSize, item.count),
+      math.ceil(item.price * math.min(item.count, item.stackSize))
+    )
+  end
+
+  tLines[6] = string.format(
+    "/pay %s %d",
+    krist.address,
+    math.ceil(
+      item.price * math.min(item.stackSize, item.count)
+    )
+  )
+end
+
+
+return tLines
+]]):gsub("%%open%%", "["):gsub("%%close%%", "]")
+      local h = io.open(fs.combine(sDir, "infoboxtext.lua"), 'w')
+      h:write(sFileContents):close()
+    end
+  end
   defineDefault("shop.visual.infobox.bg",       colors.lightGray)
   defineDefault("shop.visual.infobox.fg",       colors.white)
 
@@ -1210,7 +1271,7 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
   end
 end
 
-local function parse(sText, iLine, tSelectedItem)
+local function parse(sText, tSelectedItem)
   local tEnv = {
     _G = nil,
     math = math,
@@ -1227,13 +1288,16 @@ local function parse(sText, iLine, tSelectedItem)
   elseif sText == "" then
     return ""
   end
-  local fFunc, sErr = load(sText, "User Code Line " .. tostring(iLine), "t", tEnv)
+  local fFunc, sErr = load(sText, "User Code", "t", tEnv)
   if not fFunc then
     redrawError("Failed to parse user code due to: " .. sErr)
   end
   local bOk, sRet = pcall(fFunc)
   if not bOk then
     redrawError("Failed to run user code due to: " .. sRet)
+  end
+  if type(sRet) ~= "table" then
+    redrawError("User code should return a table.")
   end
   return sRet
 end
@@ -1245,10 +1309,15 @@ local function drawInfoBox(tSelectedItem)
     local iW        = does("shop.visual.infobox.w", "Info Box Width")
     local iH        = does("shop.visual.infobox.h", "Info Box Height")
     local bCentered = does("shop.visual.infobox.centered", "Info Box Centered")
-    local tText     = {}
-    for i = 1, 9 do
-      tText[i]      = does(string.format("shop.visual.infobox.text.%d", i), string.format("Info Box Line %d", i))
-    end
+    local tText     = parse(
+      readFile(
+        fs.combine(
+          fs.combine(sAbsoluteDir, ".TampererLongData"),
+          does("shop.visual.infobox.text", "Info box text")
+        )
+      ),
+      tSelectedItem
+    )
     local cBG       = does("shop.visual.infobox.bg", "Info Box BG Color")
     local cFG       = does("shop.visual.infobox.fg", "Info Box Text Color")
 
@@ -1261,8 +1330,8 @@ local function drawInfoBox(tSelectedItem)
       tFrame.write(sBG)
     end
     -- write text
-    for i = 0, 8 do
-      local sParsed = parse(tText[i + 1], i + 1, tSelectedItem) or ""
+    for i = 0, #tText - 1 do
+      local sParsed = tText[i + 1] or ""
       tFrame.setCursorPos(bCentered and iX + math.floor(iW / 2 + 0.5) - math.floor(#sParsed / 2 + 0.5) or iX + 1, iY + i)
       tFrame.write(sParsed)
     end

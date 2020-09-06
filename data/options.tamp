@@ -464,12 +464,12 @@
               tp = "boolean",
               bigInfo = "Should the text be centered in the box?"
             },
-            --{
-            --  setting = "shop.visual.infobox.text",
-            --  title = "All",
-            --  tp = "longstring",
-            --  bigInfo = "The table returned by this changes what is shown in the info box."
-            --}
+            {
+              setting = "shop.visual.infobox.text",
+              title = "All",
+              tp = "longstring",
+              bigInfo = "The table returned by this changes what is shown in the info box."
+            }
           }
         },
         {
