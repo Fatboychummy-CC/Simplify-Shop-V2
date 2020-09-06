@@ -463,70 +463,13 @@
               title = "Center Text",
               tp = "boolean",
               bigInfo = "Should the text be centered in the box?"
-            }
-          },
-          subPages = {
-            {
-              name = "Text",
-              info = "Change text lines",
-              bigInfo = "Change the info box's text lines (Up to 9 lines permitted)",
-              settings = {
-                {
-                  setting = "shop.visual.infobox.text.1",
-                  title = "Line 1",
-                  tp = "string",
-                  bigInfo = "Change line 1"
-                },
-                {
-                  setting = "shop.visual.infobox.text.2",
-                  title = "Line 2",
-                  tp = "string",
-                  bigInfo = "Change line 2"
-                },
-                {
-                  setting = "shop.visual.infobox.text.3",
-                  title = "Line 3",
-                  tp = "string",
-                  bigInfo = "Change line 3"
-                },
-                {
-                  setting = "shop.visual.infobox.text.4",
-                  title = "Line 4",
-                  tp = "string",
-                  bigInfo = "Change line 4"
-                },
-                {
-                  setting = "shop.visual.infobox.text.5",
-                  title = "Line 5",
-                  tp = "string",
-                  bigInfo = "Change line 5"
-                },
-                {
-                  setting = "shop.visual.infobox.text.6",
-                  title = "Line 6",
-                  tp = "string",
-                  bigInfo = "Change line 6"
-                },
-                {
-                  setting = "shop.visual.infobox.text.7",
-                  title = "Line 7",
-                  tp = "string",
-                  bigInfo = "Change line 7"
-                },
-                {
-                  setting = "shop.visual.infobox.text.8",
-                  title = "Line 8",
-                  tp = "string",
-                  bigInfo = "Change line 8"
-                },
-                {
-                  setting = "shop.visual.infobox.text.9",
-                  title = "Line 9",
-                  tp = "string",
-                  bigInfo = "Change line 9"
-                }
-              }
-            }
+            },
+            --{
+            --  setting = "shop.visual.infobox.text",
+            --  title = "All",
+            --  tp = "longstring",
+            --  bigInfo = "The table returned by this changes what is shown in the info box."
+            --}
           }
         },
         {

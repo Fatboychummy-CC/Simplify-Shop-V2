@@ -1879,6 +1879,8 @@ local function shop(bUpdates)
                 else
                   refundKrist(sFrom, nValue, tMeta, "error=No item is selected!")
                 end
+              elseif tMeta.domain and tMeta.localname then
+                refundKrist(sFrom, nValue, tMeta, "error=This feature is not yet implemented.")
               else
                 -- No item selected! Return krist to the user.
                 refundKrist(sFrom, nValue, tMeta, "error=No item is selected!")
