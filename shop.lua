@@ -2042,12 +2042,64 @@ local function shop(bUpdates)
             refundKrist(sFrom, nValue, tMetaError, "error=" .. err)
           else
             -- Metadata OK.
-            if tMeta.donate then
+            if tMeta.donate or tMeta.donation or IsIn(tMeta.ArrayMeta, "donate") or IsIn(tMeta.ArrayMeta, "donation") then
               -- Donation, do nothing.
               plog.info(string.format("Received donation of %d kst.", nValue))
             else
               -- Not a donation, must be a purchase.
-              if iSelection then
+              if tMeta.domain and tMeta.localname then
+                if tMeta.domain == sDomain then
+                  local bSent = false
+                  for i = 1, tItems.n do
+                    if tItems[i].localname == tMeta.localname and tItems[i].show then
+                      if tMeta.query or IsIn(tMeta.ArrayMeta, "query") then
+                        refundKrist(
+                          sFrom,
+                          nValue,
+                          tMeta,
+                          "message=Now displaying extra info about that item."
+                        )
+                        bAllowRedrawing = false
+                        redraw({tItems[i]}, 1, {1})
+                        local iTimer = os.startTimer(6)
+                        local ReferenceTable = {Value = false}
+                        local function f1()
+                          while true do
+                            local _, _iTimer = os.pullEvent "timer"
+                            if iTimer == _iTimer then
+                              break
+                            end
+                          end
+                          ReferenceTable.Value = true
+                        end
+                        parallel.waitForAll(
+                          f1,
+                          function()
+                            DenyPurchases(ReferenceTable)
+                          end
+                        )
+                        bAllowRedrawing = true
+                        os.queueEvent("_redraw")
+                      else
+                        Purchase(tItems[i], tMeta, sFrom, sTo, nValue)
+                      end
+                      bSent = true
+                      break
+                    end
+                  end
+                  if not bSent then
+                    refundKrist(sFrom, nValue, tMeta, string.format(
+                      "error=localname '%s' refers to no item sold in the shop.",
+                      tMeta.localname
+                    ))
+                  end
+                else
+                  refundKrist(sFrom, nValue, tMeta, string.format(
+                    "error=Domain '%s' is not registered to this shop.",
+                    tMeta.domain
+                  ))
+                end
+              elseif iSelection then
                 -- Item *is* selected, try to retrieve as many as was wanted.
                 local tItem = getSelectedItem(tItems, iPage, iSelection)
                 if tItem then
@@ -2055,8 +2107,6 @@ local function shop(bUpdates)
                 else
                   refundKrist(sFrom, nValue, tMeta, "error=No item is selected!")
                 end
-              elseif tMeta.domain and tMeta.localname then
-                refundKrist(sFrom, nValue, tMeta, "error=This feature is not yet implemented.")
               else
                 -- No item selected! Return krist to the user.
                 refundKrist(sFrom, nValue, tMeta, "error=No item is selected!")
