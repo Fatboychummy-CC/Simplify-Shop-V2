@@ -1388,9 +1388,114 @@ end
 local function options()
   local function settingHandler(sFileName, sSetting, NewVal, tPage)
     KristWrap.setEndPoint(settings.get("shop.krist.endpoint"))
-    if sSetting == "shop.monitor" or sSetting == "shop.visual.monitorScale" then
+    local tDict = {}
+    tDict["shop.monitor"] = function()
       bFrameInitialized = false
       tFrame = nil
+      if not peripheral.isPresent(NewVal) then
+        settings.set("shop.monitor", peripheral.findFirstName("monitor"))
+        return true, "Not on the network."
+      elseif peripheral.getType(NewVal) ~= "monitor" then
+        settings.set("shop.monitor", peripheral.findFirstName("monitor"))
+        return true, "Not a monitor."
+      end
+    end
+    tDict["shop.visual.monitorScale"] = tDict["shop.monitor"]
+    tDict["shop.krist.hash"] = function()
+      if NewVal == "" then
+        settings.set("shop.krist.address", "kxxxxxxxx")
+      else
+        local sAddress, err = KristWrap.getV2Address(NewVal)
+        if not sAddress then
+          return true, "Krist connection failure."
+        end
+        settings.set("shop.krist.address", sAddress)
+      end
+    end
+    tDict["shop.krist.address"] = function()
+      local hash = settings.get("shop.krist.hash")
+      local sAddress, err
+      if hash then
+        sAddress, err = KristWrap.getV2Address(settings.get("shop.krist.hash"))
+        if not sAddress then
+          return true, "Krist connection failure."
+        end
+      else
+        sAddress = "kxxxxxxxx"
+      end
+      settings.set("shop.krist.address", sAddress)
+      return true, "Set automatically."
+    end
+    tDict["shop.visual.infobox.text"] = function()
+      local bOk, sErr = pcall(parse, readFile(
+        fs.combine(
+          sAbsoluteDir,
+          fs.combine(
+            ".TampererLongData",
+            settings.get(sSetting)
+          )
+        )
+      ))
+      if not bOk then
+        return true, "Check monitor."
+      end
+    end
+    tDict["shop.items.dispenseFromTurtle"] = function()
+      if NewVal == true and not turtle then
+        settings.set("shop.items.dispenseFromTurtle", false)
+        return true, "Not a turtle."
+      end
+    end
+    tDict["shop.items.dispenseDir"] = function()
+      -- "up", "forward", "down" or "nesw/ud"
+      local tDirs = {
+        t = {"up", "forward", "down"},
+        nt = {"north", "east", "south", "west", "up", "down"}
+      }
+      if settings.get("shop.items.dispenseFromTurtle") then
+        if not IsIn(tDirs.t, NewVal) then
+          settings.set("shop.items.dispenseDir", "forward")
+          return true, "Invalid direction."
+        end
+      else
+        if not IsIn(tDirs.nt, NewVal) then
+          settings.set("shop.items.dispenseDir", "up")
+          return true, "Invalid direction."
+        end
+      end
+    end
+    tDict["shop.items.dispenseFrom"] = function()
+      local tPeriphs = Storage.GetPeripherals()
+      if not IsIn(tPeriphs, NewVal) then
+        settings.set("shop.items.dispenseFrom", tPeriphs[1])
+        return true, "No storage."
+      end
+    end
+    tDict["shop.krist.domain"] = function()
+      if NewVal ~= "" then
+        local tDomainInfo, sErr = KristWrap.getName(NewVal)
+        if tDomainInfo and tDomainInfo.ok then
+          if tDomainInfo.name and tDomainInfo.name.owner ~= settings.get("shop.krist.address") then
+            settings.set("shop.krist.domain", "")
+            return true, "Not owner of domain."
+          end
+        else
+          if tDomainInfo then
+            if tDomainInfo.error == "domain_not_found" then
+              settings.set("shop.krist.domain", "")
+              return true, "Domain not found."
+            end
+          end
+          settings.set("shop.krist.domain", "")
+          return true, sErr or tDomainInfo and tDomainInfo.error or "Unknown Error."
+        end
+      end
+    end
+
+    local bRet1, sRet2, nnRet3
+
+    if tDict[sSetting] then
+      bRet1, sRet2, nnRet3 = tDict[sSetting]()
     elseif sSetting:match("^shop%.visual%.palette") then
       bFrameInitialized = false
       tFrame = nil
@@ -1413,30 +1518,6 @@ local function options()
           )
         )
       end
-    elseif sSetting == "shop.krist.hash" then
-      if NewVal == "" then
-        settings.set("shop.krist.address", "kxxxxxxxx")
-      else
-        local sAddress, err = KristWrap.getV2Address(NewVal)
-        if not sAddress then
-          return true, "Krist connection failure."
-        end
-        settings.set("shop.krist.address", sAddress)
-      end
-    elseif sSetting == "shop.krist.address" then
-      local hash = settings.get("shop.krist.hash")
-      local sAddress, err
-      if hash then
-        sAddress, err = KristWrap.getV2Address(settings.get("shop.krist.hash"))
-        if not sAddress then
-          return true, "Krist connection failure."
-        end
-      else
-        sAddress = "kxxxxxxxx"
-      end
-      settings.set("shop.krist.address", sAddress)
-      settings.save(sFileName)
-      return true, "Set automatically."
     end
 
     settings.save(sFileName)
@@ -1484,6 +1565,7 @@ local function options()
         tFrame.PushBuffer()
       end
     end
+    return bRet1, sRet2, nnRet3
   end
 
   local tTamp = Tamperer.loadFile(tFiles.OptionsMenu.name)()
