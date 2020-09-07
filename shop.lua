@@ -258,6 +258,15 @@ local function dCopy(tCopy)
   return tReturn
 end
 
+local function IsIn(t, v)
+  for i = 1, t.n or #t do
+    if t[i] == v then
+      return true
+    end
+  end
+  return false
+end
+
 -- update checker
 -- returns a table of boolean values.
 local function checkUpdates()
