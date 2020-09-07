@@ -1831,6 +1831,7 @@ local function shop(bUpdates)
 
   local function inventoryHandler()
     local invlog = Logger("Inventory")
+    KristWrap.Initialized:Wait()
     tItems = dCopy(tCache)
     tItems.n = #tItems
     for i = 1, tItems.n do
