@@ -1774,6 +1774,7 @@ end
 local function shop(bUpdates)
   local tItems = {}
   local iPage = 1
+  local bAllowRedrawing = true
   local iSelection
   initMonitor()
   initDots()
@@ -2069,13 +2070,15 @@ local function shop(bUpdates)
     while true do
       local tEvent = table.pack(os.pullEvent())
       if tEvent[1] == "_redraw" then
-        redraw(tItems, iPage, {iSelection})
-        local x, y = tFrame.getSize()
-        tFrame.setCursorPos(x - 3, y)
-        tFrame.setBackgroundColor(colors.black)
-        tFrame.setTextColor(colors.red)
-        tFrame.write("BETA")
-        tFrame.PushBuffer()
+        if bAllowRedrawing then
+          redraw(tItems, iPage, {iSelection})
+          local x, y = tFrame.getSize()
+          tFrame.setCursorPos(x - 3, y)
+          tFrame.setBackgroundColor(colors.black)
+          tFrame.setTextColor(colors.red)
+          tFrame.write("BETA")
+          tFrame.PushBuffer()
+        end
         iTimer = os.startTimer(5)
       elseif tEvent[1] == "timer" and tEvent[2] == iTimer then
         os.queueEvent("_redraw")
