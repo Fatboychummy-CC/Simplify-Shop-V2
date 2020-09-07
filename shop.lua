@@ -726,6 +726,21 @@ local function defineDefault(sSetting, val)
   expect(2, val, "string", "number", "table", "boolean")
   settings.define(sSetting, {type = type(val), default = val})
 end
+
+local function defineTampererFile(sFileName, sContents)
+  local sDir = fs.combine(fs.getDir(shell.getRunningProgram()), ".TampererLongData")
+
+  if not fs.exists(sDir) then
+    fs.makeDir(sDir)
+  end
+  if not fs.exists(fs.combine(sDir, sFileName)) then
+    -- write file
+    sContents = sContents:gsub("%%open%%", "["):gsub("%%close%%", "]")
+    local h = io.open(fs.combine(sDir, sFileName), 'w')
+    h:write(sContents):close()
+  end
+end
+
 local function defineSettings()
   -- base settings
   defineDefault("shop.autorun", 15)
@@ -796,18 +811,11 @@ local function defineSettings()
   defineDefault("shop.visual.infobox.text", "infoboxtext.lua")
 
   -- initialize the file with "basic" datas
-  do
-    local sDir = fs.combine(fs.getDir(shell.getRunningProgram()), ".TampererLongData")
-
-    if not fs.exists(sDir) then
-      fs.makeDir(sDir)
-    end
-    if not fs.exists(fs.combine(sDir, "infoboxtext.lua")) then
-      local sFileContents = ([[--%open%%open%
+  defineTampererFile("infoboxtext.lua", [[--%open%%open%
   Available in the environment:
-    math [table],
-    string [table],
-    table [table],
+    math [library],
+    string [library],
+    table [library],
     item {
       name [string] (the internally cached name of the item),
       displayName [string] (the name of the item displayed to the user),
@@ -849,7 +857,9 @@ if item then
 
   tLines[6] = string.format(
     "/pay %s %d",
-    krist.domain ~= "" and item.localname ~= "" and string.format(
+    krist.domain and krist.domain ~= ""
+    and item.localname and item.localname ~= ""
+    and string.format(
       "%s@%s.kst",
       item.localname,
       krist.domain
@@ -863,13 +873,25 @@ end
 
 
 return tLines
-]]):gsub("%%open%%", "["):gsub("%%close%%", "]")
-      local h = io.open(fs.combine(sDir, "infoboxtext.lua"), 'w')
-      h:write(sFileContents):close()
-    end
-  end
+]])
+
   defineDefault("shop.visual.infobox.bg",       colors.lightGray)
   defineDefault("shop.visual.infobox.fg",       colors.white)
+
+    -- bsod
+  defineDefault("shop.visual.bsod.bg", colors.blue)
+  defineDefault("shop.visual.bsod.fg", colors.white)
+  defineDefault("shop.visual.bsod.custom", "bsodinformation.lua")
+  defineTampererFile("bsodinformation.lua", [[--%open%%open%
+  Available in the environment:
+    string [library],
+    owner [string]
+%close%%close%
+
+return string.format(
+  "Contact %s for help.",
+  owner and owner ~= "" and owner or "the owner of this shop"
+)]])
 
   -- buttons
     -- previous page
@@ -944,6 +966,54 @@ return tLines
   defineDefault("shop.logger.saveold", false)
 end
 
+local function Bawx(tTo, x, y, w, h, bg, fg)
+  local chars = {
+    corners = {
+      br = {char = "\133", inverted = true},
+      bl = {char = "\138", inverted = true},
+      tr = {char = "\148", inverted = true},
+      tl = {char = "\151", inverted = false}
+    },
+    tl = {char = "\131", inverted = false},
+    ll = {char = "\149", inverted = false},
+    rl = {char = "\149", inverted = true},
+    bl = {char = "\143", inverted = true}
+  }
+
+  local function drawCorner(char, x, y)
+    tTo.setCursorPos(x, y)
+    tTo.setBackgroundColor(char.inverted and fg or bg)
+    tTo.setTextColor(char.inverted and bg or fg)
+    tTo.write(char.char)
+  end
+  local function horiLine(char, x, y, len)
+    tTo.setCursorPos(x, y)
+    tTo.setBackgroundColor(char.inverted and fg or bg)
+    tTo.setTextColor(char.inverted and bg or fg)
+    tTo.write(string.rep(char.char, len))
+  end
+
+
+  drawCorner(chars.corners.tl, x, y)
+  drawCorner(chars.corners.tr, x + w - 1, y)
+  drawCorner(chars.corners.bl, x, y + h - 1)
+  drawCorner(chars.corners.br, x + w - 1, y + h - 1)
+
+  horiLine(chars.tl, x + 1, y, w - 2)
+  horiLine(chars.bl, x + 1, y + h - 1, w - 2)
+
+end
+
+-- cut a string into multiple strings
+local function cut(s, iMax)
+  local t = {n = 0}
+  for str in string.gmatch(s, string.rep(".?", iMax)) do
+    t.n = t.n + 1
+    t[t.n] = str
+  end
+  return t
+end
+
 -- split a string into a table of lines
 -- s: string, iMax: max x value
 local function line(s, iMax)
@@ -967,7 +1037,10 @@ local function line(s, iMax)
   -- split
   while true do
     local function pushLine(bFlag)
-      tNew:push(table.concat(tTemp, ' ', 1, bFlag and #tTemp or #tTemp - 1))
+      local toPush = table.concat(tTemp, ' ', 1, bFlag and tTemp.n or tTemp.n - 1)
+      if toPush ~= "" then
+        tNew:push(toPush)
+      end
       i = i - 1
       tTemp = setmetatable({n = 0}, tMeta)
     end
@@ -975,8 +1048,15 @@ local function line(s, iMax)
     tTemp:push(tSep[i])
 
     -- check if the current line is too long
-    if #table.concat(tTemp, ' ') > iMax then
-      -- if it is, move it to the lines table and clear
+    if tTemp.n == 1 and #tTemp[1] > iMax then
+      -- If a single word is too long, push it.
+      tTemp = setmetatable({n = 0}, tMeta)
+      local cuts = cut(tSep[i], iMax)
+      for j = 1, cuts.n do
+        tNew:push(cuts[j])
+      end
+    elseif #table.concat(tTemp, ' ') > iMax then
+      -- If the line is too long, move it to the lines table and clear
       pushLine()
     end
 
@@ -1285,35 +1365,29 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
   end
 end
 
-local function parse(sText, tSelectedItem)
-  local tEnv = {
-    _G = nil,
-    math = math,
-    string = string,
-    table = table,
-    item = tSelectedItem and dCopy(tSelectedItem),
-    krist = {
-      address = does("shop.krist.address", "Krist Address"),
-      domain = does("shop.krist.domain", "Krist Domain")
-    }
-  }
-  if sText:sub(1, 1) == "!" then
-    return sText:sub(2)
-  elseif sText == "" then
+local function UserCode(sText, sChunkName, tEnv, sReturnType)
+  if sText == "" then
     return ""
   end
-  local fFunc, sErr = load(sText, "User Code", "t", tEnv)
+  local fFunc, sErr = load(sText, "User Code:" .. tostring(sChunkName), 't', tEnv or {})
   if not fFunc then
-    redrawError("Failed to parse user code due to: " .. sErr)
+    redrawError(sErr)
   end
-  local bOk, sRet = pcall(fFunc)
+
+  local bOk, returnValue = pcall(fFunc)
   if not bOk then
-    redrawError("Failed to run user code due to: " .. sRet)
+    redrawError(returnValue)
   end
-  if type(sRet) ~= "table" then
-    redrawError("User code should return a table.")
+
+  if type(returnValue) ~= sReturnType then
+    redrawError(string.format(
+      "User Code:%s:Expected %s, got %s",
+      tostring(sChunkName),
+      sReturnType,
+      type(returnValue)
+    ))
   end
-  return sRet
+  return returnValue
 end
 
 local function drawInfoBox(tSelectedItem)
@@ -1323,14 +1397,26 @@ local function drawInfoBox(tSelectedItem)
     local iW        = does("shop.visual.infobox.w", "Info Box Width")
     local iH        = does("shop.visual.infobox.h", "Info Box Height")
     local bCentered = does("shop.visual.infobox.centered", "Info Box Centered")
-    local tText     = parse(
+    local tText     = UserCode(
       readFile(
         fs.combine(
           fs.combine(sAbsoluteDir, ".TampererLongData"),
           does("shop.visual.infobox.text", "Info box text")
         )
       ),
-      tSelectedItem
+      "Info Box",
+      {
+        _G = nil,
+        math = math,
+        string = string,
+        table = table,
+        item = tSelectedItem and dCopy(tSelectedItem),
+        krist = {
+          address = does("shop.krist.address", "Krist Address"),
+          domain = does("shop.krist.domain", "Krist Domain")
+        }
+      },
+      "table"
     )
     local cBG       = does("shop.visual.infobox.bg", "Info Box BG Color")
     local cFG       = does("shop.visual.infobox.fg", "Info Box Text Color")
@@ -1384,9 +1470,75 @@ local function redraw(tItems, iPage, tSelections, bOverride)
   tFrame.PushBuffer()
 end
 
+local function bsod(sErr)
+  if tFrame then
+    local mX, mY = tFrame.getSize()
+    local tLines = line(sErr, mX - 8)
+
+    tFrame.setBackgroundColor(settings.get("shop.visual.bsod.bg") or colors.blue)
+    tFrame.clear()
+
+    local bOk, sText = pcall(UserCode,
+      readFile(
+        fs.combine(
+          sAbsoluteDir,
+          fs.combine(
+            ".TampererLongData",
+            settings.get("shop.visual.bsod.custom")
+          )
+        )
+      ),
+      "Info Box",
+      {
+        string = string,
+        owner = settings.get("shop.owner")
+      },
+      "string"
+    )
+
+    Bawx(
+      tFrame,
+      2,
+      math.ceil(mY / 2 - tLines.n / 2 + 0.5) - 1,
+      mX - 2,
+      #tLines + 2,
+      settings.get("shop.visual.bsod.bg") or colors.blue,
+      settings.get("shop.visual.bsod.fg") or colors.white
+    )
+
+    tFrame.setBackgroundColor(settings.get("shop.visual.bsod.bg") or colors.blue)
+    tFrame.setTextColor(settings.get("shop.visual.bsod.fg") or colors.white)
+
+    local s = "An unrecoverable error has occured."
+    tFrame.setCursorPos(math.ceil(mX / 2 - #s / 2 + 0.5), 1)
+    tFrame.write(s)
+
+    for i = 1, #tLines do
+      tFrame.setCursorPos(
+        math.ceil(mX / 2 - #tLines[i] / 2 + 0.5),
+        math.ceil(mY / 2 - #tLines / 2 + 0.5) + i - 1
+      )
+      tFrame.write(tLines[i])
+    end
+
+    if bOk then
+      local tCustomLines = line(sText, mX - 8)
+      for i = 1, #tCustomLines do
+        tFrame.setCursorPos(
+          math.ceil(mX / 2 - #tCustomLines[i] / 2 + 0.5),
+          mY - #tCustomLines + i
+        )
+        tFrame.write(tCustomLines[i])
+      end
+    end
+    tFrame.PushBuffer()
+  end
+end
+
 -- run the options page
 local function options()
   local function settingHandler(sFileName, sSetting, NewVal, tPage)
+    local bDoRedraw = true
     KristWrap.setEndPoint(settings.get("shop.krist.endpoint"))
     local tDict = {}
     tDict["shop.monitor"] = function()
@@ -1427,15 +1579,30 @@ local function options()
       return true, "Set automatically."
     end
     tDict["shop.visual.infobox.text"] = function()
-      local bOk, sErr = pcall(parse, readFile(
-        fs.combine(
-          sAbsoluteDir,
+      local bOk, sErr = pcall(UserCode,
+        readFile(
           fs.combine(
-            ".TampererLongData",
-            settings.get(sSetting)
+            sAbsoluteDir,
+            fs.combine(
+              ".TampererLongData",
+              settings.get(sSetting)
+            )
           )
-        )
-      ))
+        ),
+        "Info Box",
+        {
+          _G = nil,
+          math = math,
+          string = string,
+          table = table,
+          krist = {
+            address = does("shop.krist.address", "Krist Address"),
+            domain = does("shop.krist.domain", "Krist Domain")
+          }
+        },
+        "table"
+      )
+
       if not bOk then
         return true, "Check monitor."
       end
@@ -1491,6 +1658,31 @@ local function options()
         end
       end
     end
+    tDict["shop.visual.bsod.custom"] = function()
+      local bOk, sErr = pcall(UserCode,
+        readFile(
+          fs.combine(
+            sAbsoluteDir,
+            fs.combine(
+              ".TampererLongData",
+              settings.get(sSetting)
+            )
+          )
+        ),
+        "Info Box",
+        {
+          string = string,
+          owner = settings.get("shop.owner")
+        },
+        "string"
+      )
+
+      if not bOk then
+        bsod(sErr)
+        bDoRedraw = sErr
+        return true, "Check monitor."
+      end
+    end
 
     local bRet1, sRet2, nnRet3
 
@@ -1528,43 +1720,43 @@ local function options()
     initDots()
     initButtons()
 
-    local ok, err = pcall(
-      redraw,
-      {
-        {stackSize = 64, count = 1, localname = "odd", displayName = "Odd", price = 1.2345678901234567890, damage = 0, show = true},
-        {stackSize = 64, count = 1, localname = "even", displayName = "Even", price = 1.2345678901234567890, damage = 0, show = true},
-        {stackSize = 64, count = 0, localname = "odde", displayName = "Odd Empty", price = 1.2345678901234567890, damage = 0, show = true},
-        {stackSize = 64, count = 0, localname = "evne", displayName = "Even Empty", price = 1.2345678901234567890, damage = 0, show = true},
-        {stackSize = 64, count = 1, localname = "odds", displayName = "Odd Selected", price = 1.2345678901234567890, damage = 0, show = true},
-        {stackSize = 64, count = 1, localname = "evns", displayName = "Even Selected", price = 1.2345678901234567890, damage = 0, show = true},
-      },
-      1,
-      {5, 6},
-      true
-    )
-    if tFrame then
-      for k, v in pairs(dots) do
-        v(true)
-      end
-      for k, v in pairs(buttons) do
-        v(true)
-      end
-      tFrame.PushBuffer()
-    end
-
-    if not ok then
+    if bDoRedraw == true then
+      local ok, err = pcall(
+        redraw,
+        {
+          {stackSize = 64, count = 1, localname = "odd", displayName = "Odd", price = 1.2345678901234567890, damage = 0, show = true},
+          {stackSize = 64, count = 1, localname = "even", displayName = "Even", price = 1.2345678901234567890, damage = 0, show = true},
+          {stackSize = 64, count = 0, localname = "odde", displayName = "Odd Empty", price = 1.2345678901234567890, damage = 0, show = true},
+          {stackSize = 64, count = 0, localname = "evne", displayName = "Even Empty", price = 1.2345678901234567890, damage = 0, show = true},
+          {stackSize = 64, count = 1, localname = "odds", displayName = "Odd Selected", price = 1.2345678901234567890, damage = 0, show = true},
+          {stackSize = 64, count = 1, localname = "evns", displayName = "Even Selected", price = 1.2345678901234567890, damage = 0, show = true},
+        },
+        1,
+        {5, 6},
+        true
+      )
       if tFrame then
-        tFrame.clear()
-        tFrame.setTextColor(colors.red)
-        tFrame.setBackgroundColor(colors.black)
-        local tLines = line(err, tFrame.getSize())
-        for i = 1, tLines.n do
-          tFrame.setCursorPos(1, i)
-          tFrame.write(tLines[i])
+        for k, v in pairs(dots) do
+          v(true)
+        end
+        for k, v in pairs(buttons) do
+          v(true)
         end
         tFrame.PushBuffer()
       end
+
+      if not ok then
+        pcall(bsod, err)
+      end
+    else
+      pcall(bsod, bDoRedraw)
     end
+    if type(bDoRedraw) == "string" then
+      tFrame.clear()
+      tFrame.setCursorPos(1, 1)
+      tFrame.write(bDoRedraw)
+    end
+
     return bRet1, sRet2, nnRet3
   end
 
@@ -2230,6 +2422,7 @@ while true do
       for sLine in sErr:gmatch("[^\n]+") do
         log("Traceback", sLine)
       end
+      bsod( sErr:match("[^\n]+"))
       break
     end
   end

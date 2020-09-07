@@ -736,6 +736,31 @@
               }
             }
           }
+        },
+        {
+          name = "BSOD",
+          info = "Change the BSOD",
+          bigInfo = "Change how the Blue-Screen-Of-Death looks.",
+          settings = {
+            {
+              setting = "shop.visual.bsod.bg",
+              title = "BG color",
+              tp = "color",
+              bigInfo = "Set the background color of the bsod."
+            },
+            {
+              setting = "shop.visual.bsod.fg",
+              title = "Text color",
+              tp = "color",
+              bigInfo = "Set the text color of the bsod."
+            },
+            {
+              setting = "shop.visual.bsod.custom",
+              title = "Custom Info",
+              tp = "longstring",
+              bigInfo = "Set the extra information in the bsod."
+            }
+          }
         }
       }
     },
@@ -798,7 +823,13 @@
           setting = "shop.krist.purchaseForwardingAddress",
           title = "Forward Addr",
           tp = "string",
-          bigInfo = "Address to forward purchases to, if Do Forwards is enabled."
+          bigInfo = "Address to forward funds from purchases to, if Do Forwards is enabled."
+        },
+        {
+          setting = "shop.krist.purchaseForwardingMeta",
+          title = "Forward Meta",
+          tp = "longstring",
+          bigInfo = "Metadata of the purchase forwarding transaction (Return a string)"
         },
         {
           setting = "shop.krist.endpoint",
