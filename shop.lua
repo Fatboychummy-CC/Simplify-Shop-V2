@@ -849,7 +849,12 @@ if item then
 
   tLines[6] = string.format(
     "/pay %s %d",
-    krist.address,
+    krist.domain ~= "" and item.localname ~= "" and string.format(
+      "%s@%s.kst",
+      item.localname,
+      krist.domain
+    )
+    or krist.address,
     math.ceil(
       item.price * math.min(item.stackSize, item.count)
     )
