@@ -1705,27 +1705,26 @@ end
 
 
 local function parseMeta(sMeta)
-  local tMeta = {}
+  local tMeta = {ArrayMeta = {n = 0}}
 
-  local first = true
-  local firstMatched = false
+  local sDomainMatch = "^(.+)@(.+)%.kst$"
+  local sEqualsMatch = "^(.+)=(.+)$"
+
   for line in sMeta:gmatch("[^;]+") do
-    if first then
-      if line:match("^.+@.+%.kst$") and not line:find("=") then
-        tMeta.domain, tMeta.localname = line:match("^(.+)@(.+)%.kst$")
+    if line:match(sDomainMatch) and not line:match(sEqualsMatch) then
+      tMeta.localname, tMeta.domain = line:match(sDomainMatch)
+    elseif line:match(sEqualsMatch) then
+      local _1, _2 = line:match(sEqualsMatch)
+      if _2 == "true" then
+        _2 = true
+      elseif _2 == "false" then
+        _2 = false
       end
-      firstMatched = true
+      tMeta[_1] = _2
+    else
+      tMeta.ArrayMeta.n = tMeta.ArrayMeta.n + 1
+      tMeta.ArrayMeta[tMeta.ArrayMeta.n] = line
     end
-    if line:find("=") then
-      local key, value = line:match("^(.+)=(.+)$")
-      if value == "true" then value = true elseif value == "false" then value = false end
-      tMeta[key] = value
-    elseif not first or (first and not firstMatched) then
-      log("Parser", "Failed to parse '" .. tostring(line) .. "'", 2)
-      log("This is on transaction with full meta '" .. tostring(sMeta) .. "'.")
-      return nil, tMeta, "Unable to parse '" .. tostring(line) .. "'"
-    end
-    if first then first = false end
   end
 
   return tMeta
