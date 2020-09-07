@@ -1989,6 +1989,48 @@ local function shop(bUpdates)
         )
       end
 
+      local function Purchase(tItem, tMeta, sFrom, sTo, nValue)
+        local nItemsToGrab = math.floor(nValue / tItem.price)
+
+        if nItemsToGrab < 1 then
+          -- Not enough krist for one item!
+          refundKrist(
+            sFrom,
+            nValue,
+            tMeta,
+            string.format("error=You need to send at least %d krist to buy that.", tItem.price)
+          )
+        elseif tItem.count == 0 then
+          refundKrist(
+            sFrom,
+            nValue,
+            tMeta,
+            "error=Sorry, we don't have any of that item."
+          )
+        else
+          -- Enough krist for one item!
+          local nOver = nValue % tItem.price
+          local sOverageReason = "You overpaid a little"
+          if nItemsToGrab > tItem.count then
+            nOver = nOver + (nItemsToGrab - tItem.count) * tItem.price
+            nItemsToGrab = tItem.count
+            sOverageReason = "We didn't have enough items to complete your purchase and/or you overpaid a little"
+          end
+          nOver = math.floor(nOver)
+
+          -- Refund if overpay.
+          if nOver > 0 then
+            refundKrist(
+              sFrom,
+              nOver,
+              tMeta,
+              string.format("message=%s, here's your change!", sOverageReason)
+            )
+          end
+          dispense(tItem, nItemsToGrab)
+        end
+      end
+
       -- run the shop
       while true do
         local sFrom, sTo, nValue, sMeta = KristWrap.Transaction:Wait()
@@ -2009,39 +2051,7 @@ local function shop(bUpdates)
                 -- Item *is* selected, try to retrieve as many as was wanted.
                 local tItem = getSelectedItem(tItems, iPage, iSelection)
                 if tItem then
-                  local nItemsToGrab = math.floor(nValue / tItem.price)
-
-                  if nItemsToGrab < 1 then
-                    -- Not enough krist for one item!
-                    refundKrist(
-                      sFrom,
-                      nValue,
-                      tMeta,
-                      string.format("error=You need to send at least %d krist to buy that.", tItem.price)
-                    )
-                  else
-                    -- Enough krist for one item!
-                    local nOver = nValue % tItem.price
-                    local sOverageReason = "You overpaid a little"
-                    if nItemsToGrab > tItem.count then
-                      nOver = nOver + (nItemsToGrab - tItem.count) * tItem.price
-                      nItemsToGrab = tItem.count
-                      sOverageReason = "We didn't have enough items to complete your purchase and/or you overpaid a little"
-                    end
-                    nOver = math.floor(nOver)
-
-                    -- Refund if overpay.
-                    if nOver > 0 then
-                      refundKrist(
-                        sFrom,
-                        nOver,
-                        tMeta,
-                        string.format("message=%s, here's your change!", sOverageReason)
-                      )
-                    end
-
-                    dispense(tItem, nItemsToGrab)
-                  end
+                  Purchase(tItem, tMeta, sFrom, sTo, nValue)
                 else
                   refundKrist(sFrom, nValue, tMeta, "error=No item is selected!")
                 end
