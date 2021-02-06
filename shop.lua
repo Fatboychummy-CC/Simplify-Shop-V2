@@ -134,7 +134,7 @@ end
 -- Start main program
 --##############################################################
 -- set the path
-package.path = string.format("%s;%s/modules/?;%s/modules/?.lua", package.path, sAbsoluteDir, sAbsoluteDir)
+package.path = string.format("%s;modules/?;modules/?.lua;%s/modules/?;%s/modules/?.lua", package.path, sAbsoluteDir, sAbsoluteDir)
 
 -- Parse command line arguments, if any.
 local args
