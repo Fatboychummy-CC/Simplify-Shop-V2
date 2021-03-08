@@ -279,7 +279,11 @@ local function checkUpdates()
   -- if the hash is different, an update is available
   local function checkSingleUpdate(tData)
     local sLocalHash = md5.sum(readFile(tData.name))
-    local sRemoteHash = md5.sum(getFile(tData.location))
+    -- if a provider is down, don't fail the update check.
+    local bOk, tFileData = pcall(getFile, tData.location)
+    if not bOk then return false end
+    local sRemoteHash = md5.sum(tFileData)
+
     if sLocalHash ~= sRemoteHash then
       return true
     end
