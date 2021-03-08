@@ -1926,24 +1926,7 @@ local function parseMeta(sMeta)
   return tMeta
 end
 
-local refundKrist
-local function DenyPurchases(tOk)
-  while true do
-    if tOk.Value then return end
-    local sFrom, sTo, nValue, sMeta = KristWrap.Transaction:Wait(1)
-    if sTo == sAddress then
-      local tMeta, tFailMeta, err = parseMeta(sMeta)
-      refundKrist(
-        sFrom,
-        nValue,
-        tMeta or tFailMeta,
-        "error=Shop is busy."
-      )
-    end
-  end
-end
-
-refundKrist = function(sFrom, nAmount, tMeta, sRefundMeta)
+local function refundKrist(sFrom, nAmount, tMeta, sRefundMeta)
   if nAmount < 1 then
     return
   end
@@ -1954,17 +1937,7 @@ refundKrist = function(sFrom, nAmount, tMeta, sRefundMeta)
     sTo = tMeta["return"]
   end
 
-  local ReferenceTable = {Value = false}
-  parallel.waitForAll(
-    function()
-      KristWrap.makeTransaction(sTo, nAmount, sRefundMeta)
-      ReferenceTable.Value = true
-    end,
-    function()
-      DenyPurchases(ReferenceTable)
-    end
-  )
-
+  KristWrap.makeTransaction(sTo, nAmount, sRefundMeta)
 end
 
 local function shop(bUpdates)
@@ -2168,21 +2141,13 @@ local function shop(bUpdates)
         end
       end
 
-      -- Grab the items, also deny purchases while we are doing so.
+      -- Grab the items
       local function dispense(tItem, nCount)
-        local ReferenceTable = {Value = false}
-        parallel.waitForAll(
-          function()
-            local nDispensed = Storage.GrabItems(doTurtleDispensing and peripheral.call(modemSide, "getNameLocal") or dispenser, tItem.name, tItem.damage, tItem.nbtHash, nCount, tItem.sortByNbt)
-            drop()
+        local nDispensed = Storage.GrabItems(doTurtleDispensing and peripheral.call(modemSide, "getNameLocal") or dispenser, tItem.name, tItem.damage, tItem.nbtHash, nCount, tItem.sortByNbt)
+        drop()
 
-            log("Dispenser", string.format("Dispensed %d, Requested %d", nDispensed, nCount), nDispensed == nCount and 1 or 3)
-            ReferenceTable.Value = true
-          end,
-          function()
-            DenyPurchases(ReferenceTable)
-          end
-        )
+        log("Dispenser", string.format("Dispensed %d, Requested %d", nDispensed, nCount), nDispensed == nCount and 1 or 3)
+      end
       end
 
       local function Purchase(tItem, tMeta, sFrom, sTo, nValue)
@@ -2230,6 +2195,7 @@ local function shop(bUpdates)
       -- run the shop
       while true do
         local sFrom, sTo, nValue, sMeta = KristWrap.Transaction:Wait()
+        KristWrap.setQueueEnabled(true)
         if sTo == sAddress then
           -- The transaction was sent to us
           local tMeta, tMetaError, err = parseMeta(sMeta)
@@ -2258,22 +2224,13 @@ local function shop(bUpdates)
                         bAllowRedrawing = false
                         redraw({tItems[i]}, 1, {1})
                         local iTimer = os.startTimer(6)
-                        local ReferenceTable = {Value = false}
-                        local function f1()
-                          while true do
-                            local _, _iTimer = os.pullEvent "timer"
-                            if iTimer == _iTimer then
-                              break
-                            end
+                        while true do
+                          local _, _iTimer = os.pullEvent "timer"
+                          if iTimer == _iTimer then
+                            break
                           end
-                          ReferenceTable.Value = true
                         end
-                        parallel.waitForAll(
-                          f1,
-                          function()
-                            DenyPurchases(ReferenceTable)
-                          end
-                        )
+
                         bAllowRedrawing = true
                         os.queueEvent("_redraw")
                       else
@@ -2310,6 +2267,7 @@ local function shop(bUpdates)
             end
           end
         end
+        KristWrap.setQueueEnabled(false)
       end
     end)
   end
