@@ -1,0 +1,864 @@
+{
+  name = "Options Menu",
+  info = "Change deez nuts",
+  bigInfo = "",
+  platform = "all",
+  colors = {
+    bg = {
+      main = "black",
+    },
+    fg = {
+      main = "white",
+      title = "yellow",
+      info = "lightGray",
+      listInfo = "gray",
+      listTitle = "white",
+      bigInfo = "lightGray",
+      selector = "yellow",
+      arrowDisabled = "gray",
+      arrowEnabled = "white",
+      input = "yellow",
+      error = "red",
+    }
+  },
+  selections = {
+  },
+  settings = {
+    location = ".shopSettings",
+    {
+      setting = "shop.owner",
+      title = "Owner",
+      tp = "string",
+      bigInfo = "Who is the owner of this shop?"
+    },
+    {
+      setting = "shop.autorun",
+      title = "Autorun",
+      tp = "number",
+      bigInfo = "How long in seconds should the shop wait in the menu before autorunning?  Set to 0 to disable."
+    },
+    {
+      setting = "shop.monitor",
+      title = "Monitor",
+      tp = "string",
+      bigInfo = "What monitor should be used to display the shop?"
+    }
+  },
+  subPages = {
+    {
+      name = "Visuals",
+      info = "Change Visuals",
+      bigInfo = "Change how your shop looks!",
+      settings = {
+        {
+          setting = "shop.visual.monitorScale",
+          title = "Scale",
+          tp = "number",
+          bigInfo = "Set monitor scale (0.5 - 5)",
+          min = 0.5,
+          max = 5
+        },
+        {
+          setting = "shop.visual.mainBG",
+          title = "Main BG",
+          tp = "color",
+          bigInfo = "Set the color of the main background",
+        }
+      },
+      subPages = {
+        {
+          name = "Item list",
+          info = "Item List Visuals",
+          bigInfo = "Change how the item list looks!",
+          subPages = {
+            {
+              name = "Positions",
+              info = "Set positions of the list",
+              bigInfo = "Change things like x, y, width, and items per page (and more)",
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.x",
+                  title = "List X",
+                  tp = "number",
+                  bigInfo = "What should the starting (leftmost) x position of the item list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.y",
+                  title = "List Y",
+                  tp = "number",
+                  bigInfo = "What should the starting (uppermost) y position of the iteml ist be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.w",
+                  title = "List Width",
+                  tp = "number",
+                  bigInfo = "How wide should the item list be?  Take into account the length of your item names!",
+                  min = 27
+                },
+                {
+                  setting = "shop.visual.itemlist.h",
+                  title = "Items/Page",
+                  tp = "number",
+                  bigInfo = "How many items should be displayed per page?",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.itemlist.s",
+                  title = "Spacing",
+                  tp = "number",
+                  bigInfo = "How many spaces between each column (going by length of column name)?",
+                  min = 1
+                }
+              }
+            },
+            {
+              name = "Legend",
+              info = "Change Legend Visuals",
+              bigInfo = "Change things like the bg and text color of the legend.",
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.showLegend",
+                  title = "Show Legend",
+                  tp = "boolean",
+                  bigInfo = "Should the legend above the items be displayed?"
+                },
+                {
+                  setting = "shop.visual.itemlist.legendBG",
+                  title = "BG Color",
+                  tp = "color",
+                  bigInfo = "What color should the background of the legend be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.legendFG",
+                  title = "Text Color",
+                  tp = "color",
+                  bigInfo = "What color should the text of the legend be?"
+                },
+              }
+            },
+            {
+              name = "Buttons",
+              info = "Change Button Visuals",
+              bigInfo = "Change how the buttons look.",
+              subPages = {
+                {
+                  name = "Prev. Page",
+                  info = "Change Previous Visuals",
+                  bigInfo = "Change how the previous page button looks.",
+                  settings = {
+                    {
+                      setting = "shop.visual.buttons.prev.enabled",
+                      title = "Enabled",
+                      tp = "boolean",
+                      bigInfo = "Should this button be displayed?  Set this to false if you don't plan on using more than one page."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.x",
+                      title = "X Pos",
+                      tp = "number",
+                      bigInfo = "Set the position along the X axis the button is located."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.y",
+                      title = "Y Pos",
+                      tp = "number",
+                      bigInfo = "Set the position along the Y axis the button is located."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.w",
+                      title = "Width",
+                      tp = "number",
+                      bigInfo = "Set how wide the button is."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.h",
+                      title = "Height",
+                      tp = "number",
+                      bigInfo = "Set how tall the button is."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.color.bgOn",
+                      title = "BG On Color",
+                      tp = "color",
+                      bigInfo = "Set the background color of the button when it is on."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.color.bgOff",
+                      title = "BG Off Color",
+                      tp = "color",
+                      bigInfo = "Set the background color of the button when it is off."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.color.fgOn",
+                      title = "FG On Color",
+                      tp = "color",
+                      bigInfo = "Set the text color of the button when it is on."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.color.fgOff",
+                      title = "FG Off Color",
+                      tp = "color",
+                      bigInfo = "Set the text color of the button when it is off."
+                    },
+                    {
+                      setting = "shop.visual.buttons.prev.text",
+                      title = "Text",
+                      tp = "string",
+                      bigInfo = "Set the text of this button."
+                    }
+                  }
+                },
+                {
+                  name = "Next Page",
+                  info = "Change Next Visuals",
+                  bigInfo = "Change how the next page button looks.",
+                  settings = {
+                    {
+                      setting = "shop.visual.buttons.next.enabled",
+                      title = "Enabled",
+                      tp = "boolean",
+                      bigInfo = "Should this button be displayed?  Set this to false if you don't plan on using more than one page."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.x",
+                      title = "X Pos",
+                      tp = "number",
+                      bigInfo = "Set the position along the X axis the button is located."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.y",
+                      title = "Y Pos",
+                      tp = "number",
+                      bigInfo = "Set the position along the Y axis the button is located."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.w",
+                      title = "Width",
+                      tp = "number",
+                      bigInfo = "Set how wide the button is."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.h",
+                      title = "Height",
+                      tp = "number",
+                      bigInfo = "Set how tall the button is."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.color.bgOn",
+                      title = "BG On Color",
+                      tp = "color",
+                      bigInfo = "Set the background color of the button when it is on."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.color.bgOff",
+                      title = "BG Off Color",
+                      tp = "color",
+                      bigInfo = "Set the background color of the button when it is off."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.color.fgOn",
+                      title = "FG On Color",
+                      tp = "color",
+                      bigInfo = "Set the text color of the button when it is on."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.color.fgOff",
+                      title = "FG Off Color",
+                      tp = "color",
+                      bigInfo = "Set the text color of the button when it is off."
+                    },
+                    {
+                      setting = "shop.visual.buttons.next.text",
+                      title = "Text",
+                      tp = "string",
+                      bigInfo = "Set the text of this button."
+                    }
+                  }
+                }
+              }
+            },
+            {
+              name = "Normal",
+              info = "Change Normal Colors",
+              bigInfo = "Change colors of the 'normal' list items (items that are not selected or empty).",
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.oddBG",
+                  title = "Odd Item BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the odd items in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.oddFG",
+                  title = "Odd Item FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the odd items in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.evenBG",
+                  title = "Even Item BG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the even items in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.evenFG",
+                  title = "Even Item FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the even items in the list be?"
+                },
+              }
+            },
+            {
+              name = "Empty",
+              info = "Change Empty Colors",
+              bigInfo = "Change colors of items which are out of stock.",
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.emptyOddBG",
+                  title = "Odd Item BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the odd items (with 0 count) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.emptyOddFG",
+                  title = "Odd Item FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the odd items (with 0 count) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.emptyEvenBG",
+                  title = "Even Item BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the even items (with 0 count) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.emptyEvenFG",
+                  title = "Even Item FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the even items (with 0 count) in the list be?"
+                },
+              }
+            },
+            {
+              name = "Selected",
+              info = "Change Selected Colors",
+              bigInfo = "Change colors of items which are selected.",
+              settings = {
+                {
+                  setting = "shop.visual.itemlist.selectOddBG",
+                  title = "Odd Item BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the odd items (selected) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.selectOddFG",
+                  title = "Odd Item FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the odd items (selected) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.selectEvenBG",
+                  title = "Even Item BG",
+                  tp = "color",
+                  bigInfo = "What color should the background of the even items (selected) in the list be?"
+                },
+                {
+                  setting = "shop.visual.itemlist.selectEvenFG",
+                  title = "Even Item FG",
+                  tp = "color",
+                  bigInfo = "What color should the text of the even items (selected) in the list be?"
+                },
+              }
+            }
+          },
+          settings = {
+            {
+              setting = "shop.visual.itemlist.showEmpty",
+              title = "Show Empty",
+              tp = "boolean",
+              bigInfo = "Should items which are out of stock be displayed?"
+            },
+            {
+              setting = "shop.visual.itemlist.decimal",
+              title = "Float",
+              tp = "number",
+              bigInfo = "How many numbers behind the decimal point should be displayed?",
+              min = 0,
+            },
+            {
+              setting = "shop.visual.itemlist.showDomain",
+              title = "Show Domain",
+              tp = "boolean",
+              bigInfo = "Show the item@domain.kst information?"
+            },
+            {
+              setting = "shop.visual.itemlist.shortDomain",
+              title = "Short Domain",
+              tp = "boolean",
+              bigInfo = "If true, show only <this part>@domain.kst, then the domain in the legend."
+            },
+            {
+              setting = "shop.visual.itemlist.deselectTime",
+              title = "Timer",
+              tp = "number",
+              bigInfo = "Set how long it takes for the currently selected item to deselect.",
+              min = 30,
+              max = 300
+            }
+          }
+        },
+        {
+          name = "Info Box",
+          info = "Change the info box",
+          bigInfo = "Change information displayed in the info box, along with it's position and size.",
+          settings = {
+            {
+              setting = "shop.visual.infobox.enabled",
+              title = "Enabled",
+              tp = "boolean",
+              bigInfo = "Should the infobox be displayed?"
+            },
+            {
+              setting = "shop.visual.infobox.x",
+              title = "X Position",
+              tp = "number",
+              bigInfo = "Where should the info box be positioned on the X axis?",
+              min = 1
+            },
+            {
+              setting = "shop.visual.infobox.y",
+              title = "Y Position",
+              tp = "number",
+              bigInfo = "Where should the info box be positioned on the Y axis?",
+              min = 1
+            },
+            {
+              setting = "shop.visual.infobox.w",
+              title = "Width",
+              tp = "number",
+              bigInfo = "How wide should the infobox be?",
+              min = 1
+            },
+            {
+              setting = "shop.visual.infobox.h",
+              title = "Height",
+              tp = "number",
+              bigInfo = "How tall should the infobox be?",
+              min = 1
+            },
+            {
+              setting = "shop.visual.infobox.bg",
+              title = "BG Color",
+              tp = "color",
+              bigInfo = "What should the background color of the info box be?"
+            },
+            {
+              setting = "shop.visual.infobox.fg",
+              title = "Text Color",
+              tp = "color",
+              bigInfo = "What should the text color of the info box be?"
+            },
+            {
+              setting = "shop.visual.infobox.centered",
+              title = "Center Text",
+              tp = "boolean",
+              bigInfo = "Should the text be centered in the box?"
+            },
+            {
+              setting = "shop.visual.infobox.text",
+              title = "All",
+              tp = "longstring",
+              bigInfo = "The table returned by this changes what is shown in the info box."
+            }
+          }
+        },
+        {
+          name = "Info Dots",
+          info = "Change Info Dots",
+          bigInfo = "Change positions and colors of the information dots (dots which blink when certain events occur).",
+          subPages = {
+            {
+              name = "Redraw",
+              info = "Change dot info.",
+              bigInfo = "The redraw dot is a dot that appears on the monitor whenever the screen redraws.",
+              settings = {
+                --{
+                --  setting = "shop.visual.dots.redraw.enabled",
+                --  title = "Enabled",
+                --  tp = "boolean",
+                --  bigInfo = "Should this dot be enabled?"
+                --},
+                {
+                  setting = "shop.visual.dots.redraw.displayTime",
+                  title = "Display Time",
+                  tp = "number",
+                  bigInfo = "How long (in seconds) should this dot be displayed?",
+                  min = 0.5,
+                  max = 5
+                },
+                {
+                  setting = "shop.visual.dots.redraw.x",
+                  title = "X Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the X axis? (left = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.redraw.y",
+                  title = "Y Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the Y axis? (top = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.redraw.color",
+                  title = "Color",
+                  tp = "color",
+                  bigInfo = "What color should this dot be?",
+                },
+                {
+                  setting = "shop.visual.dots.redraw.useCustomOffColor",
+                  title = "Custom?",
+                  tp = "boolean",
+                  bigInfo = "Use a custom 'off' color for this dot (Defaults to the main shop background if off)?"
+                },
+                {
+                  setting = "shop.visual.dots.redraw.offColor",
+                  title = "Off Color",
+                  tp = "color",
+                  bigInfo = "Choose a custom off color (Custom Off Color must be enabled)."
+                }
+              }
+            },
+            {
+              name = "Purchase",
+              info = "Change dot info.",
+              bigInfo = "The purchase dot is a dot that appears on the monitor whenever somebody makes a purchase.",
+              settings = {
+                {
+                  setting = "shop.visual.dots.purchase.enabled",
+                  title = "Enabled",
+                  tp = "boolean",
+                  bigInfo = "Should this dot be enabled?"
+                },
+                {
+                  setting = "shop.visual.dots.purchase.displayTime",
+                  title = "Display Time",
+                  tp = "number",
+                  bigInfo = "How long (in seconds) should this dot be displayed?",
+                  min = 0.1,
+                  max = 5
+                },
+                {
+                  setting = "shop.visual.dots.purchase.x",
+                  title = "X Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the X axis? (left = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.purchase.y",
+                  title = "Y Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the Y axis? (top = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.purchase.color",
+                  title = "Color",
+                  tp = "color",
+                  bigInfo = "What color should this dot be?",
+                },
+                {
+                  setting = "shop.visual.dots.purchase.useCustomOffColor",
+                  title = "Custom?",
+                  tp = "boolean",
+                  bigInfo = "Use a custom 'off' color for this dot (Defaults to the main shop background if off)?"
+                },
+                {
+                  setting = "shop.visual.dots.purchase.offColor",
+                  title = "Off Color",
+                  tp = "color",
+                  bigInfo = "Choose a custom off color (Custom Off Color must be enabled)."
+                }
+              }
+            },
+            {
+              name = "User Input",
+              info = "Change dot info.",
+              bigInfo = "The user input dot is a dot that appears on the monitor whenever a player touches the monitor.",
+              settings = {
+                {
+                  setting = "shop.visual.dots.userInput.enabled",
+                  title = "Enabled",
+                  tp = "boolean",
+                  bigInfo = "Should this dot be enabled?"
+                },
+                {
+                  setting = "shop.visual.dots.userInput.displayTime",
+                  title = "Display Time",
+                  tp = "number",
+                  bigInfo = "How long (in seconds) should this dot be displayed?",
+                  min = 0.1,
+                  max = 5
+                },
+                {
+                  setting = "shop.visual.dots.userInput.x",
+                  title = "X Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the X axis? (left = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.userInput.y",
+                  title = "Y Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the Y axis? (top = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.userInput.color",
+                  title = "Color",
+                  tp = "color",
+                  bigInfo = "What color should this dot be?",
+                },
+                {
+                  setting = "shop.visual.dots.userInput.useCustomOffColor",
+                  title = "Custom?",
+                  tp = "boolean",
+                  bigInfo = "Use a custom 'off' color for this dot (Defaults to the main shop background if off)?"
+                },
+                {
+                  setting = "shop.visual.dots.userInput.offColor",
+                  title = "Off Color",
+                  tp = "color",
+                  bigInfo = "Choose a custom off color (Custom Off Color must be enabled)."
+                }
+              }
+            },
+            {
+              name = "Update",
+              info = "Change dot info",
+              bigInfo = "The update dot is a dot that flashes when an update is available.",
+              settings = {
+                {
+                  setting = "shop.visual.dots.update.enabled",
+                  title = "Enabled",
+                  tp = "boolean",
+                  bigInfo = "Should this dot be enabled?"
+                },
+                {
+                  setting = "shop.visual.dots.update.displayTime",
+                  title = "Display Time",
+                  tp = "number",
+                  bigInfo = "How long (in seconds) should this dot be displayed?",
+                  min = 0.1,
+                  max = 5
+                },
+                {
+                  setting = "shop.visual.dots.update.x",
+                  title = "X Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the X axis? (left = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.update.y",
+                  title = "Y Pos",
+                  tp = "number",
+                  bigInfo = "Where should this dot be positioned along the Y axis? (top = 1)",
+                  min = 1
+                },
+                {
+                  setting = "shop.visual.dots.update.color",
+                  title = "Color",
+                  tp = "color",
+                  bigInfo = "What color should this dot be?",
+                },
+                {
+                  setting = "shop.visual.dots.update.useCustomOffColor",
+                  title = "Custom?",
+                  tp = "boolean",
+                  bigInfo = "Use a custom 'off' color for this dot (Defaults to the main shop background if off)?"
+                },
+                {
+                  setting = "shop.visual.dots.update.offColor",
+                  title = "Off Color",
+                  tp = "color",
+                  bigInfo = "Choose a custom off color (Custom Off Color must be enabled)."
+                }
+              }
+            }
+          }
+        },
+        {
+          name = "Palette",
+          info = "Set Palette Colors",
+          bigInfo = "Set the palette colors (rgb) for each color.",
+          subPages = {
+            {
+              name = "COLOR",
+              info = "Set COLOR RGB",
+              bigInfo = "Set COLOR's Red / Green / Blue values.",
+              settings = {
+                {
+                  setting = "shop.visual.palette.COLOR.hex",
+                  title = "Hex",
+                  tp = "number",
+                  bigInfo = "Set the hex value of COLOR in the shop.",
+                  min = 0,
+                  max = 0xffffff
+                },
+                {
+                  setting = "shop.visual.palette.COLOR.r",
+                  title = "Red",
+                  tp = "number",
+                  bigInfo = "Set COLOR's red value (0-255).",
+                  min = 0,
+                  max = 255
+                },
+                {
+                  setting = "shop.visual.palette.COLOR.g",
+                  title = "Green",
+                  tp = "number",
+                  bigInfo = "Set COLOR's green value (0-255).",
+                  min = 0,
+                  max = 255
+                },
+                {
+                  setting = "shop.visual.palette.COLOR.b",
+                  title = "Blue",
+                  tp = "number",
+                  bigInfo = "Set COLOR's blue value (0-255).",
+                  min = 0,
+                  max = 255
+                }
+              }
+            }
+          }
+        },
+        {
+          name = "BSOD",
+          info = "Change the BSOD",
+          bigInfo = "Change how the Blue-Screen-Of-Death looks.",
+          settings = {
+            {
+              setting = "shop.visual.bsod.bg",
+              title = "BG color",
+              tp = "color",
+              bigInfo = "Set the background color of the bsod."
+            },
+            {
+              setting = "shop.visual.bsod.fg",
+              title = "Text color",
+              tp = "color",
+              bigInfo = "Set the text color of the bsod."
+            },
+            {
+              setting = "shop.visual.bsod.custom",
+              title = "Custom Info",
+              tp = "longstring",
+              bigInfo = "Set the extra information in the bsod."
+            }
+          }
+        }
+      }
+    },
+    {
+      name = "Items",
+      info = "Change item settings.",
+      bigInfo = "Change the way items are collected, stored, and displayed.",
+      settings = {
+        {
+          setting = "shop.items.dispenseFromTurtle",
+          title = "Self?",
+          tp = "boolean",
+          bigInfo = "Should we drop items from the ourself (requires turtle)?"
+        },
+        {
+          setting = "shop.items.dispenseDir",
+          title = "Drop Dir",
+          tp = "string",
+          bigInfo = "What direction should we drop items?"
+        },
+        {
+          setting = "shop.items.dispenseFrom",
+          title = "Drop From",
+          tp = "string",
+          bigInfo = "What peripheral should we drop items from (Only effective if Turtle? is false)?"
+        },
+      }
+    },
+    {
+      name = "Krist",
+      info = "Change Krist Info",
+      bigInfo = "Change things like your krist address, domain, and more.",
+      settings = {
+        {
+          setting = "shop.krist.address",
+          title = "Address",
+          tp = "string",
+          bigInfo = "What is the krist address of this shop (Will autoset when setting wallet key)?"
+        },
+        {
+          setting = "shop.krist.hash",
+          title = "Wallet Key",
+          tp = "password",
+          store = "kristwallet",
+          bigInfo = "What is the pkey of your wallet?  This will be transformed into and stored as a Kristwallet hash."
+        },
+        {
+          setting = "shop.krist.domain",
+          title = "Domain",
+          tp = "string",
+          bigInfo = "What is the domain of your wallet (x@<this part>.kst), excluding the '.kst'? (Not required)"
+        },
+        {
+          setting = "shop.krist.doPurchaseForwarding",
+          title = "Do Forwards",
+          tp = "boolean",
+          bigInfo = "Should the shop forward krist from purchases to another address?"
+        },
+        {
+          setting = "shop.krist.purchaseForwardingAddress",
+          title = "Forward Addr",
+          tp = "string",
+          bigInfo = "Address to forward funds from purchases to, if Do Forwards is enabled."
+        },
+        {
+          setting = "shop.krist.purchaseForwardingMeta",
+          title = "Forward Meta",
+          tp = "longstring",
+          bigInfo = "Metadata of the purchase forwarding transaction (Return a string)"
+        },
+        {
+          setting = "shop.krist.endpoint",
+          title = "End-Point",
+          tp = "string",
+          bigInfo = "DO NOT CHANGE THIS IF YOU DON'T KNOW WHAT IT DOES! Sets the krist end-point the shop will use."
+        }
+      }
+    },
+    {
+      name = "Logger",
+      info = "Change Logger Settings",
+      bigInfo = "Change how the logger logs data.",
+      settings = {
+        {
+          setting = "shop.logger.saveold",
+          title = "Save Old",
+          tp = "boolean",
+          bigInfo = "Should the shop save old logs? Keep this disabled unless debugging."
+        },
+        {
+          setting = "shop.logger.level",
+          title = "Log Level",
+          tp = "number",
+          bigInfo = "1: Info/Warn/Error\n2: Warn/Error\n3: Error only",
+          min = 1,
+          max = 3
+        }
+      }
+    }
+  }
+}

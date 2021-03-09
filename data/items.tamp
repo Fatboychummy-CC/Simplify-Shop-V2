@@ -1,0 +1,42 @@
+{
+  name = "Items",
+  info = "Do stuff with items",
+  bigInfo = "",
+  platform = "all",
+  colors = {
+    bg = {
+      main = "black",
+    },
+    fg = {
+      main = "white",
+      title = "yellow",
+      info = "lightGray",
+      listInfo = "gray",
+      listTitle = "white",
+      bigInfo = "lightGray",
+      selector = "yellow",
+      arrowDisabled = "gray",
+      arrowEnabled = "white",
+      input = "yellow",
+      error = "red",
+    }
+  },
+  selections = {
+    {
+      title = "Add Items",
+      info = "Add new items to sell.",
+      bigInfo = "Select this to add new items to the shop."
+    },
+    {
+      title = "Edit Items",
+      info = "Edit items in the shop.",
+      bigInfo = "Select this to edit items you are already selling in the shop."
+    },
+    {
+      title = "Remove Items",
+      info = "Remove items in the shop.",
+      bigInfo = "Select this to remove items that you are selling in your shop."
+    }
+  },
+  final = "Cancel"
+}

@@ -1,0 +1,35 @@
+{
+  name = "Updates",
+  info = "Select updates to install",
+  bigInfo = "",
+  platform = "all",
+  colors = {
+    bg = {
+      main = "black",
+    },
+    fg = {
+      main = "white",
+      title = "yellow",
+      info = "lightGray",
+      listInfo = "gray",
+      listTitle = "white",
+      bigInfo = "lightGray",
+      selector = "yellow",
+      arrowDisabled = "gray",
+      arrowEnabled = "white",
+      input = "yellow",
+      error = "red",
+    }
+  },
+  selections = {
+    {
+      title = "Update",
+      info = "Update and reboot.",
+      bigInfo = "Perform selected updates and then reboot the system."
+    }
+  },
+  settings = {
+    location = "/data/.temp"
+  },
+  final = "Cancel"
+}
