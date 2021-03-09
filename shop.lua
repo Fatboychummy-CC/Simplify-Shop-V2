@@ -280,8 +280,8 @@ local function checkUpdates()
   local function checkSingleUpdate(tData)
     local sLocalHash = md5.sum(readFile(tData.name))
     -- if a provider is down, don't fail the update check.
-    local bOk, tFileData = pcall(getFile, tData.location)
-    if not bOk then return false end
+    local bOk, tFileData = pcall(getFile, tData.location:gsub("__BRANCH__", sBranch))
+    if not bOk then return true end
     local sRemoteHash = md5.sum(tFileData)
 
     if sLocalHash ~= sRemoteHash then
