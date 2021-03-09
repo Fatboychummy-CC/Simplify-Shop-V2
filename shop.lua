@@ -1583,7 +1583,10 @@ local function options()
         return true, "Not a monitor."
       end
     end
-    tDict["shop.visual.monitorScale"] = tDict["shop.monitor"]
+    tDict["shop.visual.monitorScale"] = function()
+      bFrameInitialized = false
+      tFrame = nil
+    end
     tDict["shop.krist.hash"] = function()
       if NewVal == "" then
         settings.set("shop.krist.address", "kxxxxxxxx")
