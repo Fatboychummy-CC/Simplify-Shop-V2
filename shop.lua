@@ -964,6 +964,10 @@ return string.format(
   defineDefault("shop.krist.doPurchaseForwarding",      false)
   defineDefault("shop.krist.purchaseForwardingAddress", "")
   defineDefault("shop.krist.endpoint",                  KristWrap.getDefaultEndPoint())
+  defineDefault("shop.krist.purchaseForwardingMeta",    "forwardmeta.lua")
+  defineTampererFile("forwardmeta.lua", [[return string.format("Forwarded purchase: %s bought %d %s for %d (%.2f per unit, with %d refunded).", from, itemsGiven, item.displayName, value, item.price, refunded)
+  ]])
+
 
   -- -- -- Logger -- -- --
   defineDefault("shop.logger.level", 1) -- TODO: Set this to 3 once prod
@@ -2148,6 +2152,43 @@ local function shop(bUpdates)
 
         log("Dispenser", string.format("Dispensed %d, Requested %d", nDispensed, nCount), nDispensed == nCount and 1 or 3)
       end
+
+      local function Forward(tItem, nValue, nRefund, tFrom, nItemsGiven, bIsDonation)
+        if does("shop.krist.doPurchaseForwarding", "Enable Krist Purchase Forwarding") then
+          local sTo = does("shop.krist.purchaseForwardingAddress", "Krist Purchase Forwarding Address")
+          local sMeta = does("shop.krist.purchaseForwardingMeta", "Krist Purchase Forwarding Metadata")
+          local bOk, sText = pcall(UserCode,
+            readFile(
+              fs.combine(
+                sAbsoluteDir,
+                fs.combine(
+                  ".TampererLongData",
+                  settings.get("shop.krist.purchaseForwardingMeta")
+                )
+              )
+            ),
+            "Purchase Forwarding Metadata",
+            {
+              _G = nil,
+              math = math,
+              string = string,
+              table = table,
+              item = tItem,
+              itemsGiven = nItemsGiven,
+              value = nValue,
+              refunded = nRefund,
+              from = tFrom,
+              isDonation = bIsDonation,
+              krist = {
+                address = does("shop.krist.address", "Krist Address"),
+                domain = does("shop.krist.domain", "Krist Domain")
+              }
+            },
+            "string"
+          )
+
+          KristWrap.makeTransaction(sTo, nValue - nRefund, sText)
+        end
       end
 
       local function Purchase(tItem, tMeta, sFrom, sTo, nValue)
@@ -2188,7 +2229,12 @@ local function shop(bUpdates)
               string.format("message=%s, here's your change!", sOverageReason)
             )
           end
+
+          -- Dispense the item
           dispense(tItem, nItemsToGrab)
+
+          -- If purchase forwarding enabled, forward the krist earned to the specified address.
+          Forward(tItem, nValue, nOver, sFrom, nItemsToGrab, false)
         end
       end
 
@@ -2207,6 +2253,7 @@ local function shop(bUpdates)
             if tMeta.donate or tMeta.donation or IsIn(tMeta.ArrayMeta, "donate") or IsIn(tMeta.ArrayMeta, "donation") then
               -- Donation, do nothing.
               plog.info(string.format("Received donation of %d kst.", nValue))
+              Forward({displayName = "Donation", price = nValue}, nValue, 0, sFrom, 1, true)
             else
               -- Not a donation, must be a purchase.
               if tMeta.domain and tMeta.localname then
