@@ -7,11 +7,11 @@ local expect = require("cc.expect").expect
 local sAbsoluteDir = shell.dir()
 local tFiles = {
   self = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/shop.lua",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/__BRANCH__/shop.lua",
     name = shell.getRunningProgram()
   },
   Storage = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/modules/Storage.lua",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/__BRANCH__/modules/Storage.lua",
     name = fs.combine(sAbsoluteDir, "modules/Storage.lua")
   },
   argparse = {
@@ -47,21 +47,25 @@ local tFiles = {
     name = fs.combine(sAbsoluteDir, "modules/KristWrap.lua")
   },
   MainMenu = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/data/main.tamp",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/__BRANCH__/data/main.tamp",
     name = fs.combine(sAbsoluteDir, "data/main.tamp")
   },
   OptionsMenu = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/data/options.tamp",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/__BRANCH__/data/options.tamp",
     name = fs.combine(sAbsoluteDir, "data/options.tamp")
   },
   UpdaterMenu = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/data/updates.tamp",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/__BRANCH__/data/updates.tamp",
     name = fs.combine(sAbsoluteDir, "data/updates.tamp")
   },
   ItemsMenu = {
-    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/RemakeAgainOrSomething/data/items.tamp",
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/__BRANCH__/data/items.tamp",
     name = fs.combine(sAbsoluteDir, "data/items.tamp")
   }
+}
+local tBranches = {
+  "master",
+  "development"
 }
 
 -- Reads a local file and returns the data in a string
@@ -123,10 +127,29 @@ local function checkAndDownload(sFileName, sLocation)
   end
 end
 
+settings.load(".shopStartup")
+if not settings.get("shop.branch") then
+  local nSelected
+  repeat
+    term.clear()
+    term.setCursorPos(1, 1)
+    print("Choose a branch:")
+    for i = 1, #tBranches do
+      print(i, tBranches[i])
+    end
+    nSelected = tonumber(io.read())
+  until nSelected and tBranches[nSelected]
+  settings.set("shop.branch", tBranches[nSelected])
+  settings.save(".shopStartup")
+end
+
+local sBranch = settings.get("shop.branch")
+settings.clear()
+
 -- check and download dependencies
 for sModule, tData in pairs(tFiles) do
   if sModule ~= "self" then
-    checkAndDownload(tData.name, tData.location)
+    checkAndDownload(tData.name, tData.location:gsub("__BRANCH__", sBranch))
   end
 end
 
