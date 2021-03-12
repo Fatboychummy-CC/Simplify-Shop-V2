@@ -4,3 +4,12 @@ Tamperer.lua
 logs
 md5.lua
 startup.lua
+argparse.lua
+json.lua
+KristWrap.lua
+sha256.lua
+cache
+.TampererLongData
+d.lua
+test.lua
+Themes.lua

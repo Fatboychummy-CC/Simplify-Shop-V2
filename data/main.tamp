@@ -41,6 +41,11 @@
       title = "Items",
       info = "Add/Remove/Edit Items",
       bigInfo = "Add, remove, or edit items you wish to sell at your shop.",
+    },
+    {
+      title = "Themes",
+      info = "Change shop themes/layout",
+      bigInfo = "Change the shop's theme (colors) and layout (positioning) quickly and easily."
     }
   },
   settings = {

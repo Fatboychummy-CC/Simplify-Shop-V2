@@ -46,6 +46,10 @@ local tFiles = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/KristWrap/master/minified.lua",
     name = fs.combine(sAbsoluteDir, "modules/KristWrap.lua")
   },
+  Themes = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-V2-Themes/main/Themes.lua",
+    name = fs.combine(sAbsoluteDir, "modules/Themes.lua")
+  },
   MainMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/__BRANCH__/data/main.tamp",
     name = fs.combine(sAbsoluteDir, "data/main.tamp")
@@ -61,6 +65,10 @@ local tFiles = {
   ItemsMenu = {
     location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/__BRANCH__/data/items.tamp",
     name = fs.combine(sAbsoluteDir, "data/items.tamp")
+  },
+  ThemeMenu = {
+    location = "https://raw.githubusercontent.com/Fatboychummy-CC/Simplify-Shop-V2/__BRANCH__/data/themeorlayout.tamp",
+    name = fs.combine(sAbsoluteDir, "data/themeorlayout.tamp")
   }
 }
 local tBranches = {
@@ -203,6 +211,7 @@ local Logger    = require "Logger"
 local json      = require "json"
 local KristWrap = require "KristWrap"
 local Storage   = require "Storage"
+local Themes    = require "Themes"
 local log  = Logger("Shop")
 local plog = Logger("Purchase")
 local sCacheLocation = "data/cache"
@@ -1035,6 +1044,20 @@ local function Bawx(tTo, x, y, w, h, bg, fg)
 
 end
 
+local function pleaseWait(reason)
+  term.setBackgroundColor(colors.black)
+  term.setTextColor(colors.white)
+  term.clear()
+  term.setBackgroundColor(colors.blue)
+  term.setCursorPos(1, 1)
+  term.write("Please wait..." .. string.rep(' ', 100))
+  term.setCursorPos(1, 2)
+  term.write(string.rep(' ', 100))
+  term.setBackgroundColor(colors.black)
+  term.setCursorPos(1, 4)
+  print(reason)
+end
+
 -- cut a string into multiple strings
 local function cut(s, iMax)
   local t = {n = 0}
@@ -1588,6 +1611,7 @@ local function options()
       tFrame = nil
     end
     tDict["shop.krist.hash"] = function()
+      pleaseWait("Validating with Krist endpoint.")
       if NewVal == "" then
         settings.set("shop.krist.address", "kxxxxxxxx")
       else
@@ -1601,6 +1625,9 @@ local function options()
     tDict["shop.krist.address"] = function()
       local hash = settings.get("shop.krist.hash")
       local sAddress, err
+
+      pleaseWait("Validating with Krist endpoint.")
+
       if hash then
         sAddress, err = KristWrap.getV2Address(settings.get("shop.krist.hash"))
         if not sAddress then
@@ -1674,6 +1701,8 @@ local function options()
     end
     tDict["shop.krist.domain"] = function()
       if NewVal ~= "" then
+        pleaseWait("Validating with Krist endpoint.")
+
         local tDomainInfo, sErr = KristWrap.getName(NewVal)
         if tDomainInfo and tDomainInfo.ok then
           if tDomainInfo.name and tDomainInfo.name.owner ~= settings.get("shop.krist.address") then
@@ -1818,6 +1847,90 @@ local function options()
   Tamperer.display(tTamp, settingHandler)
 end
 
+local function themeLoadOrSave()
+  local tTamp = dCopy(tTampBase)
+
+end
+
+local function layoutSave()
+  local layout = Themes.createLayout()
+  layout:SaveToFile("/OUTPUT.FUCK")
+end
+
+local function layoutLoad()
+  local tTamp = dCopy(tTampBase)
+  tTamp.name = "Save/Load"
+  tTamp.info = 'Save or load a layout.'
+  tTamp.final = "Exit"
+  tTamp.subPages = {
+    {
+      name = "Preview",
+      info = "Preview Layouts",
+      bigInfo = "Preview new layouts without overriding your current layout.",
+      final = "Go back.",
+      settings = {}
+    },
+    {
+      name = "Apply",
+      info = "Apply Layouts",
+      bigInfo = "Apply new layouts to the shop.",
+      final = "Go back.",
+      settings = {}
+    }
+  }
+
+  pleaseWait("Grabbing layouts.")
+
+  local layoutList = Themes.getLayouts()
+
+  local result = parallel.waitForAny(function() Tamperer.display(tTamp) end, function()
+    while true do
+      local e, v = os.pullEvent("Bruh")
+      term.clear()
+      term.setCursorPos(1, 1)
+      print(e, v)
+    end
+  end)
+end
+
+local function layoutLoadOrSave()
+  local tTamp = dCopy(tTampBase)
+  tTamp.name = "Save/Load"
+  tTamp.info = 'Save or load a layout.'
+  tTamp.final = "Exit"
+  tTamp.selections = {}
+  tTamp.selections[1] = {
+    title = "Save",
+    info = "Save current layout",
+    bigInfo = "Save the current layout to a file on the disk."
+  }
+  tTamp.selections[2] = {
+    title = "Retrieve",
+    info = "Find a new layout",
+    bigInfo = "Load a layout from the repository to be used in the shop."
+  }
+
+  repeat
+    local result = Tamperer.display(tTamp)
+    if result == 1 then
+      layoutSave()
+    elseif result == 2 then
+      layoutLoad()
+    end
+  until result == 3 or result == 1
+end
+
+local function theme()
+  repeat
+    local result = Tamperer.displayFile(tFiles.ThemeMenu.name)
+    if result == 1 then
+      themeLoadOrSave()
+    elseif result == 2 then
+      layoutLoadOrSave()
+    end
+  until result == 3
+end
+
 -- run the updater page
 local function updater(tUpdates)
   local fLoad, err = load("return " .. readFile(tFiles.UpdaterMenu.name))
@@ -1918,6 +2031,9 @@ local function mainMenu(bGetUpdates)
         -- Presented as a seperate page rather than a subpage to allow
         items()
       elseif iSelection == 5 then
+        -- theme/layout menu
+        theme()
+      elseif iSelection == 6 then
         -- exit
         return false
       end

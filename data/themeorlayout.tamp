@@ -1,0 +1,41 @@
+{
+  name = "Main Menu",
+  info = "Select an option",
+  bigInfo = "",
+  platform = "all",
+  colors = {
+    bg = {
+      main = "black",
+    },
+    fg = {
+      main = "white",
+      title = "yellow",
+      info = "lightGray",
+      listInfo = "gray",
+      listTitle = "white",
+      bigInfo = "lightGray",
+      selector = "yellow",
+      arrowDisabled = "gray",
+      arrowEnabled = "white",
+      input = "yellow",
+      error = "red",
+    }
+  },
+  selections = {
+    {
+      title = "Theme",
+      info = "Change shop theme.",
+      bigInfo = "Select this to connect to the themes/layouts repository and select a theme to use."
+    },
+    {
+      title = "Layout",
+      info = "Change shop layout.",
+      bigInfo = "Select this to connect to the themes/layouts repository and select a layout to use."
+    }
+  },
+  settings = {
+    location = ".shopSettings",
+  },
+  subPages = {},
+  final = "Exit"
+}
