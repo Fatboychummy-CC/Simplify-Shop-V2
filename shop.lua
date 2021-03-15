@@ -1124,10 +1124,12 @@ local function line(s, iMax)
   end
 end
 
-local function initMonitor()
+local function initMonitor(bDontLoad)
   if not bFrameInitialized then
     settings.clear()
-    settings.load(".shopSettings")
+    if not bDontLoad then
+      settings.load(".shopSettings")
+    end
     local sMonName = does("shop.monitor", "Monitor Peripheral Name")
     if not peripheral.isPresent(sMonName) then
       redrawError(string.format("Peripheral '%s' does not exist.", sMonName))
@@ -1509,9 +1511,11 @@ local function drawButtons(tItems, iPage)
   buttons.next(bNext)
 end
 
-local function redraw(tItems, iPage, tSelections, bOverride)
+local function redraw(tItems, iPage, tSelections, bOverride, bDontInit)
   os.queueEvent("redraw")
-  initMonitor()
+  if not bDontInit then
+    initMonitor()
+  end
 
   local cBGColor = does("shop.visual.mainBG", "Main Background Color")
   tFrame.setBackgroundColor(cBGColor)
@@ -1587,6 +1591,30 @@ local function bsod(sErr)
     end
     tFrame.PushBuffer()
   end
+end
+
+local function previewRedraw()
+  initDots()
+  initButtons()
+  bFrameInitialized = false
+  initMonitor(true)
+
+  redraw(
+    {
+      {stackSize = 64, count = 1, localname = "odd", displayName = "Odd", price = 1.2345678901234567890, damage = 0, show = true},
+      {stackSize = 64, count = 1, localname = "even", displayName = "Even", price = 1.2345678901234567890, damage = 0, show = true},
+      {stackSize = 64, count = 0, localname = "odde", displayName = "Odd Empty", price = 1.2345678901234567890, damage = 0, show = true},
+      {stackSize = 64, count = 0, localname = "evne", displayName = "Even Empty", price = 1.2345678901234567890, damage = 0, show = true},
+      {stackSize = 64, count = 1, localname = "odds", displayName = "Odd Selected", price = 1.2345678901234567890, damage = 0, show = true},
+      {stackSize = 64, count = 1, localname = "evns", displayName = "Even Selected", price = 1.2345678901234567890, damage = 0, show = true},
+    },
+    1,
+    {5, 6},
+    true,
+    true
+  )
+
+  bFrameInitialized = false
 end
 
 -- run the options page
@@ -1868,27 +1896,82 @@ local function layoutLoad()
       info = "Preview Layouts",
       bigInfo = "Preview new layouts without overriding your current layout.",
       final = "Go back.",
-      settings = {}
+      subPages = {}
     },
     {
       name = "Apply",
       info = "Apply Layouts",
       bigInfo = "Apply new layouts to the shop.",
       final = "Go back.",
-      settings = {}
+      subPages = {}
     }
   }
 
   pleaseWait("Grabbing layouts.")
+  local layouts = Themes.getLayouts()
 
-  local layoutList = Themes.getLayouts()
+  pleaseWait("Collecting layouts.")
+
+  local function dualDoot(tTamp, category, subcategories)
+    for i = 1, 2 do
+      tTamp.subPages[i].subPages[#tTamp.subPages[i].subPages + 1] = {
+        name = category,
+        info = string.format("%s", category),
+        bigInfo = string.format("Look through the category %s", category),
+        final = "Go back.",
+        subPages = {}
+      }
+
+      local x = tTamp.subPages[i].subPages[#tTamp.subPages[i].subPages]
+      local sortedSubcategories = {}
+      local j = 1
+      for k, _ in pairs(subcategories) do
+        sortedSubcategories[#sortedSubcategories + 1] = k
+      end
+      table.sort(sortedSubcategories)
+
+      for o = 1, #sortedSubcategories do
+        local subcategory, items = sortedSubcategories[o], subcategories[sortedSubcategories[o]].items
+        table.sort(items)
+
+        x.subPages[j] = {
+          name = subcategory,
+          info = string.format("%s", subcategory),
+          bigInfo = string.format("Look through the subcategory %s", subcategory),
+          final = "Go back.",
+          settings = {}
+        }
+
+        for k, item in ipairs(items) do
+          x.subPages[j].settings[k] = {
+            setting = "",
+            title = item,
+            tp = "event",
+            event = "PreviewLayout",
+            eventArgs = {category, subcategory, item},
+            bigInfo = string.format("Preview the layout %s", item)
+          }
+        end
+
+        j = j + 1
+      end
+    end
+  end
+
+  for category, subcategories in pairs(layouts) do
+    dualDoot(tTamp, category, subcategories)
+  end
 
   local result = parallel.waitForAny(function() Tamperer.display(tTamp) end, function()
     while true do
-      local e, v = os.pullEvent("Bruh")
-      term.clear()
-      term.setCursorPos(1, 1)
-      print(e, v)
+      local e, category, subcategory, name = os.pullEvent("PreviewLayout")
+      pleaseWait("Downloading layout.")
+      settings.clear()
+      local layout = Themes.getLayout(category, subcategory, name)
+      layout:InstallToSettings()
+      previewRedraw()
+      settings.clear()
+      settings.load(".shopSettings")
     end
   end)
 end
