@@ -245,6 +245,9 @@ local tTampBase = {
       error = "red",
     }
   },
+  settings = {
+    location = ".shopSettings"
+  },
   final = "Confirm"
 }
 
@@ -1126,8 +1129,8 @@ end
 
 local function initMonitor(bDontLoad)
   if not bFrameInitialized then
-    settings.clear()
     if not bDontLoad then
+      settings.clear()
       settings.load(".shopSettings")
     end
     local sMonName = does("shop.monitor", "Monitor Peripheral Name")
@@ -2620,6 +2623,7 @@ local function main()
                 error = "red",
               }
             },
+            settings = {location = ".shopSettings"},
             platform = "all",
             final = "Stop"
           })
