@@ -1360,8 +1360,23 @@ local function drawItemList(tItems, iPage, tSelections, bOverride)
   -- determine the item to grab
   local iCurrent = (iPage - 1) * iHList
 
+  -- add spacers to preview.
+  if bOverride and iHList > 6 then
+    for i = 1, iHList - 6 do
+      tItems[#tItems + 1] = {
+        count = 0,
+        displayName = "Spacer",
+        price = i,
+        localname = "test",
+        show = true
+      }
+    end
+    term.clear()
+    term.setCursorPos(1, 1)
+  end
+
   -- draw item list
-  for i = 1, bOverride and 6 or iHList do
+  for i = 1, bOverride and (6 + (iHList > 6 and iHList - 6 or 0)) or iHList do
     local iPos = getNext(tItems, iCurrent + i, bShowEmpty)
     if iPos <= #tItems then
       local tCItem = tItems[iPos]
