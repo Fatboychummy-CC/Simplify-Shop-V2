@@ -1930,7 +1930,7 @@ local function layoutLoad()
 
   pleaseWait("Collecting layouts.")
 
-  local function dualDoot(tTamp, category, subcategories)
+  local function dualDoot(tTamp, category, subcategories, event1, event2, pushType1, pushType2)
     for i = 1, 2 do
       tTamp.subPages[i].subPages[#tTamp.subPages[i].subPages + 1] = {
         name = category,
@@ -1965,9 +1965,9 @@ local function layoutLoad()
             setting = "",
             title = item,
             tp = "event",
-            event = "PreviewLayout",
+            event = i == 1 and event1 or event2,
             eventArgs = {category, subcategory, item},
-            bigInfo = string.format("Preview the layout %s", item)
+            bigInfo = string.format("%s the layout %s", i == 1 and pushType1 or pushType2, item)
           }
         end
 
@@ -1977,19 +1977,27 @@ local function layoutLoad()
   end
 
   for category, subcategories in pairs(layouts) do
-    dualDoot(tTamp, category, subcategories)
+    dualDoot(tTamp, category, subcategories, "PreviewLayout", "GetLayout", "Preview", "Install")
   end
 
   local result = parallel.waitForAny(function() Tamperer.display(tTamp) end, function()
     while true do
-      local e, category, subcategory, name = os.pullEvent("PreviewLayout")
-      pleaseWait("Downloading layout.")
-      settings.clear()
-      local layout = Themes.getLayout(category, subcategory, name)
-      layout:InstallToSettings()
-      previewRedraw()
-      settings.clear()
-      settings.load(".shopSettings")
+      local e, category, subcategory, name = os.pullEvent()
+      if e == "PreviewLayout" then
+        pleaseWait("Downloading layout.")
+        settings.clear()
+        local layout = Themes.getLayout(category, subcategory, name)
+        layout:InstallToSettings()
+        previewRedraw()
+        settings.clear()
+        settings.load(".shopSettings")
+      elseif e == "GetLayout" then
+        pleaseWait("Downloading layout.")
+        local layout = Themes.getLayout(category, subcategory, name)
+        layout:InstallToSettings()
+        previewRedraw()
+        settings.save(".shopSettings")
+      end
     end
   end)
 end
