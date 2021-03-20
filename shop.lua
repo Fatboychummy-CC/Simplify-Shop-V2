@@ -2624,6 +2624,10 @@ local function main()
           bTerminate = shop(bUpdates)
         end,
         function()
+          pleaseWait("Authorizing with Krist.")
+          KristWrap.Initialized:Wait()
+          pleaseWait("Waiting for item collection.")
+          os.pullEvent("_redraw")
           Tamperer.display({
             name = "Shop running",
             info = "",
