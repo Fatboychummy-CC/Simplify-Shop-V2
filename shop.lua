@@ -1233,7 +1233,7 @@ local function initButtons()
           tFrame.setCursorPos(t.x, t.y + y)
           tFrame.write(string.rep(' ', t.w))
         end
-        tFrame.setCursorPos(t.x + math.floor(t.w / 2 + 0.5) - math.floor(#t.text / 2 + 0.5), t.y + math.ceil(t.h / 2))
+        tFrame.setCursorPos(t.x + math.floor(t.w / 2 + 0.5) - math.floor(#t.text / 2 + 0.5), t.y + math.floor(t.h / 2))
         tFrame.write(t.text)
         t.state = b
       end
@@ -1631,6 +1631,13 @@ local function previewRedraw()
     true,
     true
   )
+  for k, v in pairs(dots) do
+    v(true)
+  end
+  for k, v in pairs(buttons) do
+    v(true)
+  end
+  tFrame.PushBuffer()
 
   bFrameInitialized = false
 end
