@@ -70,8 +70,8 @@ function inventory.getInventories()
   return {}
 end
 
-function inventory.cacheItems()
-
+function inventory.getVersion()
+  return "unknown"
 end
 
 return inventory

@@ -115,5 +115,9 @@ return function(inventory)
     return invs:Clean()
   end
 
+  function inv_1_13.getVersion()
+    return "1.13+"
+  end
+
   return inv_1_13
 end
