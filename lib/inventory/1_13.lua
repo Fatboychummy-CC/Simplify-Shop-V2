@@ -50,16 +50,39 @@ return function(inventory)
 
     local funcs = QIT()
     local pushed = 0
+    local attempting = 0
+    -- for each inventory
     for _, inv in ipairs(invs) do
+      -- insert a function
       funcs:Insert(function()
-        local list = inv.list()
+        local list = inv.list() -- list what is inside the inventory
 
+        -- for each item in the inventory
         for slot, slot_info in pairs(list) do
+          -- stop if all items are sent
           if amount <= 0 then return end
+
+          -- if our item is what we need
           if combined == combine(slot_info) then
-            local _pushed = inv.pushItems(to, slot, amount)
+            -- wait until not attempting to move items
+            while attempting >= amount and amount > 0 do sleep() end
+            -- if no more items left, exit
+            if amount <= 0 then return end
+
+            -- state how many items this is attempting to move
+            local attempting_to_add = math.min(slot_info.count, amount - attempting)
+            -- add that to our total attempting to move
+            attempting = attempting + attempting_to_add
+
+            -- then actually attempt to move it
+            local _pushed = inv.pushItems(to, slot, attempting_to_add)
+
+            -- after moving, update how much is left to do and how much was pushed.
             amount = amount - _pushed
             pushed = pushed + _pushed
+
+            -- and remove the amount we have attempted to move
+            attempting = attempting - attempting_to_add
           end
         end
       end)
