@@ -23,11 +23,13 @@ return function()
     ---@param self QIT
     ---@return any value The value removed.
     Remove = function(self)
-      local value = self[self.n]
-      self[self.n] = nil
-      self.n = self.n - 1
+      if self.n > 0 then
+        local value = self[self.n]
+        self[self.n] = nil
+        self.n = self.n - 1
 
-      return value
+        return value
+      end
     end,
 
     --- Remove a value from the beginning of the QIT.
@@ -35,6 +37,10 @@ return function()
     ---@return any value The value removed.
     Drop = function(self)
       local value = table.remove(self, 1)
+
+      if value ~= nil then
+        self.n = self.n - 1
+      end
 
       return value
     end,
