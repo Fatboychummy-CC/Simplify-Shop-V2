@@ -49,10 +49,10 @@ end
 --- Move items from any inventory to specific inventory.
 ---@virtual to be implemented by child shims.
 ---@param to string|peripheral The peripheral (or peripheral name) to send items to.
----@param item string The item ID of the item to be sent.
+---@param item_info item The item ID of the item to be sent.
 ---@param amount integer The amount of items to send.
 ---@return integer amount The amount of items actually sent.
-function inventory.moveItems(to, item, amount)
+function inventory.moveItems(to, item_info, amount)
   error("moveItems not implemented for this version.", 2)
   return 0
 end

@@ -36,15 +36,17 @@ return function(inventory)
 
   --- Move items from any inventory to specific inventory.
   ---@param to string|peripheral The peripheral (or peripheral name) to send items to.
-  ---@param item string The item ID of the item to be sent.
+  ---@param item_info item The item ID of the item to be sent.
   ---@param amount integer The amount of items to send.
   ---@return integer amount The amount of items actually sent.
-  function inv_1_13.moveItems(to, item, amount)
+  function inv_1_13.moveItems(to, item_info, amount)
     local invs = inv_1_13.getInventories()
 
     if type(to) == "table" then
       to = peripheral.getName(to)
     end
+
+    local combined = combine(item_info)
 
     local funcs = QIT()
     local pushed = 0
@@ -52,9 +54,9 @@ return function(inventory)
       funcs:Insert(function()
         local list = inv.list()
 
-        for slot, item_info in pairs(list) do
+        for slot, slot_info in pairs(list) do
           if amount <= 0 then return end
-          if item_info.name == item then
+          if combined == combine(slot_info) then
             local _pushed = inv.pushItems(to, slot, amount)
             amount = amount - _pushed
             pushed = pushed + _pushed
