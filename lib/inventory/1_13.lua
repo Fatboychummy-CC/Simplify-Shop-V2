@@ -140,6 +140,38 @@ return function(inventory)
     return invs:Clean()
   end
 
+  --- Get a list of all item types in the chests.
+  ---@return item[] items The items found
+  function inventory.getItems()
+    local invs = inv_1_13.getInventories()
+    local items = QIT()
+    local item_detail = {}
+
+    local stage1 = QIT()
+    local stage2 = QIT()
+    for _, inv in ipairs(invs) do
+      stage1:Insert(function()
+        local list = inv.list()
+
+        for slot in pairs(list) do
+          stage2:Insert(function()
+            local details = inv.getItemDetail(slot)
+            item_detail[details.name] = { name = details.name, display_name = details.displayName }
+          end)
+        end
+      end)
+    end
+
+    parallel.waitForAll(table.unpack(stage1))
+    parallel.waitForAll(table.unpack(stage2))
+
+    for _, v in pairs(item_detail) do
+      items:Insert(v)
+    end
+
+    return items:Clean()
+  end
+
   function inv_1_13.getVersion()
     return "1.13+"
   end

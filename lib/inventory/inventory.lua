@@ -70,6 +70,13 @@ function inventory.getInventories()
   return {}
 end
 
+--- Get a list of all item types in the chests.
+---@return item[] items The items found
+function inventory.getItems()
+  error("getItems not implemented for this version.", 2)
+  return {}
+end
+
 function inventory.getVersion()
   return "unknown"
 end
