@@ -2,6 +2,8 @@
 local module = {}
 
 local expect = require "cc.expect".expect
+local logging = require "logging"
+local module_context = logging.createContext("PLUGIN_RUNNER", colors.black, colors.blue)
 
 local callbacks = {}
 local running_coroutines = { n = 0 }
@@ -32,11 +34,12 @@ local function single_run_single_coroutine(co, ...)
 
       if co.status == "dead" then
         remove_from_tracked(co.co)
+        module_context.debug("A coroutine has stopped and was removed (1).")
         return true
       end
     else
       remove_from_tracked(co.co)
-      printError("Coroutine threw an error:", filter)
+      module_context.error("Coroutine threw an error: %s", filter)
       return true
     end
 
@@ -45,6 +48,7 @@ local function single_run_single_coroutine(co, ...)
 
   -- coroutine status is "not good"
   remove_from_tracked(co.co)
+  module_context.debug("A coroutine has stopped and was removed (2).")
 
   return true
 end
@@ -89,6 +93,8 @@ local function track_coroutine(co, parameters)
 
   tracked_n1 = true
 
+  module_context.debug("Tracking a coroutine.")
+
   single_run_single_coroutine(coroutine_info, table.unpack(parameters, 1, parameters.n))
 end
 
@@ -102,12 +108,12 @@ end
 --- Handle events and queue coroutines as needed.
 function module.run()
   parallel.waitForAny(coroutines, function()
-    print("Initting")
+    module_context.info("Initializing plugins.")
     for _, callback in pairs(callbacks.init) do
       track_coroutine(coroutine.create(callback), {})
     end
-    coroutine.yield("tracked_coroutines_complete")
-    print("Init done.")
+    coroutine.yield("tracked_coroutines_complete") ---@TODO Time limit.
+    module_context.info("All plugins initialized.")
 
     os.queueEvent("ready")
     while true do
@@ -115,6 +121,7 @@ function module.run()
       local event_name = event_data[1]
 
       if event_name == "terminate" then
+        module_context.warn("Terminate queued.")
         break
       else
         if callbacks[event_name] then
@@ -129,12 +136,12 @@ function module.run()
       end
     end
 
-    print("Stopping...")
+    module_context.info("Stopping plugins...")
     for _, callback in pairs(callbacks.stop) do
       track_coroutine(coroutine.create(callback), {})
     end
-    coroutine.yield("tracked_coroutines_complete")
-    print("Stopped.")
+    coroutine.yield("tracked_coroutines_complete") ---@TODO Time limit.
+    module_context.info("All plugins have stopped.")
   end)
 end
 
@@ -163,6 +170,8 @@ end
 ---@overload fun(event_name:"redraw", callback:fun(monitors:peripheral[])): table Called when the shop redraws the monitors.
 ---@overload fun(event_name:"activity_dot", callback:fun(x:integer, y:integer, colour:colour)): table Push this event to display an activity dot for 0.5 seconds.
 function module.registerEventCallback(event_name, callback)
+  module_context.debug("Register event callback: %s", event_name)
+
   local identifier = {}
 
   if not callbacks[event_name] then
@@ -178,6 +187,7 @@ end
 ---@param event_name string The event to remove the callback from.
 ---@param identifier table The identifier given from registerEventCallback
 function module.removeEventCallback(event_name, identifier)
+  module_context.debug("Remove callback: %s", event_name)
   if callbacks[event_name] then callbacks[event_name][identifier] = nil end
 end
 

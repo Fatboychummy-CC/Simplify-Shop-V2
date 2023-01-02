@@ -38,7 +38,12 @@ function logging.getWin()
 end
 
 function logging.setFile(filename)
+  logging.close()
   file = fs.open(filename, 'a')
+end
+
+function logging.close()
+  if file then file.close() file = nil end
 end
 
 --- Set the logging level.
@@ -56,6 +61,9 @@ local function l_write(context, level, s, ...)
   if log_level <= level then
     if win then
       local old = term.redirect(win)
+
+      local old_bg = term.getBackgroundColor()
+      local old_fg = term.getTextColor()
 
       write("[")
       term.setTextColor(context.text_colour)
@@ -75,6 +83,9 @@ local function l_write(context, level, s, ...)
         write(s)
       end
 
+      term.setBackgroundColor(old_bg)
+      term.setTextColor(old_fg)
+
       print()
 
       term.redirect(old)
@@ -89,6 +100,8 @@ local function l_write(context, level, s, ...)
           ("[%s][%s]: %s"):format(context.name, logging.logLevelNames[level], s)
         )
       end
+
+      file.flush()
     end
   end
 end
