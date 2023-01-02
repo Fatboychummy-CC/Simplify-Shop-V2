@@ -10,7 +10,8 @@ function plugins.loadPlugins()
   local list = fs.list(dir)
   local ignore = {
     ["init.lua"] = true,
-    ["module.lua"] = true
+    ["module.lua"] = true,
+    ["config.lua"] = true
   }
 
   for _, filename in ipairs(list) do
@@ -22,7 +23,7 @@ function plugins.loadPlugins()
         error(err, 0)
       end
 
-      local ok, plugin = pcall(loaded)
+      local ok, plugin = pcall(loaded, "PLUGIN")
       if not ok then
         error(plugin, 0)
       end

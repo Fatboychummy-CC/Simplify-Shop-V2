@@ -139,7 +139,7 @@ end
 ---@overload fun(event_name:"stop"): table Called when the system is stopping. Close your websockets or whatever here.
 ---@overload fun(event_name:"purchase", item_info:item, count:integer, price:integer, refunded:integer): table Called whenever an item is purchased.
 ---@overload fun(event_name:"refresh_stock", stock:item[]): table Called when the shop's stock refreshes. This occurs by default every minute and after each purchase.
----@overload fun(event_name:"display", monitors:peripheral[]): table Called when the shop redraws the monitors.
+---@overload fun(event_name:"redraw", monitors:peripheral[]): table Called when the shop redraws the monitors.
 ---@overload fun(event_name:"activity_dot", x:integer, y:integer, colour:colour): table Push this event to display an activity dot for 0.5 seconds.
 function module.pushEvent(event_name, ...)
   os.queueEvent(event_name, ...)
@@ -154,7 +154,7 @@ end
 ---@overload fun(event_name:"stop", callback:fun()): table Called when the system is stopping. Close your websockets or whatever here.
 ---@overload fun(event_name:"purchase", callback:fun(item_info:item, count:integer, price:integer, refunded:integer)): table Called whenever an item is purchased.
 ---@overload fun(event_name:"refresh_stock", callback:fun(stock:item[])): table Called when the shop's stock refreshes. This occurs by default every minute and after each purchase.
----@overload fun(event_name:"display", callback:fun(monitors:peripheral[])): table Called when the shop redraws the monitors.
+---@overload fun(event_name:"redraw", callback:fun(monitors:peripheral[])): table Called when the shop redraws the monitors.
 ---@overload fun(event_name:"activity_dot", callback:fun(x:integer, y:integer, colour:colour)): table Push this event to display an activity dot for 0.5 seconds.
 function module.registerEventCallback(event_name, callback)
   local identifier = {}
