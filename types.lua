@@ -1,0 +1,19 @@
+---@meta
+
+---@alias colour
+---| 'colours.white' # white
+---| 'colours.orange' # orange
+---| 'colours.magenta' # magenta
+---| 'colours.lightBlue' # light blue
+---| 'colours.yellow' # yellow
+---| 'colours.lime' # lime
+---| 'colours.pink' # pink
+---| 'colours.grey' # grey
+---| 'colours.lightGrey' # light grey
+---| 'colours.cyan' # cyan
+---| 'colours.purple' # purple
+---| 'colours.blue' # blue
+---| 'colours.brown' # brown
+---| 'colours.green' # green
+---| 'colours.red' # red
+---| 'colours.black' # black
