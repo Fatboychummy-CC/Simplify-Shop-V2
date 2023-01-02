@@ -56,7 +56,10 @@ local function single_run_coroutines(event_name, ...)
   for i = running_coroutines.n, 1, -1 do
     local co = running_coroutines[i]
     if co.filter == nil or co.filter == event_name then -- terminate events are not forwarded unless specifically listening for them.
-      single_run_single_coroutine(co, event_name, ...)
+      if single_run_single_coroutine(co, event_name, ...) then
+        table.remove(running_coroutines, i)
+        running_coroutines.n = running_coroutines.n - 1
+      end
     end
   end
 end
@@ -69,7 +72,10 @@ local function run_coroutine(co, parameters)
   table.insert(running_coroutines, coroutine_info)
   running_coroutines.n = running_coroutines.n + 1
 
-  single_run_single_coroutine(coroutine_info, table.unpack(parameters, 1, parameters.n))
+  if single_run_single_coroutine(coroutine_info, table.unpack(parameters, 1, parameters.n)) then
+    table.remove(running_coroutines, running_coroutines.n)
+    running_coroutines.n = running_coroutines.n - 1
+  end
 end
 
 --- Queue a coroutine to be ran.
