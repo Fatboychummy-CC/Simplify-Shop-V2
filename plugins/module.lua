@@ -8,6 +8,8 @@ local running_coroutines = { n = 0 }
 local tracked_coroutines = {}
 local tracked_n1 = false
 
+--- Remove a coroutine from being tracked if we are tracking it
+---@param co thread
 local function remove_from_tracked(co)
   tracked_coroutines[co] = nil
   if tracked_n1 and not next(tracked_coroutines) then
