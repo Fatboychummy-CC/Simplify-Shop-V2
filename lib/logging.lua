@@ -58,6 +58,7 @@ end
 ---@param s any The text to write (tostring'd if not a string).
 ---@param ... any If extra arguments are supplied, this will do string.format(s, ...)
 local function l_write(context, level, s, ...)
+  local args = table.pack(...)
   if log_level <= level then
     if win then
       local old = term.redirect(win)
@@ -77,7 +78,7 @@ local function l_write(context, level, s, ...)
       term.setTextColor(colors.white)
       write("]: ")
       term.setTextColor(logging.logLevelColours[level])
-      if ... then
+      if args.n > 0 then
         write(s:format(...))
       else
         write(s)
