@@ -25,11 +25,21 @@ module.registerEventCallback("init", function()
 end)
 
 module.registerEventCallback("ready", function()
+  monitors(function(mon)
+    mon.setBackgroundColor(colors.black)
+    mon.clear()
+  end)
   while true do
     display_context.debug("Redraw.")
     module.pushEvent("redraw", monitors)
     sleep(30)
   end
+end)
+
+--- Redraw monitors when queued
+---@param monitors multimon
+module.registerEventCallback("redraw", function(monitors)
+
 end)
 
 module.registerEventCallback("stop", function()
