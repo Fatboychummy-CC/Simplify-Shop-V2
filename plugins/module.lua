@@ -9,11 +9,24 @@ local callbacks = {}
 local running_coroutines = { n = 0 }
 local tracked_coroutines = {}
 local tracked_n1 = false
+local can_stop_tracking = false
+
+local function count_kv(t)
+  local n = 0
+
+  for _ in pairs(t) do
+    n = n + 1
+  end
+
+  return n
+end
 
 --- Remove a coroutine from being tracked if we are tracking it
 ---@param co thread
 local function remove_from_tracked(co)
   tracked_coroutines[co] = nil
+  module_context.debug("Tracked coroutine stop queued")
+  module_context.debug("Tracked coroutines left: %d", count_kv(tracked_coroutines))
   if tracked_n1 and not next(tracked_coroutines) then
     os.queueEvent("tracked_coroutines_complete")
     tracked_n1 = false
@@ -95,7 +108,9 @@ local function track_coroutine(co, parameters)
 
   module_context.debug("Tracking a coroutine.")
 
-  single_run_single_coroutine(coroutine_info, table.unpack(parameters, 1, parameters.n))
+  coroutine_info.filter = "CORO_START:" .. tostring(coroutine_info)
+
+  os.queueEvent("CORO_START:" .. tostring(coroutine_info), table.unpack(parameters, 1, parameters.n))
 end
 
 --- Coroutine runner which handles input events and whatnot.
