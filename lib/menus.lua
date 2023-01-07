@@ -1,8 +1,11 @@
 --- Runs the menus for the shop.
 
+local deep_copy = require "deep_copy"
+
 ---@class menu
----@field public addSelection fun(id:string, name:string, description:string, long_description:string) Add a new selection to the menu.
----@field public editSelection fun(id:string, name:string?, description:string?, long_description:string?) Edit a selection in the menu. Supplied fields will be updated, `nil` fields ignored.
+---@field public addSelection fun(id:string, name:string, description:string, long_description:string, options:selection_options?) Add a new selection to the menu.
+---@field public editSelection fun(id:string, name:string?, description:string?, long_description:string?, options:selection_options?) Edit a selection in the menu. Supplied fields will be updated, `nil` fields ignored.
+---@field public getSelection fun(id:string):selection? Get information about a selection.
 ---@field public run fun(id:string?):string Run the menu and return the id of the selection selected. Start with the id passed selected (or the first selection, if nil)
 ---@field public title string The title of this menu
 ---@field public win table The window that this menu draws to.
@@ -12,6 +15,8 @@
 
 
 ---@alias selection {id:string, name:string, description:string, long_description:string}
+
+---@alias selection_options {name_colour:colour?, description_colour:colour?, long_description_colour:colour?}
 
 ---@class menus
 local menus = {}
@@ -73,29 +78,50 @@ local function redraw_menu(menu)
     if menu._selected + 1 == sel_n then
 
       term.setBackgroundColor(colors.gray)
+      if sel.options.name_colour then
+        term.setTextColor(sel.options.name_colour)
+      else
+        term.setTextColor(colors.white)
+      end
       term.write(string.rep(' ', w))
       term.setCursorPos(3, y)
       term.write(sel.name)
 
+      if sel.options.description_colour then
+        term.setTextColor(sel.options.description_colour)
+      else
+        term.setTextColor(colors.white)
+      end
       term.setCursorPos(w - 25, y)
       term.write(sel.description)
 
-      term.setCursorPos(1, h - 1)
       term.setBackgroundColor(colors.black)
+      if sel.options.long_description_colour then
+        term.setTextColor(sel.options.long_description_colour)
+      else
+        term.setTextColor(colors.white)
+      end
+      term.setCursorPos(1, h - 1)
       write(sel.long_description)
     else
       term.setBackgroundColor(colors.black)
-      term.setTextColor(colors.white)
+      if sel.options.name_colour then
+        term.setTextColor(sel.options.name_colour)
+      else
+        term.setTextColor(colors.white)
+      end
       term.write(sel.name)
+
+      if sel.options.description_colour then
+        term.setTextColor(sel.options.description_colour)
+      else
+        term.setTextColor(colors.white)
+      end
 
       term.setCursorPos(w - 25, y)
       term.write(sel.description)
     end
   end
-
-  -- Draw the long description of the selected selection.
-
-
 
   term.redirect(old)
 end
@@ -145,24 +171,34 @@ function menus.create(win, title)
     _selected = 0
   }
 
-  function menu.addSelection(id, name, description, long_description)
+  function menu.addSelection(id, name, description, long_description, options)
     table.insert(menu.selections,
-      { id = id, name = name, description = description, long_description = long_description })
+      { id = id, name = name, description = description, long_description = long_description, options = options or {} })
   end
 
-  function menu.editSelection(id, name, description, long_description)
+  function menu.editSelection(id, name, description, long_description, options)
     for _, selection in ipairs(menu.selections) do
       if selection.id == id then
         selection.name = name or selection.name
         selection.description = description or selection.description
         selection.long_description = long_description or selection.long_description
+        selection.options = options or selection.options
+
         os.queueEvent("menu_redraw")
         return
       end
     end
   end
 
-  function menu.run(id)
+  function menu.getSelection(id)
+    for _, selection in ipairs(menu.selections) do
+      if selection.id == id then
+        return deep_copy(selection)
+      end
+    end
+  end
+
+  function menu.run()
     redraw_menu(menu)
     while true do
       if handle_menu_event(menu, coroutine.yield()) then
