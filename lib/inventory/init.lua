@@ -4,7 +4,7 @@
 local version = tonumber(_HOST:match("1.(%d+)"))
 
 if version >= 13 then
-  return require "inventory.1_13" (require "inventory.inventory")
+  return require "inventory.1_13_plus" (require "inventory.inventory")
 else
   return require "inventory.1_12" (require "inventory.inventory")
 end
