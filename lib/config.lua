@@ -47,6 +47,17 @@ config.loaded = file_helper.unserialize(CONF_FILE, {
     monitor_text_colour = colours.white,
     monitor_text = "Shop has stopped.",
   },
+  plugins = {
+    core = {
+      "display.lua",
+      "menus.lua"
+    },
+    enabled = {
+      "display.lua",
+      "menus.lua"
+    },
+    disabled = {}
+  }
 })
 config_context.info("Config has been loaded.")
 

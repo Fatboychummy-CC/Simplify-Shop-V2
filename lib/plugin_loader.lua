@@ -1,6 +1,7 @@
 local module = require "module"
 local file_helper = require "file_helper"
 local logging = require "logging"
+local config = require "config"
 local plugin_context = logging.createContext("PLUGIN_MAIN", colors.black, colors.yellow)
 
 local dir = fs.combine(fs.getDir(shell.getRunningProgram()), "plugins")
@@ -12,7 +13,7 @@ function plugins.loadPlugins()
   plugin_context.info("Loading plugins.")
 
   local list = fs.list(dir)
-  local ignore = {}
+  local ignore = config.loaded.plugins.disabled
 
   for _, filename in ipairs(list) do
     if not ignore[filename] and not fs.isDir(filename) then
