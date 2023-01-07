@@ -2,6 +2,7 @@
 
 ---@class menu
 ---@field public addSelection fun(id:string, name:string, description:string, long_description:string) Add a new selection to the menu.
+---@field public editSelection fun(id:string, name:string?, description:string?, long_description:string?) Edit a selection in the menu. Supplied fields will be updated, `nil` fields ignored.
 ---@field public run fun(id:string?):string Run the menu and return the id of the selection selected. Start with the id passed selected (or the first selection, if nil)
 ---@field public title string The title of this menu
 ---@field public win table The window that this menu draws to.
@@ -111,7 +112,8 @@ local event_handlers = {
     elseif key == keys.enter then
       return true
     end
-  end
+  end,
+  menu_redraw = function() end -- this is just here to cause a redraw to occur
 }
 
 --- Handle an event for a given menu.
@@ -146,6 +148,18 @@ function menus.create(win, title)
   function menu.addSelection(id, name, description, long_description)
     table.insert(menu.selections,
       { id = id, name = name, description = description, long_description = long_description })
+  end
+
+  function menu.editSelection(id, name, description, long_description)
+    for _, selection in ipairs(menu.selections) do
+      if selection.id == id then
+        selection.name = name or selection.name
+        selection.description = description or selection.description
+        selection.long_description = long_description or selection.long_description
+        os.queueEvent("menu_redraw")
+        return
+      end
+    end
   end
 
   function menu.run(id)
