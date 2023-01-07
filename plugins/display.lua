@@ -1,7 +1,7 @@
 --- Display plugin for displaying shop contents and whatnot.
 
-local module          = require "plugins.module"
-local config          = require "plugins.config"
+local module          = require "module"
+local config          = require "config"
 local multimon        = require "multimon"
 local window_utils    = require "window_utilities"
 local logging         = require "logging"

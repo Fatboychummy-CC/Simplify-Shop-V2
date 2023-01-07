@@ -2,7 +2,7 @@
 
 -- "press c for console" needs to be somewhere ye ye?
 
-local module  = require "plugins.module"
+local module  = require "module"
 local menus   = require "menus"
 local logging = require "logging"
 

@@ -23,7 +23,7 @@ end
 
 -- Load and run the plugins
 main_context.debug("Require plugins.")
-local plugins = require "plugins"
+local plugins = require "plugin_loader"
 plugins.loadPlugins()
 
 main_context.info("Running shop.")

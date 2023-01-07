@@ -1,4 +1,4 @@
-local module = require "plugins.module"
+local module = require "module"
 local file_helper = require "file_helper"
 local logging = require "logging"
 local plugin_context = logging.createContext("PLUGIN_MAIN", colors.black, colors.yellow)
@@ -12,11 +12,7 @@ function plugins.loadPlugins()
   plugin_context.info("Loading plugins.")
 
   local list = fs.list(dir)
-  local ignore = {
-    ["init.lua"] = true,
-    ["module.lua"] = true,
-    ["config.lua"] = true
-  }
+  local ignore = {}
 
   for _, filename in ipairs(list) do
     if not ignore[filename] and not fs.isDir(filename) then
