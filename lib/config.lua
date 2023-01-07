@@ -50,11 +50,14 @@ config.loaded = file_helper.unserialize(CONF_FILE, {
   plugins = {
     core = {
       "display.lua",
-      "menus.lua"
+      "krist.lua",
+      "menus.lua",
+      "NFCC.lua",
+      "stock.lua"
     },
     enabled = {
-      "display.lua",
-      "menus.lua"
+      "announce.lua",
+      "webhooks.lua"
     },
     disabled = {}
   }

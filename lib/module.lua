@@ -127,7 +127,7 @@ function module.run()
     for _, callback in pairs(callbacks.init) do
       track_coroutine(coroutine.create(callback), {})
     end
-    coroutine.yield("tracked_coroutines_complete") ---@TODO Time limit.
+    coroutine.yield("tracked_coroutines_complete")
     module_context.info("All plugins initialized.")
 
     os.queueEvent("ready")
