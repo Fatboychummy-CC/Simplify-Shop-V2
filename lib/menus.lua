@@ -3,8 +3,8 @@
 local deep_copy = require "deep_copy"
 
 ---@class menu
----@field public addSelection fun(id:string, name:string, description:string, long_description:string, options:selection_options?) Add a new selection to the menu.
----@field public editSelection fun(id:string, name:string?, description:string?, long_description:string?, options:selection_options?) Edit a selection in the menu. Supplied fields will be updated, `nil` fields ignored.
+---@field public addSelection fun(id:string, name:string, description:string|fun(), long_description:string, options:selection_options?) Add a new selection to the menu.
+---@field public editSelection fun(id:string, name:string?, description:string|fun()?, long_description:string?, options:selection_options?) Edit a selection in the menu. Supplied fields will be updated, `nil` fields ignored.
 ---@field public getSelection fun(id:string):selection? Get information about a selection.
 ---@field public run fun(id:string?):string Run the menu and return the id of the selection selected. Start with the id passed selected (or the first selection, if nil)
 ---@field public title string The title of this menu
@@ -14,7 +14,7 @@ local deep_copy = require "deep_copy"
 ---@field public selections selection[]
 
 
----@alias selection {id:string, name:string, description:string, long_description:string}
+---@alias selection {id:string, name:string, description:string|fun(), long_description:string}
 
 ---@alias selection_options {name_colour:colour?, description_colour:colour?, long_description_colour:colour?}
 
@@ -93,7 +93,7 @@ local function redraw_menu(menu)
         term.setTextColor(colors.white)
       end
       term.setCursorPos(w - 25, y)
-      term.write(sel.description)
+      term.write(type(sel.description) == "function" and sel.description() or sel.description)
 
       term.setBackgroundColor(colors.black)
       if sel.options.long_description_colour then
@@ -119,7 +119,7 @@ local function redraw_menu(menu)
       end
 
       term.setCursorPos(w - 25, y)
-      term.write(sel.description)
+      term.write(type(sel.description) == "function" and sel.description() or sel.description)
     end
   end
 
@@ -208,6 +208,32 @@ function menus.create(win, title)
   end
 
   return menu
+end
+
+--- Ask the user a question and get them to input a value.
+---@param win table The window to be used.
+---@param title string The title of the page.
+---@param question string The question to ask.
+---@return string answer The answer the user gave
+function menus.question(win, title, question)
+  local old = term.redirect(win)
+
+  term.setBackgroundColor(colors.black)
+  term.setTextColor(colors.yellow)
+  term.clear()
+  term.setCursorPos(1, 1)
+  write(title)
+
+  term.setCursorPos(1, 3)
+  print(question)
+
+  write("> ")
+  term.setTextColor(colors.white)
+
+  local answer = read()
+
+  term.redirect(old)
+  return answer
 end
 
 return menus
