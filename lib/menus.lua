@@ -3,8 +3,8 @@
 local deep_copy = require "deep_copy"
 
 ---@class menu
----@field public addSelection fun(id:string, name:string, description:string|fun(), long_description:string, options:selection_options?) Add a new selection to the menu.
----@field public editSelection fun(id:string, name:string?, description:string|fun()?, long_description:string?, options:selection_options?) Edit a selection in the menu. Supplied fields will be updated, `nil` fields ignored.
+---@field public addSelection fun(id:string, name:string, description:string|fun(id:string), long_description:string, options:selection_options?) Add a new selection to the menu.
+---@field public editSelection fun(id:string, name:string?, description:string|fun(id:string)?, long_description:string?, options:selection_options?) Edit a selection in the menu. Supplied fields will be updated, `nil` fields ignored.
 ---@field public getSelection fun(id:string):selection? Get information about a selection.
 ---@field public run fun(id:string?):string Run the menu and return the id of the selection selected. Start with the id passed selected (or the first selection, if nil)
 ---@field public title string The title of this menu
@@ -14,9 +14,9 @@ local deep_copy = require "deep_copy"
 ---@field public selections selection[]
 
 
----@alias selection {id:string, name:string, description:string|fun(), long_description:string}
+---@alias selection {id:string, name:string, description:string|fun(id:string), long_description:string}
 
----@alias selection_options {name_colour:colour?, description_colour:colour?, long_description_colour:colour?}
+---@alias selection_options {name_colour:colour?, description_colour:colour?, long_description_colour:colour?, override_width:integer?}
 
 ---@class menus
 local menus = {}
@@ -85,15 +85,20 @@ local function redraw_menu(menu)
       end
       term.write(string.rep(' ', w))
       term.setCursorPos(3, y)
-      term.write(sel.name)
+
+      if #sel.name > w - (sel.options.override_width or 25) - 4 then
+        term.write(sel.name:sub(1, w - (sel.options.override_width or 25) - 7) .. "...")
+      else
+        term.write(sel.name)
+      end
 
       if sel.options.description_colour then
         term.setTextColor(sel.options.description_colour)
       else
         term.setTextColor(colors.white)
       end
-      term.setCursorPos(w - 25, y)
-      term.write(type(sel.description) == "function" and sel.description() or sel.description)
+      term.setCursorPos(w - (sel.options.override_width or 25), y)
+      term.write(type(sel.description) == "function" and sel.description(sel.id) or sel.description)
 
       term.setBackgroundColor(colors.black)
       if sel.options.long_description_colour then
@@ -110,7 +115,12 @@ local function redraw_menu(menu)
       else
         term.setTextColor(colors.white)
       end
-      term.write(sel.name)
+
+      if #sel.name > w - (sel.options.override_width or 25) - 4 then
+        term.write(sel.name:sub(1, w - (sel.options.override_width or 25) - 7) .. "...")
+      else
+        term.write(sel.name)
+      end
 
       if sel.options.description_colour then
         term.setTextColor(sel.options.description_colour)
@@ -118,8 +128,8 @@ local function redraw_menu(menu)
         term.setTextColor(colors.white)
       end
 
-      term.setCursorPos(w - 25, y)
-      term.write(type(sel.description) == "function" and sel.description() or sel.description)
+      term.setCursorPos(w - (sel.options.override_width or 25), y)
+      term.write(type(sel.description) == "function" and sel.description(sel.id) or sel.description)
     end
   end
 
