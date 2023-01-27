@@ -6,6 +6,8 @@ local deep_copy = require "deep_copy"
 ---@field public addSelection fun(id:string, name:string, description:string|fun(id:string), long_description:string, options:selection_options?) Add a new selection to the menu.
 ---@field public editSelection fun(id:string, name:string?, description:string|fun(id:string)?, long_description:string?, options:selection_options?) Edit a selection in the menu. Supplied fields will be updated, `nil` fields ignored.
 ---@field public getSelection fun(id:string):selection? Get information about a selection.
+---@field public clearSelections fun() Clear all selections out of the menu, so selections can be re-added.
+---@field public redraw fun() Redraw the menu.
 ---@field public run fun(id:string?):string Run the menu and return the id of the selection selected. Start with the id passed selected (or the first selection, if nil)
 ---@field public title string The title of this menu
 ---@field public win table The window that this menu draws to.
@@ -158,14 +160,14 @@ local event_handlers = {
 
       -- handle wrap-around
       if menu._selected == #menu.selections - 1 then
-        menu._scroll_position = #menu.selections - 8 ---@TODO this is a hardcoded size!
+        menu._scroll_position = #menu.selections - (h - 5)
         if menu._scroll_position < 0 then menu._scroll_position = 0 end
       end
     elseif key == keys.down then
       menu._selected = (menu._selected + 1) % #menu.selections
 
       -- scroll down if needed
-      while menu._selected > menu._scroll_position + (h - 6) do ---@TODO this is a hardcoded size!
+      while menu._selected > menu._scroll_position + (h - 6) do
         menu._scroll_position = menu._scroll_position + 1
       end
 
@@ -185,7 +187,7 @@ local event_handlers = {
 ---@param event_name string The name of the event.
 ---@param ... any The event parameters.
 local function handle_menu_event(menu, event_name, ...)
-  if event_handlers[event_name] then
+  if menu.win.isVisible() and event_handlers[event_name] then
     local result = event_handlers[event_name](menu, ...)
 
     if not result then
@@ -210,6 +212,10 @@ function menus.create(win, title)
     _scroll_position = 0
   }
 
+  function menu.redraw()
+    redraw_menu(menu)
+  end
+
   function menu.addSelection(id, name, description, long_description, options)
     table.insert(menu.selections,
       { id = id, name = name, description = description, long_description = long_description, options = options or {} })
@@ -223,7 +229,7 @@ function menus.create(win, title)
         selection.long_description = long_description or selection.long_description
         selection.options = options or selection.options
 
-        os.queueEvent("menu_redraw")
+        menu.redraw()
         return
       end
     end
@@ -235,6 +241,11 @@ function menus.create(win, title)
         return deep_copy(selection)
       end
     end
+  end
+
+  function menu.clearSelections()
+    menu.selections = {}
+    menu.redraw()
   end
 
   function menu.run()
