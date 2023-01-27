@@ -13,16 +13,16 @@ local log_win        = logging.getWin()
 local menu_win       = window.create(term.current(), 1, 1, term.getSize())
 local log_visibility = false
 
-local function run_settings_menu(menu_win)
+local function run_settings_menu()
   local settings_menu = menus.create(menu_win, "Settings")
 end
 
-local function run_help_menu(menu_win)
+local function run_help_menu()
   local help_menu = menus.create(menu_win, "Help")
 
 end
 
-local function run_plugins_menu(menu_win)
+local function run_plugins_menu()
   local EXIT = "exit"
 
   local plugin_menu = menus.create(menu_win, "Plugins")
@@ -122,8 +122,7 @@ local function stop_preboot()
 end
 
 --- Run the main menu.
----@param menu_win table
-local function run_main_menu(menu_win)
+local function run_main_menu()
   -- define the main menu selections and whatnot
   local GO = "go"
   local SETTINGS = "settings"
@@ -146,15 +145,15 @@ local function run_main_menu(menu_win)
 
     if selection == SETTINGS then
       menu_context.debug("Open settings")
-      run_settings_menu(menu_win)
+      run_settings_menu()
 
     elseif selection == HELP then
       menu_context.debug("Open help")
-      run_help_menu(menu_win)
+      run_help_menu()
 
     elseif selection == PLUGINS then
       menu_context.debug("Open plugins")
-      if run_plugins_menu(menu_win) then
+      if run_plugins_menu() then
         stop_preboot()
         selection = EXIT
       end
@@ -168,8 +167,7 @@ local function run_main_menu(menu_win)
 end
 
 --- Run the menu that is displayed while the shop is running
----@param menu_win table
-local function run_running_menu(menu_win)
+local function run_running_menu()
   local run_menu = menus.create(menu_win, "Shop is running.")
   run_menu.addSelection("", "Stop", "Stop the shop.",
     "Stop the shop. WARNING: This terminates anything in progress.")
@@ -185,7 +183,7 @@ module.registerEventCallback("init", function()
   menu_win.setVisible(true)
   menu_win.redraw()
 
-  run_main_menu(menu_win)
+  run_main_menu()
 end)
 
 module.registerEventCallback("ready", function()
@@ -194,7 +192,7 @@ module.registerEventCallback("ready", function()
   menu_win.setTextColor(colors.white)
   menu_win.clear()
 
-  run_running_menu(menu_win)
+  run_running_menu()
 end)
 
 module.registerEventCallback("key", function(key)
