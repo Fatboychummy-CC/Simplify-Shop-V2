@@ -37,6 +37,11 @@ config.loaded = file_helper.unserialize(CONF_FILE, {
     }
   },
   monitors = { "left" },
+  pre_init = {
+    monitor_background = colours.yellow,
+    monitor_text_colour = colours.black,
+    monitor_text = "Shop menu is open...",
+  },
   init = {
     monitor_background = colours.yellow,
     monitor_text_colour = colours.black,

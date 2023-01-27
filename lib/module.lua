@@ -9,7 +9,7 @@ local callbacks = {}
 local running_coroutines = { n = 0 }
 local tracked_coroutines = {}
 local tracked_n1 = false
-local can_stop_tracking = false
+local running = false
 
 local function count_kv(t)
   local n = 0
@@ -122,7 +122,21 @@ end
 
 --- Handle events and queue coroutines as needed.
 function module.run()
+  running = true
+
   parallel.waitForAny(coroutines, function()
+    module_context.info("Pre-initializing plugins.")
+    for _, callback in pairs(callbacks["pre-init"]) do
+      track_coroutine(coroutine.create(callback), {})
+    end
+    coroutine.yield("tracked_coroutines_complete")
+    module_context.info("All plugins Pre-initialized.")
+
+    -- Safe to hard-stop after pre-initialization, but not after initialization.
+    if not running then
+      return
+    end
+
     module_context.info("Initializing plugins.")
     for _, callback in pairs(callbacks.init) do
       track_coroutine(coroutine.create(callback), {})
@@ -131,7 +145,7 @@ function module.run()
     module_context.info("All plugins initialized.")
 
     os.queueEvent("ready")
-    while true do
+    while running do
       local event_data = table.pack(os.pullEventRaw())
       local event_name = event_data[1]
 
@@ -158,10 +172,20 @@ function module.run()
     coroutine.yield("tracked_coroutines_complete") ---@TODO Time limit.
     module_context.info("All plugins have stopped.")
   end)
+
+  running = false
+end
+
+--- Run a thread "in the background" (magic!)
+---@param func function The function to run in the background.
+---@param ... any Arguments to be passed to the function.
+function module.thread(func, ...)
+  run_coroutine(coroutine.create(func), ...)
 end
 
 --- Push an event to all plugin handlers listening for it.
 ---@param event_name string The name of the event.
+---@overload fun(event_name:"pre-init"): table Called pre-start of the shop. Run any settings menus and whatnot here.
 ---@overload fun(event_name:"init"): table Called when the system is starting up. Initialize your websockets or whatever here.
 ---@overload fun(event_name:"ready"): table Called when all init functions have completed. Looping module code should be stuffed here.
 ---@overload fun(event_name:"stop"): table Called when the system is stopping. Close your websockets or whatever here.
@@ -177,6 +201,7 @@ end
 ---@param event_name string The name of the event to be handled.
 ---@param callback fun(...:any) The handler function.
 ---@return table callback_id Unique table to identify the callback with for removal.
+---@overload fun(event_name:"pre-init"): table Called pre-start of the shop. Run any settings menus and whatnot here.
 ---@overload fun(event_name:"init", callback:fun()): table Called when the system is starting up. Initialize your websockets or whatever here.
 ---@overload fun(event_name:"ready", callback:fun()): table Called when all init functions have completed. Looping module code should be stuffed here.
 ---@overload fun(event_name:"stop", callback:fun()): table Called when the system is stopping. Close your websockets or whatever here.
@@ -204,6 +229,17 @@ end
 function module.removeEventCallback(event_name, identifier)
   module_context.debug("Remove callback: %s", event_name)
   if callbacks[event_name] then callbacks[event_name][identifier] = nil end
+end
+
+--- Stop the coroutine controller.
+function module.stop()
+  running = false
+end
+
+--- Get the current status of the coroutine controller.
+---@return boolean running Whether or not the controller is running.
+function module.running()
+  return running
 end
 
 return module

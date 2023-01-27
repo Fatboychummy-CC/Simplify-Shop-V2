@@ -115,10 +115,7 @@ end
 
 --- Generate a stop event after the shop is ready.
 local function stop_preboot()
-  module.registerEventCallback("ready", function()
-    sleep(0.15)
-    os.queueEvent "terminate"
-  end)
+  module.stop()
 end
 
 --- Run the main menu.
@@ -177,13 +174,19 @@ local function run_running_menu()
   os.queueEvent("terminate")
 end
 
-module.registerEventCallback("init", function()
+module.registerEventCallback("pre-init", function()
   -- Run menus, return only when menu exited.
   log_win.setVisible(false)
   menu_win.setVisible(true)
   menu_win.redraw()
 
   run_main_menu()
+end)
+
+module.registerEventCallback("init", function()
+  menu_win.clear()
+  menu_win.setCursorPos(1, 1)
+  menu_win.write("Initializing...")
 end)
 
 module.registerEventCallback("ready", function()

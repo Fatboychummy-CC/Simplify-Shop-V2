@@ -9,10 +9,22 @@ local display_context = logging.createContext("DISPLAY", colors.black, colors.li
 
 local monitors
 
-module.registerEventCallback("init", function()
+module.registerEventCallback("pre-init", function()
   display_context.debug("Init monitors")
   monitors = multimon.monitors(table.unpack(config.loaded.monitors))
 
+  monitors(function(mon)
+    mon.setBackgroundColor(config.loaded.pre_init.monitor_background)
+    mon.setTextColor(config.loaded.pre_init.monitor_text_colour)
+    mon.clear()
+
+    local w = mon.getSize()
+
+    window_utils.writeCenteredText(mon, nil, nil, config.loaded.pre_init.monitor_text, math.floor(w * 2 / 3))
+  end)
+end)
+
+module.registerEventCallback("init", function()
   monitors(function(mon)
     mon.setBackgroundColor(config.loaded.init.monitor_background)
     mon.setTextColor(config.loaded.init.monitor_text_colour)
