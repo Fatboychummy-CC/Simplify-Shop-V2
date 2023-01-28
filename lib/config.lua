@@ -52,17 +52,22 @@ config.loaded = file_helper.unserialize(CONF_FILE, {
     monitor_text_colour = colours.white,
     monitor_text = "Shop has stopped.",
   },
+  error = {
+    monitor_background = colours.blue,
+    monitor_text_colour = colours.white,
+    monitor_text = "Shop threw an error:\n\n%s",
+  },
   plugins = {
     core = {
       "display.lua",
       "krist.lua",
       "menus.lua",
-      "NFCC.lua",
       "stock.lua"
     },
     enabled = {
       "announce.lua",
-      "webhooks.lua"
+      "webhooks.lua",
+      "NFCC.lua",
     },
     disabled = {}
   }

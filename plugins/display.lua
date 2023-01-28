@@ -60,14 +60,14 @@ module.registerEventCallback("stop", function()
   local errored, err = module.errored()
   if errored then
     monitors(function(mon)
-      mon.setBackgroundColor(colors.blue)
-      mon.setTextColor(colors.white)
+      mon.setBackgroundColor(config.loaded.error.monitor_background)
+      mon.setTextColor(config.loaded.error.monitor_text_colour)
       mon.clear()
 
       local w = mon.getSize()
 
       ---@diagnostic disable-next-line `err` exists if `errored` is true.
-      window_utils.writeCenteredText(mon, nil, nil, err, w - 4)
+      window_utils.writeCenteredText(mon, nil, nil, config.loaded.error.monitor_text:format(err), w - 4)
     end)
   else
     monitors(function(mon)
