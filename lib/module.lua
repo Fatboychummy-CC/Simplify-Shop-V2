@@ -10,6 +10,15 @@ local running_coroutines = { n = 0 }
 local tracked_coroutines = {}
 local tracked_n1 = false
 local running = false
+local pre_init_stop = false
+local errored = false
+local error_message ---@type string?
+
+local function reset_coroutines()
+  running_coroutines = { n = 0 }
+  tracked_coroutines = {}
+  tracked_n1 = false
+end
 
 local function count_kv(t)
   local n = 0
@@ -53,6 +62,7 @@ local function single_run_single_coroutine(co, ...)
     else
       remove_from_tracked(co.co)
       module_context.error("Coroutine threw an error: %s", filter)
+      module.pushEvent("error", filter)
       return true
     end
 
@@ -120,57 +130,92 @@ local function coroutines()
   end
 end
 
+--- Run a set of coroutines until they are done.
+---@param coroutine_list function[]
+---@param time_limit number? The time limit, if any.
+---@return boolean time_out If the stop was caused by a time-out.
+---@return boolean errored If the stop was caused by an error.
+---@return string? error_message The message returned by the error, if any.
+local function run_tracked_coroutines(coroutine_list, time_limit)
+  for _, callback in pairs(coroutine_list) do
+    track_coroutine(coroutine.create(callback), {})
+  end
+
+  local timer
+  if time_limit then
+    timer = os.startTimer(time_limit)
+  end
+  local result, tmr
+  repeat
+    result, tmr = coroutine.yield()
+    module_context.debug("%s %s", result, tmr)
+  until result == "tracked_coroutines_complete" or result == "error" or (result == "timer" and tmr == timer)
+
+  if result == "error" then
+    return false, true, tmr
+  end
+  return result == "timer", false
+end
+
 --- Handle events and queue coroutines as needed.
 function module.run()
   running = true
+  errored = false
+  pre_init_stop = false
+  error_message = nil
 
   parallel.waitForAny(coroutines, function()
     module_context.info("Pre-initializing plugins.")
-    for _, callback in pairs(callbacks["pre-init"]) do
-      track_coroutine(coroutine.create(callback), {})
-    end
-    coroutine.yield("tracked_coroutines_complete")
+    local _, _errored, _error_message = run_tracked_coroutines(callbacks["pre-init"])
     module_context.info("All plugins Pre-initialized.")
+    errored = _errored
+    error_message = _error_message
+    reset_coroutines() -- ensure coroutine tables are clean
 
     -- Safe to hard-stop after pre-initialization, but not after initialization.
-    if not running then
-      return
-    end
+    if not pre_init_stop and not errored then
+      module_context.info("Initializing plugins.")
+      _, _errored, _error_message = run_tracked_coroutines(callbacks.init)
+      module_context.info("All plugins initialized.")
+      errored = _errored
+      error_message = _error_message
+      reset_coroutines() -- ensure coroutine tables are clean
 
-    module_context.info("Initializing plugins.")
-    for _, callback in pairs(callbacks.init) do
-      track_coroutine(coroutine.create(callback), {})
-    end
-    coroutine.yield("tracked_coroutines_complete")
-    module_context.info("All plugins initialized.")
+      if not errored then
+        os.queueEvent("ready")
+        while running do
+          local event_data = table.pack(os.pullEventRaw())
+          local event_name = event_data[1]
 
-    os.queueEvent("ready")
-    while running do
-      local event_data = table.pack(os.pullEventRaw())
-      local event_name = event_data[1]
+          if event_name == "terminate" then
+            module_context.warn("Terminate queued.")
+            break
+          elseif event_name == "error" then
+            running = false
+            errored = true
+            error_message = event_data[2]
+          else
+            if callbacks[event_name] then
+              table.remove(event_data, 1)
+              event_data.n = event_data.n - 1
 
-      if event_name == "terminate" then
-        module_context.warn("Terminate queued.")
-        break
-      else
-        if callbacks[event_name] then
-          table.remove(event_data, 1)
-          event_data.n = event_data.n - 1
-
-          for _, callback in pairs(callbacks[event_name]) do
-            run_coroutine(coroutine.create(callback), event_data)
+              for _, callback in pairs(callbacks[event_name]) do
+                run_coroutine(coroutine.create(callback), event_data)
+              end
+              os.queueEvent("new_coroutine")
+            end
           end
-          os.queueEvent("new_coroutine")
         end
       end
     end
+    reset_coroutines() -- ensure coroutine tables are clean
 
     module_context.info("Stopping plugins...")
-    for _, callback in pairs(callbacks.stop) do
-      track_coroutine(coroutine.create(callback), {})
-    end
-    coroutine.yield("tracked_coroutines_complete") ---@TODO Time limit.
+    local timed_out = run_tracked_coroutines(callbacks.stop, 5)
     module_context.info("All plugins have stopped.")
+    if timed_out then
+      printError("One or more modules ran past the 5 second shutdown limit and have been killed.")
+    end
   end)
 
   running = false
@@ -185,14 +230,15 @@ end
 
 --- Push an event to all plugin handlers listening for it.
 ---@param event_name string The name of the event.
----@overload fun(event_name:"pre-init"): table Called pre-start of the shop. Run any settings menus and whatnot here.
----@overload fun(event_name:"init"): table Called when the system is starting up. Initialize your websockets or whatever here.
----@overload fun(event_name:"ready"): table Called when all init functions have completed. Looping module code should be stuffed here.
----@overload fun(event_name:"stop"): table Called when the system is stopping. Close your websockets or whatever here.
----@overload fun(event_name:"purchase", item_info:item, count:integer, price:integer, refunded:integer): table Called whenever an item is purchased.
----@overload fun(event_name:"refresh_stock", stock:item[]): table Called when the shop's stock refreshes. This occurs by default every minute and after each purchase.
----@overload fun(event_name:"redraw", monitors:multimon): table Called when the shop redraws the monitors.
----@overload fun(event_name:"activity_dot", x:integer, y:integer, colour:colour): table Push this event to display an activity dot for 0.5 seconds.
+---@overload fun(event_name:"pre-init") Called pre-start of the shop. Run any settings menus and whatnot here.
+---@overload fun(event_name:"init") Called when the system is starting up. Initialize your websockets or whatever here.
+---@overload fun(event_name:"ready") Called when all init functions have completed. Looping module code should be stuffed here.
+---@overload fun(event_name:"stop") Called when the system is stopping. Close your websockets or whatever here. It is recommended you check the return values of `module.errored()` here.
+---@overload fun(event_name:"purchase", item_info:item, count:integer, price:integer, refunded:integer) Called whenever an item is purchased.
+---@overload fun(event_name:"refresh_stock", stock:item[]) Called when the shop's stock refreshes. This occurs by default every minute and after each purchase.
+---@overload fun(event_name:"redraw", monitors:multimon) Called when the shop redraws the monitors.
+---@overload fun(event_name:"activity_dot", x:integer, y:integer, colour:colour) Push this event to display an activity dot for 0.5 seconds.
+---@overload fun(event_name:"error", error:string) Push this event when a critical error occurs. INTERNAL USE ONLY.
 function module.pushEvent(event_name, ...)
   os.queueEvent(event_name, ...)
 end
@@ -204,7 +250,7 @@ end
 ---@overload fun(event_name:"pre-init"): table Called pre-start of the shop. Run any settings menus and whatnot here.
 ---@overload fun(event_name:"init", callback:fun()): table Called when the system is starting up. Initialize your websockets or whatever here.
 ---@overload fun(event_name:"ready", callback:fun()): table Called when all init functions have completed. Looping module code should be stuffed here.
----@overload fun(event_name:"stop", callback:fun()): table Called when the system is stopping. Close your websockets or whatever here.
+---@overload fun(event_name:"stop", callback:fun()): table Called when the system is stopping. Close your websockets or whatever here. It is recommended you check the return values of `module.errored()` here.
 ---@overload fun(event_name:"purchase", callback:fun(item_info:item, count:integer, price:integer, refunded:integer)): table Called whenever an item is purchased.
 ---@overload fun(event_name:"refresh_stock", callback:fun(stock:item[])): table Called when the shop's stock refreshes. This occurs by default every minute and after each purchase.
 ---@overload fun(event_name:"redraw", callback:fun(monitors:multimon)): table Called when the shop redraws the monitors.
@@ -236,10 +282,22 @@ function module.stop()
   running = false
 end
 
+--- Stop the system during pre-init stage. Use this in place of `module.stop()` when in the pre-init stage.
+function module.pre_init_stop()
+  pre_init_stop = true
+end
+
 --- Get the current status of the coroutine controller.
 ---@return boolean running Whether or not the controller is running.
 function module.running()
   return running
+end
+
+--- Check if the module is stopping due to an error.
+---@return boolean errored If the module stopped due to an error.
+---@return string? error The error message, if an error occurred.
+function module.errored()
+  return errored, error_message
 end
 
 return module
