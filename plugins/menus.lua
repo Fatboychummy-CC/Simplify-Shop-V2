@@ -115,7 +115,8 @@ end
 
 --- Generate a stop event after the shop is ready.
 local function stop_preboot()
-  module.stop()
+  menu_context.warn("Stop requested by user.")
+  module.pre_init_stop()
 end
 
 --- Run the main menu.

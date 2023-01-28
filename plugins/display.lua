@@ -57,13 +57,27 @@ end)
 module.registerEventCallback("stop", function()
   display_context.debug("Stop monitors")
 
-  monitors(function(mon)
-    mon.setBackgroundColor(config.loaded.stop.monitor_background)
-    mon.setTextColor(config.loaded.stop.monitor_text_colour)
-    mon.clear()
+  local errored, err = module.errored()
+  if errored then
+    monitors(function(mon)
+      mon.setBackgroundColor(colors.blue)
+      mon.setTextColor(colors.white)
+      mon.clear()
 
-    local w = mon.getSize()
+      local w = mon.getSize()
 
-    window_utils.writeCenteredText(mon, nil, nil, config.loaded.stop.monitor_text, math.floor(w * 2 / 3))
-  end)
+      ---@diagnostic disable-next-line `err` exists if `errored` is true.
+      window_utils.writeCenteredText(mon, nil, nil, err, w - 4)
+    end)
+  else
+    monitors(function(mon)
+      mon.setBackgroundColor(config.loaded.stop.monitor_background)
+      mon.setTextColor(config.loaded.stop.monitor_text_colour)
+      mon.clear()
+
+      local w = mon.getSize()
+
+      window_utils.writeCenteredText(mon, nil, nil, config.loaded.stop.monitor_text, math.floor(w * 2 / 3))
+    end)
+  end
 end)
